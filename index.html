@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fable by Kavita Anu | Stitching Stories</title>
+  <meta name="description" content="Minimal premium ecommerce website for Fable by Kavita Anu, Surat-based Indian ethnic and western wear brand." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Razorpay Checkout Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <style>
+    :root {
+      --rose: #f7d8df;
+      --rose-deep: #c95f7f;
+      --rose-dark: #8e3554;
+      --ivory: #fffaf4;
+      --cream: #fff2e5;
+      --maroon: #561f32;
+      --gold: #b88a44;
+      --mehndi: #64714c;
+      --ink: #25151a;
+      --muted: #7c6670;
+      --white: #ffffff;
+      --shadow: 0 22px 70px rgba(86, 31, 50, 0.16);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --transition: all 0.35s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(247,216,223,0.9), transparent 35%),
+        linear-gradient(135deg, var(--ivory), #fff6fb 55%, var(--cream));
+      overflow-x: hidden;
+    }
+
+    body.cart-open { overflow: hidden; }
+
+    .container { width: min(1160px, 92%); margin: auto; }
+
+    .section { padding: 96px 0; position: relative; }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.35rem, 5vw, 4.4rem);
+      line-height: 0.95;
+      color: var(--maroon);
+      margin-bottom: 18px;
+    }
+    .section-kicker {
+      color: var(--rose-dark);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.19em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .section-text { color: var(--muted); line-height: 1.85; max-width: 720px; }
+
+    .btn {
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      font-size: 0.94rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--maroon), var(--rose-deep));
+      color: var(--white);
+      box-shadow: 0 16px 34px rgba(201, 95, 127, 0.34);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 20px 48px rgba(201, 95, 127, 0.42); }
+    .btn-soft { background: rgba(255,255,255,0.75); color: var(--maroon); border: 1px solid rgba(201,95,127,0.22); }
+    .btn-soft:hover { background: var(--white); transform: translateY(-3px); }
+
+    .nav {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1160px, 92%);
+      z-index: 1000;
+      background: rgba(255,250,244,0.74);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(201,95,127,0.18);
+      box-shadow: 0 14px 40px rgba(86,31,50,0.08);
+      border-radius: 999px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--maroon); }
+    .brand-mark {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(145deg, var(--rose), #fff, #eec1cc);
+      border: 1px solid rgba(184,138,68,0.5);
+      display: grid; place-items: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--rose-dark);
+    }
+    .brand small { display: block; color: var(--muted); font-size: 0.72rem; letter-spacing: 0.08em; }
+    .brand strong { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { color: var(--maroon); text-decoration: none; font-weight: 700; font-size: 0.88rem; }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .cart-btn { position: relative; }
+    .cart-count {
+      position: absolute; top: -7px; right: -7px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--gold); color: var(--white); font-size: 0.74rem;
+      display: grid; place-items: center; font-weight: 900;
+    }
+    .mobile-toggle { display: none; background: transparent; border: 0; font-size: 1.8rem; color: var(--maroon); }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: 140px 0 70px;
+      overflow: hidden;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.03fr 0.97fr; gap: 52px; align-items: center; }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 7vw, 7rem);
+      line-height: 0.87;
+      color: var(--maroon);
+      letter-spacing: -0.04em;
+      margin-bottom: 24px;
+    }
+    .hero h1 span { color: var(--rose-deep); }
+    .hero p { color: var(--muted); font-size: 1.08rem; line-height: 1.9; max-width: 650px; margin-bottom: 30px; }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .badge { padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,0.75); border: 1px solid rgba(184,138,68,0.2); color: var(--maroon); font-weight: 700; font-size: 0.86rem; }
+
+    .hero-art {
+      position: relative;
+      min-height: 610px;
+    }
+    .arch-card {
+      position: absolute;
+      inset: 20px 20px 80px 40px;
+      border-radius: 220px 220px 32px 32px;
+      background:
+        linear-gradient(rgba(86,31,50,0.08), rgba(86,31,50,0.08)),
+        url('https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=950&q=80') center/cover;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: floaty 6s ease-in-out infinite;
+    }
+    .arch-card::after {
+      content: '';
+      position: absolute; inset: 18px;
+      border-radius: 200px 200px 22px 22px;
+      border: 1px solid rgba(255,255,255,0.68);
+    }
+    .floating-card {
+      position: absolute;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(201,95,127,0.18);
+      box-shadow: 0 18px 42px rgba(86,31,50,0.12);
+      border-radius: 24px;
+      padding: 18px;
+      max-width: 240px;
+    }
+    .floating-card.top { right: 0; top: 78px; }
+    .floating-card.bottom { left: 0; bottom: 20px; }
+    .floating-card strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--maroon); }
+    .floating-card span { color: var(--muted); font-size: 0.86rem; line-height: 1.6; display: block; margin-top: 4px; }
+
+    @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+
+    .about-grid, .why-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: center; }
+    .heritage-card {
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(184,138,68,0.22);
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+    .heritage-image {
+      height: 430px;
+      border-radius: 22px;
+      background: url('https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=900&q=80') center/cover;
+      margin-bottom: 18px;
+    }
+    .timeline { display: grid; gap: 18px; margin-top: 26px; }
+    .timeline-item { display: grid; grid-template-columns: 70px 1fr; gap: 18px; padding: 18px; background: rgba(255,255,255,0.68); border: 1px solid rgba(201,95,127,0.15); border-radius: 18px; }
+    .timeline-item b { color: var(--gold); }
+    .timeline-item p { color: var(--muted); line-height: 1.7; }
+
+    .products-head { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 34px; }
+    .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .product-card {
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(201,95,127,0.15);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 18px 50px rgba(86,31,50,0.09);
+      transition: var(--transition);
+    }
+    .product-card:hover { transform: translateY(-8px); box-shadow: var(--shadow); }
+    .product-image { height: 340px; background-size: cover; background-position: center; position: relative; }
+    .product-tag { position: absolute; left: 16px; top: 16px; background: rgba(255,250,244,0.86); color: var(--rose-dark); padding: 8px 12px; border-radius: 999px; font-size: 0.76rem; font-weight: 900; }
+    .product-body { padding: 20px; }
+    .product-body h3 { font-family: 'Cormorant Garamond', serif; color: var(--maroon); font-size: 1.65rem; margin-bottom: 7px; }
+    .product-body p { color: var(--muted); line-height: 1.6; font-size: 0.92rem; min-height: 46px; }
+    .product-meta { display: flex; justify-content: space-between; align-items: center; margin: 18px 0; }
+    .price { color: var(--maroon); font-weight: 900; font-size: 1.1rem; }
+    select, input, textarea {
+      width: 100%; border: 1px solid rgba(201,95,127,0.22); border-radius: 14px;
+      padding: 13px 14px; background: rgba(255,255,255,0.8); color: var(--ink); outline: none;
+      font-family: inherit;
+    }
+    .card-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+    .why-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .why-card { padding: 24px; border-radius: 24px; background: rgba(255,255,255,0.72); border: 1px solid rgba(184,138,68,0.18); box-shadow: 0 16px 38px rgba(86,31,50,0.08); }
+    .why-card .icon { font-size: 2rem; margin-bottom: 14px; }
+    .why-card h3 { color: var(--maroon); margin-bottom: 8px; }
+    .why-card p { color: var(--muted); line-height: 1.7; font-size: 0.94rem; }
+
+    .instagram-box {
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(255,255,255,0.78), rgba(247,216,223,0.55));
+      border: 1px solid rgba(201,95,127,0.18);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      overflow: hidden;
+    }
+    .insta-top { display: flex; justify-content: space-between; gap: 22px; align-items: center; margin-bottom: 24px; }
+    .insta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .insta-post { aspect-ratio: 1; border-radius: 20px; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+    .insta-post::after { content: 'View on Instagram'; position: absolute; inset: auto 10px 10px 10px; transform: translateY(120%); transition: var(--transition); background: rgba(86,31,50,0.78); color: white; text-align: center; padding: 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 800; }
+    .insta-post:hover::after { transform: translateY(0); }
+    .api-note { margin-top: 18px; color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    .contact-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 36px; }
+    .contact-card, .form-card { padding: 28px; border-radius: var(--radius-lg); background: rgba(255,255,255,0.72); border: 1px solid rgba(201,95,127,0.16); box-shadow: 0 18px 50px rgba(86,31,50,0.08); }
+    .contact-list { display: grid; gap: 16px; margin-top: 24px; }
+    .contact-list a, .contact-list div { color: var(--maroon); text-decoration: none; font-weight: 700; background: rgba(247,216,223,0.42); border-radius: 18px; padding: 16px; }
+    .form-grid { display: grid; gap: 14px; }
+
+    footer { padding: 42px 0; border-top: 1px solid rgba(201,95,127,0.16); color: var(--muted); text-align: center; }
+
+    .cart-drawer {
+      position: fixed; inset: 0; z-index: 2000; pointer-events: none;
+    }
+    .cart-overlay { position: absolute; inset: 0; background: rgba(37,21,26,0.34); opacity: 0; transition: var(--transition); }
+    .cart-panel {
+      position: absolute; top: 0; right: 0; height: 100%; width: min(460px, 94vw);
+      background: var(--ivory); box-shadow: -24px 0 80px rgba(37,21,26,0.24);
+      transform: translateX(105%); transition: var(--transition); padding: 28px; overflow-y: auto;
+    }
+    .cart-drawer.open { pointer-events: auto; }
+    .cart-drawer.open .cart-overlay { opacity: 1; }
+    .cart-drawer.open .cart-panel { transform: translateX(0); }
+    .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .cart-header h2 { font-family: 'Cormorant Garamond', serif; color: var(--maroon); font-size: 2rem; }
+    .close-cart { border: none; background: var(--rose); color: var(--maroon); width: 42px; height: 42px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; }
+    .cart-items { display: grid; gap: 14px; margin-bottom: 24px; }
+    .cart-item { display: grid; grid-template-columns: 70px 1fr auto; gap: 12px; padding: 12px; border-radius: 18px; background: white; border: 1px solid rgba(201,95,127,0.12); }
+    .cart-item-img { width: 70px; height: 80px; border-radius: 14px; background-size: cover; background-position: center; }
+    .cart-item h4 { color: var(--maroon); font-size: 0.95rem; margin-bottom: 4px; }
+    .cart-item small { color: var(--muted); display: block; line-height: 1.45; }
+    .remove-item { background: transparent; border: none; color: var(--rose-dark); font-weight: 900; cursor: pointer; }
+    .cart-total { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-top: 1px solid rgba(201,95,127,0.18); border-bottom: 1px solid rgba(201,95,127,0.18); margin-bottom: 18px; font-weight: 900; color: var(--maroon); }
+    .checkout-form { display: grid; gap: 12px; }
+    .small-note { color: var(--muted); font-size: 0.82rem; line-height: 1.55; }
+
+    .reveal { opacity: 0; transform: translateY(34px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 940px) {
+      .mobile-toggle { display: block; }
+      .nav-links {
+        position: absolute; top: 76px; left: 0; right: 0;
+        flex-direction: column; background: rgba(255,250,244,0.96); border-radius: 26px; padding: 22px;
+        border: 1px solid rgba(201,95,127,0.18); box-shadow: var(--shadow);
+        transform: translateY(-12px); opacity: 0; pointer-events: none; transition: var(--transition);
+      }
+      .nav-links.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+      .hero-grid, .about-grid, .why-grid, .contact-grid { grid-template-columns: 1fr; }
+      .hero-art { min-height: 500px; }
+      .products-head { align-items: start; flex-direction: column; }
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+      .insta-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 620px) {
+      .section { padding: 72px 0; }
+      .nav { top: 10px; width: 94%; }
+      .brand strong { font-size: 1rem; }
+      .brand small { display: none; }
+      .hero { padding-top: 118px; }
+      .hero-art { min-height: 410px; }
+      .arch-card { inset: 10px 0 70px 0; }
+      .floating-card { max-width: 190px; padding: 14px; }
+      .floating-card.top { top: 30px; }
+      .product-grid, .why-cards { grid-template-columns: 1fr; }
+      .product-image { height: 390px; }
+      .timeline-item { grid-template-columns: 1fr; }
+      .insta-top { flex-direction: column; align-items: start; }
+      .nav-actions .btn-soft { padding: 12px 15px; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="#home" class="brand" aria-label="Fable by Kavita Anu Home">
+      <div class="brand-mark">F</div>
+      <div>
+        <strong>Fable by Kavita Anu</strong>
+        <small>Stitching Stories</small>
+      </div>
+    </a>
+
+    <div class="nav-links" id="navLinks">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#products">Products</a>
+      <a href="#why-us">Why Us</a>
+      <a href="#instagram">Instagram</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-soft cart-btn" id="openCart">Cart <span class="cart-count" id="cartCount">0</span></button>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Open menu">☰</button>
+    </div>
+  </nav>
+
+  <header class="hero" id="home">
+    <div class="container hero-grid">
+      <div class="reveal">
+        <div class="section-kicker">Surat • Ethnic & Western Wear</div>
+        <h1>Indian stories, <span>stitched</span> for today.</h1>
+        <p>
+          A premium minimal online boutique for curated sarees, festive silhouettes, designer blouses,
+          elegant western wear, and kidswear — created for women who love tradition with a modern finish.
+        </p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="#products" class="btn btn-primary">Shop Collection</a>
+          <a href="https://wa.me/9601129762" target="_blank" class="btn btn-soft">Order on WhatsApp</a>
+        </div>
+        <div class="hero-badges">
+          <span class="badge">Handpicked Fabrics</span>
+          <span class="badge">Festive Ready</span>
+          <span class="badge">Custom Styling</span>
+          <span class="badge">Surat Boutique</span>
+        </div>
+      </div>
+
+      <div class="hero-art reveal">
+        <div class="arch-card"></div>
+        <div class="floating-card top">
+          <strong>Fable</strong>
+          <span>Curated fashion that brings out the perfect you.</span>
+        </div>
+        <div class="floating-card bottom">
+          <strong>Tradition × Modern</strong>
+          <span>From royal drapes to contemporary festive looks.</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section" id="about">
+    <div class="container about-grid">
+      <div class="heritage-card reveal">
+        <div class="heritage-image"></div>
+        <p class="section-text">Inspired by India’s long textile legacy — from delicate embroidery to flowing drapes and festive colors.</p>
+      </div>
+      <div class="reveal">
+        <div class="section-kicker">About the Brand</div>
+        <h2 class="section-title">A boutique built around elegance, comfort, and memory.</h2>
+        <p class="section-text">
+          Fable by Kavita Anu brings together Indian ethnic charm and modern styling. The website experience is designed to feel premium, warm, and trustworthy — helping offline boutique customers confidently place online orders.
+        </p>
+        <div class="timeline">
+          <div class="timeline-item">
+            <b>Drape</b>
+            <p>Sarees and festive wear carry the language of Indian celebration, identity, and family occasions.</p>
+          </div>
+          <div class="timeline-item">
+            <b>Craft</b>
+            <p>Embroidery, patterns, borders, and fabric texture create the luxury feel customers notice instantly.</p>
+          </div>
+          <div class="timeline-item">
+            <b>Today</b>
+            <p>Modern silhouettes and easy online ordering make boutique shopping simple for the next generation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="products">
+    <div class="container">
+      <div class="products-head reveal">
+        <div>
+          <div class="section-kicker">Featured Collection</div>
+          <h2 class="section-title">Shop graceful essentials.</h2>
+          <p class="section-text">Replace these demo products with the client’s real catalog, pricing, sizes, and images.</p>
+        </div>
+        <button class="btn btn-soft" onclick="document.getElementById('openCart').click()">View Cart</button>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+
+  <section class="section" id="why-us">
+    <div class="container why-grid">
+      <div class="reveal">
+        <div class="section-kicker">Why Choose Us</div>
+        <h2 class="section-title">Boutique trust, online convenience.</h2>
+        <p class="section-text">
+          The website focuses on a smooth purchase journey: product discovery, size selection, cart review, email capture, secure Razorpay payment, and automated order communication through backend integration.
+        </p>
+      </div>
+      <div class="why-cards reveal">
+        <div class="why-card"><div class="icon">🪷</div><h3>Traditional Aesthetic</h3><p>Light pink, ivory, maroon, and muted gold create a soft Indian festive look.</p></div>
+        <div class="why-card"><div class="icon">🧵</div><h3>Curated Pieces</h3><p>Designed for elegant sarees, ethnic wear, designer blouses, western wear, and kidswear.</p></div>
+        <div class="why-card"><div class="icon">🛍️</div><h3>Easy Cart Flow</h3><p>Customers can select size, add products to cart, and review before payment.</p></div>
+        <div class="why-card"><div class="icon">💳</div><h3>Razorpay Ready</h3><p>Checkout is prepared for Razorpay Orders API and payment verification backend.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="instagram">
+    <div class="container">
+      <div class="instagram-box reveal">
+        <div class="insta-top">
+          <div>
+            <div class="section-kicker">Live Social Feed</div>
+            <h2 class="section-title" style="margin-bottom:0;">From Instagram</h2>
+          </div>
+          <a href="https://www.instagram.com/fablebykavitaanu/" target="_blank" class="btn btn-primary">Follow @fablebykavitaanu</a>
+        </div>
+
+        <!-- Static fallback preview. For a true live feed, connect Meta Instagram Basic Display API or a third-party widget. -->
+        <div class="insta-grid" id="instagramGrid">
+          <a class="insta-post" href="https://www.instagram.com/fablebykavitaanu/" target="_blank" style="background-image:url('https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=600&q=80')"></a>
+          <a class="insta-post" href="https://www.instagram.com/fablebykavitaanu/" target="_blank" style="background-image:url('https://images.unsplash.com/photo-1583391733981-84984045512f?auto=format&fit=crop&w=600&q=80')"></a>
+          <a class="insta-post" href="https://www.instagram.com/fablebykavitaanu/" target="_blank" style="background-image:url('https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?auto=format&fit=crop&w=600&q=80')"></a>
+          <a class="insta-post" href="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80" target="_blank" style="background-image:url('https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80')"></a>
+        </div>
+        <p class="api-note">
+          Developer note: Instagram does not allow reliable direct public-feed fetching from only a profile URL in frontend JavaScript. For production, use Meta Instagram Basic Display API, Instagram Graph API for a Business/Creator account, or an approved embed widget. Keep API tokens on the backend.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="container contact-grid">
+      <div class="contact-card reveal">
+        <div class="section-kicker">Visit / Connect</div>
+        <h2 class="section-title">Let’s style your next occasion.</h2>
+        <p class="section-text">For custom fittings, new arrivals, festive collections, or bulk family orders, connect directly with the boutique.</p>
+        <div class="contact-list">
+          <a href="https://wa.me/9601129762" target="_blank">WhatsApp: +91 96011 29762</a>
+          <a href="https://www.instagram.com/fablebykavitaanu/" target="_blank">Instagram: @fablebykavitaanu</a>
+          <div>Location: Surat, Gujarat</div>
+        </div>
+      </div>
+      <form class="form-card reveal" id="contactForm">
+        <div class="form-grid">
+          <input type="text" id="contactName" placeholder="Your Name" required>
+          <input type="email" id="contactEmail" placeholder="Email Address" required>
+          <input type="tel" id="contactPhone" placeholder="Phone Number">
+          <textarea id="contactMessage" rows="5" placeholder="Tell us what you are looking for"></textarea>
+          <button class="btn btn-primary" type="submit">Send Inquiry on WhatsApp</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> Fable by Kavita Anu. Designed for boutique ecommerce expansion.
+    </div>
+  </footer>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-panel">
+      <div class="cart-header">
+        <h2>Your Cart</h2>
+        <button class="close-cart" id="closeCart">×</button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotal">₹0</span>
+      </div>
+      <form class="checkout-form" id="checkoutForm">
+        <input type="text" id="customerName" placeholder="Full Name" required>
+        <input type="email" id="customerEmail" placeholder="Email Address" required>
+        <input type="tel" id="customerPhone" placeholder="Phone Number" required>
+        <textarea id="customerAddress" rows="4" placeholder="Delivery Address" required></textarea>
+        <button class="btn btn-primary" type="submit">Pay & Place Order</button>
+        <p class="small-note">
+          Demo note: Replace the test key and backend endpoints before going live. Production payment verification and order emails must run from the server.
+        </p>
+      </form>
+    </div>
+  </aside>
+
+  <script>
+    const WHATSAPP_NUMBER = '919601129762';
+    const CLIENT_EMAIL = 'client@example.com'; // Replace with the client's business email.
+    const RAZORPAY_KEY_ID = 'rzp_test_REPLACE_WITH_KEY_ID'; // Replace with live/test Razorpay Key ID only. Never expose Key Secret.
+
+    const products = [
+      {
+        id: 1,
+        name: 'Mint Embroidered Saree',
+        price: 4499,
+        tag: 'Festive Saree',
+        desc: 'Soft mint drape with delicate embroidery for elegant occasions.',
+        image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=900&q=80',
+        sizes: ['Free Size', 'Custom Blouse']
+      },
+      {
+        id: 2,
+        name: 'Royal Purple Drape',
+        price: 5299,
+        tag: 'Royal Edit',
+        desc: 'A rich festive look inspired by traditional Indian royal hues.',
+        image: 'https://images.unsplash.com/photo-1583391733981-84984045512f?auto=format&fit=crop&w=900&q=80',
+        sizes: ['Free Size', 'Custom Blouse']
+      },
+      {
+        id: 3,
+        name: 'Floral Organza Saree',
+        price: 5999,
+        tag: 'Organza',
+        desc: 'Lightweight organza texture with floral details and modern grace.',
+        image: 'https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?auto=format&fit=crop&w=900&q=80',
+        sizes: ['Free Size', 'Custom Blouse']
+      },
+      {
+        id: 4,
+        name: 'Designer Kurta Set',
+        price: 3299,
+        tag: 'Ethnic Wear',
+        desc: 'Comfortable, refined ethnic set for daily elegance and functions.',
+        image: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=900&q=80',
+        sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+      },
+      {
+        id: 5,
+        name: 'Contemporary Co-ord',
+        price: 2799,
+        tag: 'Western Wear',
+        desc: 'Modern silhouette with a soft boutique finish for casual outings.',
+        image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=900&q=80',
+        sizes: ['XS', 'S', 'M', 'L', 'XL']
+      },
+      {
+        id: 6,
+        name: 'Kids Festive Lehenga',
+        price: 2499,
+        tag: 'Kidswear',
+        desc: 'Playful festive wear for kids with comfort-first styling.',
+        image: 'https://images.unsplash.com/photo-1578897367107-2828e351c8a8?auto=format&fit=crop&w=900&q=80',
+        sizes: ['2-3Y', '4-5Y', '6-7Y', '8-9Y', '10-11Y']
+      }
+    ];
+
+    let cart = JSON.parse(localStorage.getItem('fableCart')) || [];
+
+    const productGrid = document.getElementById('productGrid');
+    const cartCount = document.getElementById('cartCount');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartDrawer = document.getElementById('cartDrawer');
+
+    function money(value) {
+      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
+    }
+
+    function renderProducts() {
+      productGrid.innerHTML = products.map(product => `
+        <article class="product-card reveal">
+          <div class="product-image" style="background-image:url('${product.image}')">
+            <span class="product-tag">${product.tag}</span>
+          </div>
+          <div class="product-body">
+            <h3>${product.name}</h3>
+            <p>${product.desc}</p>
+            <div class="product-meta">
+              <span class="price">${money(product.price)}</span>
+            </div>
+            <select id="size-${product.id}" aria-label="Select size for ${product.name}">
+              ${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+            </select>
+            <div class="card-actions" style="margin-top:12px;">
+              <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      const size = document.getElementById(`size-${productId}`).value;
+      const existing = cart.find(item => item.id === productId && item.size === size);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...product, size, qty: 1 });
+      saveCart();
+      openCart();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      saveCart();
+    }
+
+    function saveCart() {
+      localStorage.setItem('fableCart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function renderCart() {
+      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+      const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      cartCount.textContent = totalQty;
+      cartTotal.textContent = money(total);
+
+      if (!cart.length) {
+        cartItems.innerHTML = '<p class="small-note">Your cart is empty. Add a product to continue.</p>';
+        return;
+      }
+
+      cartItems.innerHTML = cart.map((item, index) => `
+        <div class="cart-item">
+          <div class="cart-item-img" style="background-image:url('${item.image}')"></div>
+          <div>
+            <h4>${item.name}</h4>
+            <small>Size: ${item.size}</small>
+            <small>Qty: ${item.qty} × ${money(item.price)}</small>
+          </div>
+          <button class="remove-item" onclick="removeFromCart(${index})">×</button>
+        </div>
+      `).join('');
+    }
+
+    function openCart() {
+      cartDrawer.classList.add('open');
+      document.body.classList.add('cart-open');
+      cartDrawer.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeCart() {
+      cartDrawer.classList.remove('open');
+      document.body.classList.remove('cart-open');
+      cartDrawer.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('openCart').addEventListener('click', openCart);
+    document.getElementById('closeCart').addEventListener('click', closeCart);
+    document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+    document.getElementById('mobileToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('show');
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => document.getElementById('navLinks').classList.remove('show'));
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value;
+      const email = document.getElementById('contactEmail').value;
+      const phone = document.getElementById('contactPhone').value;
+      const message = document.getElementById('contactMessage').value;
+      const text = `Hello Fable by Kavita Anu,%0A%0AMy name is ${encodeURIComponent(name)}.%0AEmail: ${encodeURIComponent(email)}%0APhone: ${encodeURIComponent(phone)}%0A%0ARequirement: ${encodeURIComponent(message)}`;
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+    });
+
+    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      if (!cart.length) {
+        alert('Please add at least one product to cart.');
+        return;
+      }
+
+      const customer = {
+        name: document.getElementById('customerName').value,
+        email: document.getElementById('customerEmail').value,
+        phone: document.getElementById('customerPhone').value,
+        address: document.getElementById('customerAddress').value,
+      };
+
+      const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+      /*
+        PRODUCTION FLOW REQUIRED:
+        1. Send cart + customer details to your backend: POST /api/create-order
+        2. Backend creates Razorpay order using Key Secret.
+        3. Backend returns { id, amount, currency }.
+        4. Frontend opens Razorpay checkout with order_id.
+        5. After payment, send razorpay_payment_id, razorpay_order_id, razorpay_signature to backend.
+        6. Backend verifies signature and then sends confirmation emails to customer and client.
+      */
+
+      // Demo checkout without backend order_id. Use only for UI testing. Replace before going live.
+      const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: total * 100,
+        currency: 'INR',
+        name: 'Fable by Kavita Anu',
+        description: 'Boutique Clothing Order',
+        image: '',
+        prefill: {
+          name: customer.name,
+          email: customer.email,
+          contact: customer.phone
+        },
+        notes: {
+          address: customer.address,
+          client_email: CLIENT_EMAIL,
+          order_summary: cart.map(i => `${i.name} (${i.size}) x ${i.qty}`).join(', ')
+        },
+        theme: { color: '#c95f7f' },
+        handler: function(response) {
+          const orderDetails = cart.map(item => `${item.name} | Size: ${item.size} | Qty: ${item.qty} | Price: ${money(item.price)}`).join('\n');
+          alert(`Payment successful!\nPayment ID: ${response.razorpay_payment_id}\n\nOrder details should now be verified and emailed from backend.`);
+
+          const whatsappText = `New order received:%0A%0ACustomer: ${encodeURIComponent(customer.name)}%0AEmail: ${encodeURIComponent(customer.email)}%0APhone: ${encodeURIComponent(customer.phone)}%0AAddress: ${encodeURIComponent(customer.address)}%0A%0AOrder:%0A${encodeURIComponent(orderDetails)}%0A%0ATotal: ${encodeURIComponent(money(total))}%0APayment ID: ${encodeURIComponent(response.razorpay_payment_id)}`;
+          window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappText}`, '_blank');
+
+          cart = [];
+          saveCart();
+          closeCart();
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+
+    function initReveal() {
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderProducts();
+    renderCart();
+    initReveal();
+  </script>
+</body>
+</html>
