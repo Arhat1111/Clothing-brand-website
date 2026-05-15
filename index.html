@@ -91,9 +91,20 @@
     .navbar.scrolled { height: 68px; box-shadow: 0 10px 35px rgba(45,36,36,.07); }
     .logo {
       display: flex;
+      align-items: center;
+      gap: 11px;
+      white-space: nowrap;
+    }
+    .logo-img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+    .logo div {
+      display: flex;
       align-items: baseline;
       gap: 9px;
-      white-space: nowrap;
     }
     .logo strong {
       font-family: var(--serif);
@@ -470,8 +481,14 @@
 
     @keyframes slideUp { from { opacity: 0; transform: translateY(35px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .reveal { opacity: 0; transform: translateY(36px); transition: .75s ease; }
+    .reveal { opacity: 0; transform: translateY(42px); transition: .85s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-55px); transition: .9s ease; }
+    .reveal-right { opacity: 0; transform: translateX(55px); transition: .9s ease; }
+    .reveal-zoom { opacity: 0; transform: scale(.92); transition: .9s ease; }
+    .reveal-left.visible, .reveal-right.visible, .reveal-zoom.visible { opacity: 1; transform: translateX(0) scale(1); }
+    .float-soft { animation: floatSoft 5s ease-in-out infinite; }
+    @keyframes floatSoft { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 
     @media (max-width: 1100px) {
       .products-grid { grid-template-columns: repeat(2, 1fr); }
@@ -527,7 +544,10 @@
 </head>
 <body>
   <header class="navbar" id="navbar">
-    <a href="#home" class="logo"><strong>FABLE</strong><span>by Kavita Anu</span></a>
+    <a href="#home" class="logo">
+      <img src="logo.png" alt="Fable by Kavita Anu Logo" class="logo-img">
+      <div><strong>FABLE</strong><span>by Kavita Anu</span></div>
+    </a>
     <nav class="nav-links" id="navLinks">
       <a href="#home">Home</a>
       <a href="#about">About</a>
@@ -553,9 +573,9 @@
           <a href="#about" class="link-btn">Our Story</a>
         </div>
       </div>
-      <div class="hero-art">
+      <div class="hero-art reveal-right">
         <div class="hero-frame"></div>
-        <img class="hero-main parallax" src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=900&q=80" alt="Indian ethnic wear model">
+        <img class="hero-main parallax float-soft" src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=900&q=80" alt="Indian ethnic wear model">
         <div class="floating-card parallax-card">
           <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?auto=format&fit=crop&w=500&q=80" alt="Hand woven detail">
           <span>Hand-woven Detail</span>
@@ -564,11 +584,11 @@
     </section>
 
     <section class="section about" id="about">
-      <div class="image-collage reveal">
+      <div class="image-collage reveal-left">
         <img src="https://images.unsplash.com/photo-1615800001964-5afd0ae8e49a?auto=format&fit=crop&w=900&q=80" alt="Traditional textile craft">
         <img src="https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=900&q=80" alt="Embroidery work">
       </div>
-      <div class="about-copy reveal">
+      <div class="about-copy reveal-right">
         <div class="eyebrow">Our Heritage</div>
         <h2 class="section-title" style="text-align:left">Where Tradition Meets <em>Modern Elegance</em></h2>
         <p class="lead" style="margin-top:28px">Born in the textile capital of India — <b>Surat</b> — Fable by Kavita Anu is more than a brand. It is a bridge between centuries of weaving tradition and the contemporary woman who wears these stories.</p>
@@ -761,17 +781,12 @@
 
     function renderProducts() {
       productsGrid.innerHTML = products.map(product => `
-        <article class="product-card reveal">
+        <article class="product-card reveal-zoom">
           <div class="product-img"><img src="${product.img}" alt="${product.name}"></div>
           <div class="product-info">
             <h3>${product.name}</h3>
             <p class="product-meta">${product.category} · ${product.desc}</p>
-            <div class="form-group" style="margin:15px 0 0">
-              <label>Size</label>
-              <select id="size-${product.id}">
-                <option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>Custom</option>
-              </select>
-            </div>
+            
             <div class="product-bottom">
               <span class="price">${money(product.price)}</span>
               <button class="small-btn" onclick="addToCart(${product.id})">Add to Cart</button>
@@ -788,11 +803,10 @@
 
     function addToCart(id) {
       const product = products.find(p => p.id === id);
-      const size = document.getElementById(`size-${id}`).value;
-      const key = `${id}-${size}`;
+      const key = `${id}`;
       const existing = cart.find(item => item.key === key);
       if (existing) existing.qty += 1;
-      else cart.push({ ...product, key, size, qty: 1 });
+      else cart.push({ ...product, key, qty: 1 });
       saveCart();
       showToast(`${product.name} added to cart`);
     }
@@ -826,7 +840,7 @@
           <img src="${item.img}" alt="${item.name}">
           <div>
             <h4>${item.name}</h4>
-            <p>${item.size} · ${money(item.price)}</p>
+            <p>${money(item.price)}</p>
             <div class="qty-row">
               <button onclick="changeQty('${item.key}', -1)">-</button>
               <span>${item.qty}</span>
@@ -853,8 +867,10 @@
     window.addEventListener("scroll", () => {
       document.getElementById("navbar").classList.toggle("scrolled", window.scrollY > 35);
       const y = window.scrollY;
-      document.querySelectorAll(".parallax").forEach(el => el.style.transform = `translateY(${y * -0.035}px)`);
-      document.querySelectorAll(".parallax-card").forEach(el => el.style.transform = `translateY(${y * 0.025}px)`);
+      document.querySelectorAll(".parallax").forEach(el => el.style.transform = `translateY(${y * -0.045}px) scale(1.01)`);
+      document.querySelectorAll(".parallax-card").forEach(el => el.style.transform = `translateY(${y * 0.035}px)`);
+      document.querySelectorAll(".image-collage img:first-child").forEach(el => el.style.transform = `translateY(${y * -0.012}px)`);
+      document.querySelectorAll(".image-collage img:last-child").forEach(el => el.style.transform = `translateY(${y * 0.012}px)`);
     });
 
     function observeReveals() {
@@ -863,7 +879,7 @@
           if (entry.isIntersecting) entry.target.classList.add("visible");
         });
       }, { threshold: 0.12 });
-      document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+      document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-zoom").forEach(el => observer.observe(el));
     }
 
     function getCustomerDetails() {
@@ -883,7 +899,7 @@
     }
 
     function orderSummaryText() {
-      return cart.map(item => `${item.name} | Size: ${item.size} | Qty: ${item.qty} | Price: ${money(item.price)} | Subtotal: ${money(item.price * item.qty)}`).join("\n");
+      return cart.map(item => `${item.name} | Qty: ${item.qty} | Price: ${money(item.price)} | Subtotal: ${money(item.price * item.qty)}`).join("\n");
     }
 
     async function sendOrderEmails(paymentId, customer, total) {
@@ -986,7 +1002,7 @@
     document.getElementById("contactForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const form = e.target;
-      const whatsappNumber = "910000000000";
+      const whatsappNumber = "919601129762";
       const message = `Hello Fable by Kavita Anu,%0A%0AI would like to enquire about your collection.%0A%0AName: ${encodeURIComponent(form.name.value)}%0AEmail: ${encodeURIComponent(form.email.value)}%0AMessage: ${encodeURIComponent(form.message.value)}`;
       window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
       form.reset();
