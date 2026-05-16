@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     :root {
@@ -725,22 +724,14 @@
       SETUP REQUIRED BEFORE LIVE USE:
       1. Replace RAZORPAY_KEY_ID with your real Razorpay Key ID.
       2. For production, create Razorpay order_id from your backend. Do not rely only on client-side amount.
-      3. Replace EmailJS public key, service ID, and template IDs below.
-      4. Create two EmailJS templates:
-         - Customer order confirmation
-         - Brand packaging/order alert
-      5. For a full live ecommerce system, use backend verification for payment signature and email sending.
+      3. Google Apps Script stores the order in Sheets and sends customer/brand emails.
+      4. For a full live ecommerce system, use backend verification for payment signature.
     */
 
-
     const RAZORPAY_KEY_ID = "rzp_test_SorDXJp6NxRWb6";
-    const EMAILJS_PUBLIC_KEY = "vZ6Xr_meCih4Uux60";
-    const EMAILJS_SERVICE_ID = "service_ksj7dwp";
-    const CUSTOMER_TEMPLATE_ID = "template_k1xhsmt";
-    const BRAND_TEMPLATE_ID = "template_jew8l2b";
     const BRAND_EMAIL = "arhat.j.h.1111@gmail.com";
     const BRAND_WHATSAPP_NUMBER = "919558187425";
-    const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby6-hGiOIa0l8NNSdZA_KWvlMQjegQ7h8Es2QH79SUxaYHO5InSzGGoTGGD3W9TdypXJA/exec";
+    const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxU9CBgsrnBzCkozXxrU2XXWq-nHXdAaXcplw13Md1RltzE3BDdGy_OYe1-42vjGLle_g/exec";
 
     // Instagram live feed setup:
     // A profile URL like instagram.com/fablesbykavitaanu cannot directly work as an API.
@@ -748,10 +739,6 @@
     // and paste it below. Until then, the section shows a clean static grid linked to the real profile.
     const INSTAGRAM_ACCESS_TOKEN = "REPLACE_INSTAGRAM_ACCESS_TOKEN";
     const INSTAGRAM_PROFILE_URL = "https://www.instagram.com/fablesbykavitaanu/";
-
-    if (EMAILJS_PUBLIC_KEY !== "REPLACE_EMAILJS_PUBLIC_KEY") {
-      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-    }
 
     const products = [
       { id: 1, name: "Rose Banarasi Saree", price: 6499, category: "Saree", img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=80", desc: "Soft pink Banarasi-inspired saree with festive zari detailing." },
@@ -905,6 +892,15 @@
       return cart.map(item => `${item.name} | Qty: ${item.qty} | Price: ${money(item.price)} | Subtotal: ${money(item.price * item.qty)}`).join("");
     }
 
+    function orderItemsForInvoice() {
+      return cart.map(item => ({
+        name: item.name,
+        quantity: item.qty,
+        price: item.price,
+        subtotal: item.price * item.qty
+      }));
+    }
+
     function buildOrderData(paymentId, customer, total) {
       const orderId = "FABLE-" + Date.now();
       return {
@@ -917,6 +913,7 @@
         customer_phone: customer.phone,
         customer_address: customer.address,
         order_items: orderSummaryText(),
+        invoice_items: orderItemsForInvoice(),
         order_total: money(total),
         raw_total: total,
         brand_email: BRAND_EMAIL,
@@ -939,56 +936,6 @@
         body: JSON.stringify(orderData)
       });
 
-      return true;
-    }
-
-    async function sendOrderEmails(orderData) {
-      if (
-        EMAILJS_PUBLIC_KEY === "vZ6Xr_meCih4Uux60" ||
-        EMAILJS_SERVICE_ID === "service_ksj7dwp" ||
-        CUSTOMER_TEMPLATE_ID === "template_k1xhsmt" ||
-        BRAND_TEMPLATE_ID === "template_jew8l2b"
-      ) {
-        console.log("EmailJS not configured. Order email payload:", orderData);
-        return false;
-      }
-
-      const customerEmailParams = {
-        to_email: orderData.customer_email,
-        to_name: orderData.customer_name,
-        subject: orderData.invoice_subject,
-        order_id: orderData.order_id,
-        payment_id: orderData.payment_id,
-        payment_status: orderData.payment_status,
-        order_date: orderData.order_date,
-        customer_name: orderData.customer_name,
-        customer_email: orderData.customer_email,
-        customer_phone: orderData.customer_phone,
-        customer_address: orderData.customer_address,
-        order_items: orderData.order_items,
-        order_total: orderData.order_total,
-        message: orderData.customer_invoice_message
-      };
-
-      const brandEmailParams = {
-        to_email: BRAND_EMAIL,
-        to_name: "Fable by Kavita Anu",
-        subject: `New Paid Order - ${orderData.order_id}`,
-        order_id: orderData.order_id,
-        payment_id: orderData.payment_id,
-        payment_status: orderData.payment_status,
-        order_date: orderData.order_date,
-        customer_name: orderData.customer_name,
-        customer_email: orderData.customer_email,
-        customer_phone: orderData.customer_phone,
-        customer_address: orderData.customer_address,
-        order_items: orderData.order_items,
-        order_total: orderData.order_total,
-        message: orderData.brand_order_message
-      };
-
-      await emailjs.send(EMAILJS_SERVICE_ID, CUSTOMER_TEMPLATE_ID, customerEmailParams);
-      await emailjs.send(EMAILJS_SERVICE_ID, BRAND_TEMPLATE_ID, brandEmailParams);
       return true;
     }
 
@@ -1033,28 +980,17 @@
           showToast("Payment successful. Saving order...");
           const orderData = buildOrderData(response.razorpay_payment_id, customer, total);
 
-          // WhatsApp cannot auto-send. This opens the prepared message; the brand must press Send.
-          sendBrandWhatsAppOrder(orderData);
-
           try {
-            const sheetSaved = await saveOrderToGoogleSheets(orderData);
-            const emailsSent = await sendOrderEmails(orderData);
+            await saveOrderToGoogleSheets(orderData);
+            sendBrandWhatsAppOrder(orderData);
+
             cart = [];
             saveCart();
             closeCart();
-
-            if (sheetSaved && emailsSent) {
-              showToast("Order saved. Emails sent. WhatsApp opened — press Send.");
-            } else if (!sheetSaved && !emailsSent) {
-              showToast("Payment done. Add Google Sheets URL and EmailJS keys.");
-            } else if (!sheetSaved) {
-              showToast("Emails sent. Add/fix Google Sheets Web App URL.");
-            } else if (!emailsSent) {
-              showToast("Order saved. Add/fix EmailJS keys and templates.");
-            }
+            showToast("Order saved. Invoice emails sent through Google!");
           } catch (err) {
             console.error(err);
-            showToast("Payment done, but storage/email failed. Check Console.");
+            showToast("Payment done, but order save/email failed. Check Apps Script.");
           }
         },
         modal: {
