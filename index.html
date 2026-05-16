@@ -732,12 +732,14 @@
       5. For a full live ecommerce system, use backend verification for payment signature and email sending.
     */
 
-    const RAZORPAY_KEY_ID = "rzp_test_REPLACE_WITH_YOUR_KEY";
-    const EMAILJS_PUBLIC_KEY = "REPLACE_EMAILJS_PUBLIC_KEY";
-    const EMAILJS_SERVICE_ID = "REPLACE_EMAILJS_SERVICE_ID";
-    const CUSTOMER_TEMPLATE_ID = "REPLACE_CUSTOMER_TEMPLATE_ID";
-    const BRAND_TEMPLATE_ID = "REPLACE_BRAND_TEMPLATE_ID";
-    const BRAND_EMAIL = "fablebykavitaanu@gmail.com";
+    const RAZORPAY_KEY_ID = "rzp_test_SorDXJp6NxRWb6";
+    const EMAILJS_PUBLIC_KEY = "vZ6Xr_meCih4Uux60";
+    const EMAILJS_SERVICE_ID = "service_ksj7dwp";
+    const CUSTOMER_TEMPLATE_ID = "template_k1xhsmt";
+    const BRAND_TEMPLATE_ID = "template_jew8l2b";
+    const BRAND_EMAIL = "arhat.j.h.1111@gmail.com";
+    const BRAND_WHATSAPP_NUMBER = "919558187425";
+    const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzMV5avMjOtn9JhKa_vWA1XfpquzN0IwxONynhLxF_nt8aksoEkVd7IoQUo_zvA2etwgQ/exec";
 
     // Instagram live feed setup:
     // A profile URL like instagram.com/fablesbykavitaanu cannot directly work as an API.
@@ -870,7 +872,7 @@
       document.querySelectorAll(".parallax").forEach(el => el.style.transform = `translateY(${y * -0.045}px) scale(1.01)`);
       document.querySelectorAll(".parallax-card").forEach(el => el.style.transform = `translateY(${y * 0.035}px)`);
       document.querySelectorAll(".image-collage img:first-child").forEach(el => el.style.transform = `translateY(${y * -0.012}px)`);
-      document.querySelectorAll(".image-collage img:last-child").forEach(el => el.style.transform = `translateY(${y * 0.012}px)`);
+      document.querySelectorAll(".image-collage img:last-child").forEach(el => el.style.transform = `translateY(${y * 0.014}px)`);
     });
 
     function observeReveals() {
@@ -899,28 +901,101 @@
     }
 
     function orderSummaryText() {
-      return cart.map(item => `${item.name} | Qty: ${item.qty} | Price: ${money(item.price)} | Subtotal: ${money(item.price * item.qty)}`).join("\n");
+      return cart.map(item => `${item.name} | Qty: ${item.qty} | Price: ${money(item.price)} | Subtotal: ${money(item.price * item.qty)}`).join("");
     }
 
-    async function sendOrderEmails(paymentId, customer, total) {
-      if (EMAILJS_PUBLIC_KEY === "REPLACE_EMAILJS_PUBLIC_KEY") {
-        console.log("EmailJS not configured. Order email payload:", { paymentId, customer, cart, total });
-        return;
-      }
-
-      const params = {
+    function buildOrderData(paymentId, customer, total) {
+      const orderId = "FABLE-" + Date.now();
+      return {
+        order_id: orderId,
+        payment_id: paymentId,
+        payment_status: "Paid",
+        order_date: new Date().toLocaleString("en-IN"),
         customer_name: customer.name,
         customer_email: customer.email,
         customer_phone: customer.phone,
         customer_address: customer.address,
-        brand_email: BRAND_EMAIL,
         order_items: orderSummaryText(),
         order_total: money(total),
-        payment_id: paymentId
+        raw_total: total,
+        brand_email: BRAND_EMAIL,
+        invoice_subject: `Invoice ${orderId} - Fable by Kavita Anu`,
+        customer_invoice_message: `Thank you for shopping with Fable by Kavita Anu. Your order ${orderId} has been confirmed. Payment ID: ${paymentId}. Order Total: ${money(total)}. Items: ${orderSummaryText()}`,
+        brand_order_message: `New paid order received. Order ID: ${orderId}. Payment ID: ${paymentId}. Customer: ${customer.name}. Phone: ${customer.phone}. Email: ${customer.email}. Address: ${customer.address}. Items: ${orderSummaryText()}. Total: ${money(total)}`
+      };
+    }
+
+    async function saveOrderToGoogleSheets(orderData) {
+      if (GOOGLE_SHEETS_WEB_APP_URL === "REPLACE_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
+        console.log("Google Sheets not configured. Order storage payload:", orderData);
+        return false;
+      }
+
+      await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(orderData)
+      });
+
+      return true;
+    }
+
+    async function sendOrderEmails(orderData) {
+      if (
+        EMAILJS_PUBLIC_KEY === "REPLACE_EMAILJS_PUBLIC_KEY" ||
+        EMAILJS_SERVICE_ID === "REPLACE_EMAILJS_SERVICE_ID" ||
+        CUSTOMER_TEMPLATE_ID === "REPLACE_CUSTOMER_TEMPLATE_ID" ||
+        BRAND_TEMPLATE_ID === "REPLACE_BRAND_TEMPLATE_ID"
+      ) {
+        console.log("EmailJS not configured. Order email payload:", orderData);
+        return false;
+      }
+
+      const customerEmailParams = {
+        to_email: orderData.customer_email,
+        to_name: orderData.customer_name,
+        subject: orderData.invoice_subject,
+        order_id: orderData.order_id,
+        payment_id: orderData.payment_id,
+        payment_status: orderData.payment_status,
+        order_date: orderData.order_date,
+        customer_name: orderData.customer_name,
+        customer_email: orderData.customer_email,
+        customer_phone: orderData.customer_phone,
+        customer_address: orderData.customer_address,
+        order_items: orderData.order_items,
+        order_total: orderData.order_total,
+        message: orderData.customer_invoice_message
       };
 
-      await emailjs.send(EMAILJS_SERVICE_ID, CUSTOMER_TEMPLATE_ID, params);
-      await emailjs.send(EMAILJS_SERVICE_ID, BRAND_TEMPLATE_ID, params);
+      const brandEmailParams = {
+        to_email: BRAND_EMAIL,
+        to_name: "Fable by Kavita Anu",
+        subject: `New Paid Order - ${orderData.order_id}`,
+        order_id: orderData.order_id,
+        payment_id: orderData.payment_id,
+        payment_status: orderData.payment_status,
+        order_date: orderData.order_date,
+        customer_name: orderData.customer_name,
+        customer_email: orderData.customer_email,
+        customer_phone: orderData.customer_phone,
+        customer_address: orderData.customer_address,
+        order_items: orderData.order_items,
+        order_total: orderData.order_total,
+        message: orderData.brand_order_message
+      };
+
+      await emailjs.send(EMAILJS_SERVICE_ID, CUSTOMER_TEMPLATE_ID, customerEmailParams);
+      await emailjs.send(EMAILJS_SERVICE_ID, BRAND_TEMPLATE_ID, brandEmailParams);
+      return true;
+    }
+
+    function sendBrandWhatsAppOrder(orderData) {
+      const whatsappMessage = `New Paid Order - Fable by Kavita Anu%0A%0AOrder ID: ${encodeURIComponent(orderData.order_id)}%0APayment ID: ${encodeURIComponent(orderData.payment_id)}%0APayment Status: Paid%0ADate: ${encodeURIComponent(orderData.order_date)}%0A%0ACustomer Name: ${encodeURIComponent(orderData.customer_name)}%0APhone: ${encodeURIComponent(orderData.customer_phone)}%0AEmail: ${encodeURIComponent(orderData.customer_email)}%0AAddress: ${encodeURIComponent(orderData.customer_address)}%0A%0AItems:%0A${encodeURIComponent(orderData.order_items)}%0A%0ATotal: ${encodeURIComponent(orderData.order_total)}`;
+      const whatsappUrl = `https://wa.me/${BRAND_WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+      window.open(whatsappUrl, "_blank");
+      return whatsappUrl;
     }
 
     document.getElementById("payBtn").addEventListener("click", () => {
@@ -954,16 +1029,31 @@
         },
         theme: { color: "#e7aaa9" },
         handler: async function(response) {
-          showToast("Payment successful. Sending order emails...");
+          showToast("Payment successful. Saving order...");
+          const orderData = buildOrderData(response.razorpay_payment_id, customer, total);
+
+          // WhatsApp cannot auto-send. This opens the prepared message; the brand must press Send.
+          sendBrandWhatsAppOrder(orderData);
+
           try {
-            await sendOrderEmails(response.razorpay_payment_id, customer, total);
+            const sheetSaved = await saveOrderToGoogleSheets(orderData);
+            const emailsSent = await sendOrderEmails(orderData);
             cart = [];
             saveCart();
             closeCart();
-            showToast("Order placed successfully!");
+
+            if (sheetSaved && emailsSent) {
+              showToast("Order saved. Emails sent. WhatsApp opened — press Send.");
+            } else if (!sheetSaved && !emailsSent) {
+              showToast("Payment done. Add Google Sheets URL and EmailJS keys.");
+            } else if (!sheetSaved) {
+              showToast("Emails sent. Add/fix Google Sheets Web App URL.");
+            } else if (!emailsSent) {
+              showToast("Order saved. Add/fix EmailJS keys and templates.");
+            }
           } catch (err) {
             console.error(err);
-            showToast("Payment done, but email failed. Check EmailJS setup.");
+            showToast("Payment done, but storage/email failed. Check Console.");
           }
         },
         modal: {
