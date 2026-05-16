@@ -285,6 +285,32 @@
     .product-info { padding: 21px; }
     .product-info h3 { font-family: var(--serif); font-size: 25px; font-weight: 500; margin-bottom: 8px; }
     .product-meta { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .product-actions {
+      margin-top: 48px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .view-more-btn {
+      width: auto;
+      min-width: 250px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--dark);
+      padding: 12px 18px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: .3s ease;
+      font-family: var(--sans);
+    }
+
+    .view-more-btn:hover {
+      background: var(--dark);
+      color: white;
+    }
+
     .product-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; gap: 10px; }
     .price { font-weight: 700; color: var(--dark); }
     .small-btn {
@@ -609,6 +635,9 @@
         <p class="lead">Minimal, elegant Indian wear with handcrafted details. Choose your size, add to cart, and pay securely through Razorpay.</p>
       </div>
       <div class="products-grid" id="productsGrid"></div>
+      <div class="product-actions reveal">
+        <button class="view-more-btn" onclick="window.location.href='products.html'">View More Collection</button>
+      </div>
     </section>
 
     <section class="section why" id="why">
@@ -729,8 +758,8 @@
     */
 
     const RAZORPAY_KEY_ID = "rzp_test_SorDXJp6NxRWb6";
-    const BRAND_EMAIL = "arhat.j.h.1111@gmail.com";
-    const BRAND_WHATSAPP_NUMBER = "919558187425";
+    const BRAND_EMAIL = "test@gmail.com"; // eed to change this when the client gives their company number
+    const BRAND_WHATSAPP_NUMBER = "9111111111"; // Need to change this when the client gives their company number
     const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxU9CBgsrnBzCkozXxrU2XXWq-nHXdAaXcplw13Md1RltzE3BDdGy_OYe1-42vjGLle_g/exec";
 
     // Instagram live feed setup:
@@ -776,7 +805,6 @@
           <div class="product-info">
             <h3>${product.name}</h3>
             <p class="product-meta">${product.category} · ${product.desc}</p>
-            
             <div class="product-bottom">
               <span class="price">${money(product.price)}</span>
               <button class="small-btn" onclick="addToCart(${product.id})">Add to Cart</button>
