@@ -265,9 +265,76 @@
       color: var(--muted);
     }
 
-    .products-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 45px; }
+    .products-head { display: none; }
+    .product-hero {
+      width: 100vw;
+      min-height: 720px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding: 70px;
+      overflow: hidden;
+      margin-left: calc(50% - 50vw);
+      border: none;
+      background: var(--cream);
+    }
+    .product-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(51, 33, 38, 0.68), rgba(51, 33, 38, 0.28), rgba(255, 245, 247, 0.12));
+      z-index: 1;
+    }
+    .product-hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.88) contrast(.96);
+      transform: scale(1.03);
+    }
+    .product-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+      color: white;
+    }
+    .product-hero-content .eyebrow { color: var(--pink-soft); }
+    .product-hero-content h2 {
+      font-family: var(--serif);
+      font-size: clamp(46px, 6vw, 86px);
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: -1.5px;
+      margin-bottom: 22px;
+    }
+    .product-hero-content p {
+      color: rgba(255,255,255,.86);
+      font-size: 17px;
+      line-height: 1.8;
+      max-width: 580px;
+      margin-bottom: 32px;
+    }
+    .product-hero-btn {
+      display: inline-block;
+      background: var(--bg);
+      color: var(--dark);
+      border: 1px solid rgba(255,255,255,.55);
+      padding: 17px 32px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 700;
+      transition: .25s ease;
+    }
+    .product-hero-btn:hover {
+      background: var(--pink);
+      color: white;
+      transform: translateY(-3px);
+    }
     .products-grid {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(4, 1fr);
       gap: 28px;
     }
@@ -528,7 +595,7 @@
         right: -100%;
         width: 78%;
         height: calc(100vh - 72px);
-        background: #fffaf7;
+        background: #fffafb;
         flex-direction: column;
         align-items: start;
         padding: 45px;
@@ -546,14 +613,18 @@
       .products-head { display: block; }
       .products-head .lead { margin-top: 15px; }
       .footer-grid { grid-template-columns: 1fr; }
+      .product-hero { min-height: 540px; padding: 42px 28px; }
+      .product-hero::before { background: linear-gradient(0deg, rgba(51,33,38,.78), rgba(51,33,38,.26)); }
+      .product-hero-content h2 { font-size: clamp(42px, 12vw, 68px); }
     }
     @media (max-width: 900px) {
       .insta-strip { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 560px) {
       .section { padding: 70px 6%; }
-      .logo strong { font-size: 26px; }
+      .logo strong { font-size: 24px; }
       .logo span { font-size: 8px; letter-spacing: 2px; }
+      .logo-img { width: 34px; height: 34px; }
       .hero { padding-left: 6%; padding-right: 6%; }
       .hero-art { min-height: 430px; }
       .hero-main { height: 380px; width: 82%; right: 0; }
@@ -564,6 +635,9 @@
       .product-img { height: 390px; }
       .contact-form { padding: 25px; }
       .cart-drawer { width: 100%; right: -100%; }
+      .product-hero { min-height: 500px; padding: 34px 22px; }
+      .product-hero-content p { font-size: 14px; }
+      .product-hero-btn { width: 100%; text-align: center; }
     }
   </style>
 </head>
@@ -627,17 +701,16 @@
     </section>
 
     <section class="section" id="products">
-      <div class="products-head reveal">
-        <div>
+      <div class="product-hero reveal">
+        <img class="product-hero-img product-banner-parallax" src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1600&q=85" alt="Fable ethnic wear collection">
+        <div class="product-hero-content">
           <div class="eyebrow">The Collection</div>
-          <h2 class="section-title" style="text-align:left">Shop the <em>Fable</em></h2>
+          <h2>Embrace Indian Elegance with a Modern Statement.</h2>
+          <p>Discover curated sarees, lehengas, anarkalis, and festive silhouettes crafted in soft pastel tones, delicate details, and timeless Surat-inspired elegance.</p>
+          <a href="products.html" class="product-hero-btn">View Products</a>
         </div>
-        <p class="lead">Minimal, elegant Indian wear with handcrafted details. Choose your size, add to cart, and pay securely through Razorpay.</p>
       </div>
       <div class="products-grid" id="productsGrid"></div>
-      <div class="product-actions reveal">
-        <button class="view-more-btn" onclick="window.location.href='products.html'">View More Collection</button>
-      </div>
     </section>
 
     <section class="section why" id="why">
@@ -758,8 +831,8 @@
     */
 
     const RAZORPAY_KEY_ID = "rzp_test_SorDXJp6NxRWb6";
-    const BRAND_EMAIL = "test@gmail.com"; // eed to change this when the client gives their company number
-    const BRAND_WHATSAPP_NUMBER = "9111111111"; // Need to change this when the client gives their company number
+    const BRAND_EMAIL = "arhat.j.h.1111@gmail.com"; // eed to change this when the client gives their company number
+    const BRAND_WHATSAPP_NUMBER = "919558187425"; // Need to change this when the client gives their company number
     const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxU9CBgsrnBzCkozXxrU2XXWq-nHXdAaXcplw13Md1RltzE3BDdGy_OYe1-42vjGLle_g/exec";
 
     // Instagram live feed setup:
@@ -889,6 +962,13 @@
       document.querySelectorAll(".parallax-card").forEach(el => el.style.transform = `translateY(${y * 0.035}px)`);
       document.querySelectorAll(".image-collage img:first-child").forEach(el => el.style.transform = `translateY(${y * -0.012}px)`);
       document.querySelectorAll(".image-collage img:last-child").forEach(el => el.style.transform = `translateY(${y * 0.014}px)`);
+      document.querySelectorAll(".product-banner-parallax").forEach(el => {
+        const section = el.closest(".product-hero");
+        if (!section) return;
+        const rect = section.getBoundingClientRect();
+        const offset = rect.top * -0.12;
+        el.style.transform = `translateY(${offset}px) scale(1.08)`;
+      });
     });
 
     function observeReveals() {
