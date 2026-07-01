@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Shop the complete Fable by Kavita Anu catalogue of sarees, lehengas, kurta sets and fusion wear." />
+  <meta name="theme-color" content="#f8e9ea" />
+  <title>Shop | Fable by Kavita Anu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="products">
+  <div class="page-loader" aria-hidden="true"><div class="loader-mark"><span>F</span><small>FABLE</small></div></div>
+  <div class="cursor-dot" aria-hidden="true"></div><div class="cursor-ring" aria-hidden="true"></div>
+
+  <div class="announcement-bar"><p>Complimentary styling assistance on every order enquiry</p><a href="https://www.instagram.com/fablebykavitaanu/" target="_blank" rel="noopener">Connect on Instagram</a></div>
+
+  <header class="site-header shop-header" id="siteHeader">
+    <a class="brand" href="index.html" aria-label="Fable by Kavita Anu home"><span class="brand-name">Fable</span><span class="brand-byline">by Kavita Anu</span></a>
+    <nav class="desktop-nav" aria-label="Main navigation"><a href="index.html">Home</a><a class="is-active" href="products.html">Shop</a><a href="products.html?category=sarees">Sarees</a><a href="products.html?category=lehengas">Lehengas</a><a href="index.html#story">Our Story</a></nav>
+    <div class="header-actions">
+      <a class="icon-link" href="https://www.instagram.com/fablebykavitaanu/" target="_blank" rel="noopener" aria-label="Open Fable Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg></a>
+      <button class="cart-toggle" type="button" data-cart-open aria-label="Open shopping bag">Bag <span data-cart-count>0</span></button>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="mobile-menu-pattern" aria-hidden="true"></div>
+    <nav aria-label="Mobile navigation"><a href="index.html"><span>01</span>Home</a><a href="products.html"><span>02</span>All Products</a><a href="products.html?category=sarees"><span>03</span>Sarees</a><a href="products.html?category=lehengas"><span>04</span>Lehengas</a><a href="index.html#story"><span>05</span>Our Story</a></nav>
+    <div class="mobile-menu-footer"><p>Surat, Gujarat</p><a href="https://www.instagram.com/fablebykavitaanu/" target="_blank" rel="noopener">Instagram ↗</a></div>
+  </aside>
+
+  <main>
+    <section class="shop-hero">
+      <div class="shop-hero-copy reveal-up"><p class="eyebrow">The complete collection</p><h1>Find your<br /><em>next Fable.</em></h1><p>Explore statement sarees, celebration lehengas, graceful kurta sets and modern fusion silhouettes from the Fable lookbooks.</p></div>
+      <div class="shop-hero-images" aria-hidden="true">
+        <figure class="shop-portrait shop-portrait-one"><img src="assets/products/sage-floral-saree.webp" alt="" /></figure>
+        <figure class="shop-portrait shop-portrait-two"><img src="assets/products/rose-gold-anarkali.webp" alt="" /></figure>
+        <div class="shop-hero-motif">✦</div>
+      </div>
+    </section>
+
+    <section class="catalog-section" id="catalog">
+      <div class="catalog-toolbar">
+        <div class="category-tabs" id="categoryTabs" aria-label="Product categories">
+          <button type="button" data-category="all" class="active">All</button>
+          <button type="button" data-category="sarees">Sarees</button>
+          <button type="button" data-category="lehengas">Lehengas</button>
+          <button type="button" data-category="kurta-sets">Kurta Sets</button>
+          <button type="button" data-category="fusion">Fusion Edit</button>
+        </div>
+        <label class="catalog-search"><span class="sr-only">Search products</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 5 5"></path></svg><input id="productSearch" type="search" placeholder="Search the collection" autocomplete="off" /></label>
+      </div>
+
+      <div class="catalog-meta"><p><span id="productCount">0</span> pieces</p><button type="button" id="clearFilters" hidden>Clear filter ×</button></div>
+      <div class="catalog-grid" id="catalogGrid" aria-live="polite"></div>
+      <div class="catalog-no-results" id="noResults" hidden><span>✦</span><h2>No Fable found.</h2><p>Try another search or explore all categories.</p><button type="button" class="button button-outline" id="resetCatalog">Show all products</button></div>
+    </section>
+
+    <section class="shop-service-strip">
+      <article><span>01</span><h3>Personal styling</h3><p>Ask the Fable team for styling, fit and occasion guidance.</p></article>
+      <article><span>02</span><h3>Size assistance</h3><p>Select your preferred size and confirm final measurements during enquiry.</p></article>
+      <article><span>03</span><h3>Order confirmation</h3><p>Availability, shipping and payment details are confirmed before dispatch.</p></article>
+    </section>
+
+    <section class="shop-cta">
+      <div><p class="eyebrow">Still deciding?</p><h2>Save the looks you love<br /><em>inside your bag.</em></h2></div>
+      <button class="button button-dark magnetic" type="button" data-cart-open>View shopping bag</button>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-brand"><span>Fable</span><small>by Kavita Anu</small></div>
+    <div class="footer-links"><a href="index.html">Home</a><a href="products.html">Shop</a><a href="index.html#story">Our Story</a><a href="https://www.instagram.com/fablebykavitaanu/" target="_blank" rel="noopener">Instagram</a></div>
+    <p>© <span id="year"></span> Fable by Kavita Anu.</p>
+  </footer>
+
+  <div class="drawer-backdrop" data-cart-close></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Shopping bag">
+    <div class="cart-head"><div><p class="eyebrow">Your selection</p><h2>Shopping Bag</h2></div><button type="button" data-cart-close aria-label="Close shopping bag">×</button></div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-empty" id="cartEmpty"><span>✦</span><h3>Your bag is waiting.</h3><p>Choose a Fable silhouette and begin your story.</p><a class="button button-outline" href="products.html">Explore collection</a></div>
+    <div class="cart-foot" id="cartFoot"><div class="cart-subtotal"><span>Subtotal</span><strong id="cartSubtotal">₹0</strong></div><p>Shipping and final availability are confirmed by the Fable team.</p><button class="button button-dark" type="button" id="checkoutButton">Complete enquiry</button></div>
+  </aside>
+
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <section class="quick-modal" id="quickModal" aria-hidden="true" aria-label="Product details"></section>
+  <section class="checkout-modal" id="checkoutModal" aria-hidden="true" aria-label="Complete order enquiry"></section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <button class="back-to-top" type="button" aria-label="Back to top">↑</button>
+
+  <script src="catalog.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
