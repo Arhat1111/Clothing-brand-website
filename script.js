@@ -115,7 +115,7 @@ const featuredCardMarkup = (product) => `
 
 const featuredRail = document.getElementById("featuredRail");
 if (featuredRail) {
-  const featuredIds = ["crimson-drape-jacket", "sage-floral-saree", "emerald-bandhani-lehenga", "noir-jacket-saree", "rani-embroidered-kurta", "mocha-drape-jacket"];
+  const featuredIds = ["blue", "golden-tissue", "shreenathji", "black", "purple-drape", "rani-lotus-anarkali", "green-cape", "wine-kurta-dhoti"];
   featuredRail.innerHTML = featuredIds.map(getProduct).filter(Boolean).map(featuredCardMarkup).join("");
 }
 
@@ -147,7 +147,7 @@ const productCount = document.getElementById("productCount");
 const noResults = document.getElementById("noResults");
 const clearFilters = document.getElementById("clearFilters");
 const resetCatalog = document.getElementById("resetCatalog");
-const validCategories = ["all", "sarees", "lehengas", "kurta-sets", "fusion"];
+const validCategories = ["all", "sarees", "anarkalis", "drapes", "festive"];
 let activeCategory = "all";
 let activeSearch = "";
 
