@@ -1,24 +1,16 @@
-# Fable by Kavita Anu - Main Layout E-commerce Website
+# Fable by Kavita Anu - E-commerce Website
 
-This package keeps the website layout and visual language aligned with the main Fable by Kavita Anu website while adding the uploaded saree and Rakhi/festive product catalogue.
+Updated full responsive website for Fable by Kavita Anu.
 
 ## Included
+- Main website layout inspired by the live Fable visual direction
+- Saree, Rakhi/Festive, and What Celebrities Wear product pages
+- Updated celebrity-product pricing from the latest product upload
+- Multiple images per celebrity product from the New Look Book
+- Product quick-view popup with image slider, arrows, thumbnails, and keyboard support
+- Cart, size selection, order enquiry flow, and responsive mobile layout
 
-- Home page matching the existing Fable look and feel
-- Products page with 23 uploaded products
-- Saree collection pricing
-- Rakhi/festive collection pricing
-- Product filters, search, quick view and shopping bag
-- Enquiry checkout that copies the order summary and opens Instagram
-- Responsive desktop, tablet and mobile layout
+Open `index.html` to start.
 
-## Main files
 
-- index.html
-- products.html
-- styles.css
-- script.js
-- catalog.js
-- assets/products/
-
-Edit product names, descriptions, pricing and images inside `catalog.js`.
+Update: The What Celebrities Wear page now shows a two-row product preview followed by a button linking to the full products page.

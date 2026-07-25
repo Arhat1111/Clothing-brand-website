@@ -709,5 +709,357 @@ window.FABLE_PRODUCTS = [
       "XL",
       "Custom fit"
     ]
+  },
+  {
+    "id": "celebrity-red",
+    "name": "Red Celebrity Edit",
+    "price": 15500,
+    "color": "Red",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 2,
+    "tone": "#c9203b",
+    "accent": "#d5a25b",
+    "description": "A statement red festive look from the celebrity-inspired Fable edit, styled for intimate celebrations and modern Indian occasions.",
+    "fabric": "Festive Indian silhouette with refined embroidery and celebration-ready styling.",
+    "subCategory": "celebrity-edit",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Celebrity Edit",
+    "image": "assets/products/celebrity-red-main.webp",
+    "gallery": [
+      "assets/products/celebrity-red-main.webp",
+      "assets/products/celebrity-red-detail-1.webp",
+      "assets/products/celebrity-red-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 3
+  },
+  {
+    "id": "celebrity-golden",
+    "name": "Golden Celebrity Edit",
+    "price": 15500,
+    "color": "Golden",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 4,
+    "tone": "#b99874",
+    "accent": "#8b2742",
+    "description": "A golden festive look with a soft traditional finish, made for bright occasions and elegant family functions.",
+    "fabric": "Golden-toned festive ensemble with graceful drape and hand-finished detailing.",
+    "subCategory": "celebrity-edit",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Celebrity Edit",
+    "image": "assets/products/celebrity-golden-main.webp",
+    "gallery": [
+      "assets/products/celebrity-golden-main.webp",
+      "assets/products/celebrity-golden-detail-1.webp",
+      "assets/products/celebrity-golden-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 5
+  },
+  {
+    "id": "celebrity-green-lehenga",
+    "name": "Green Lehenga",
+    "price": 45000,
+    "color": "Green",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 6,
+    "tone": "#184a37",
+    "accent": "#c89c5d",
+    "description": "A premium green lehenga look with rich festive styling and a couture-inspired finish.",
+    "fabric": "Lehenga-style festive ensemble with ornate work and structured occasion wear appeal.",
+    "subCategory": "lehenga",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Lehenga",
+    "image": "assets/products/celebrity-green-lehenga-main.webp",
+    "gallery": [
+      "assets/products/celebrity-green-lehenga-main.webp",
+      "assets/products/celebrity-green-lehenga-detail-1.webp",
+      "assets/products/celebrity-green-lehenga-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 7
+  },
+  {
+    "id": "celebrity-banarasi",
+    "name": "Banarasi Heritage Look",
+    "price": 75000,
+    "color": "Banarasi",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 8,
+    "tone": "#694884",
+    "accent": "#7a1d36",
+    "description": "A luxurious Banarasi-inspired look with a heritage mood, elevated for wedding and festive appearances.",
+    "fabric": "Banarasi-inspired festive fabric with rich texture and premium Indian craftsmanship.",
+    "subCategory": "heritage",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Banarasi",
+    "image": "assets/products/celebrity-banarasi-main.webp",
+    "gallery": [
+      "assets/products/celebrity-banarasi-main.webp",
+      "assets/products/celebrity-banarasi-detail-1.webp",
+      "assets/products/celebrity-banarasi-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 9
+  },
+  {
+    "id": "celebrity-golden-tissue",
+    "name": "Golden Tissue Celebrity Look",
+    "price": 19000,
+    "color": "Golden Tissue",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 10,
+    "tone": "#c9964b",
+    "accent": "#b51d3d",
+    "description": "A golden tissue festive edit with subtle shine and easy elegance for parties and family events.",
+    "fabric": "Light golden tissue styling with soft shimmer and festive detail work.",
+    "subCategory": "tissue",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Tissue Edit",
+    "image": "assets/products/celebrity-golden-tissue-main.webp",
+    "gallery": [
+      "assets/products/celebrity-golden-tissue-main.webp",
+      "assets/products/celebrity-golden-tissue-detail-1.webp",
+      "assets/products/celebrity-golden-tissue-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 11
+  },
+  {
+    "id": "celebrity-wine-kurta",
+    "name": "Wine Kurta",
+    "price": 17000,
+    "color": "Wine",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 12,
+    "tone": "#7c1838",
+    "accent": "#d2a15c",
+    "description": "A wine kurta look with deep festive colour and a refined embroidered neckline.",
+    "fabric": "Wine-toned kurta silhouette with occasion-ready handwork and fluid styling.",
+    "subCategory": "kurta",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Kurta Set",
+    "image": "assets/products/celebrity-wine-kurta-main.webp",
+    "gallery": [
+      "assets/products/celebrity-wine-kurta-main.webp",
+      "assets/products/celebrity-wine-kurta-detail-1.webp",
+      "assets/products/celebrity-wine-kurta-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 13
+  },
+  {
+    "id": "celebrity-beige",
+    "name": "Beige Festive Edit",
+    "price": 17000,
+    "color": "Beige",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 14,
+    "tone": "#e6cfaa",
+    "accent": "#1e405f",
+    "description": "A beige festive piece with an understated palette and premium styling for day-to-evening occasions.",
+    "fabric": "Beige-toned Indian wear with soft detailing and modern festive comfort.",
+    "subCategory": "festive",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Festive Edit",
+    "image": "assets/products/celebrity-beige-main.webp",
+    "gallery": [
+      "assets/products/celebrity-beige-main.webp",
+      "assets/products/celebrity-beige-detail-1.webp",
+      "assets/products/celebrity-beige-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 15
+  },
+  {
+    "id": "celebrity-multi-25000",
+    "name": "Multi Festive Look",
+    "price": 25000,
+    "color": "Multi",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 16,
+    "tone": "#b97a58",
+    "accent": "#1b8b94",
+    "description": "A multi-toned festive look with statement colour blocking and occasion-ready appeal.",
+    "fabric": "Multi-colour festive ensemble with Indian motifs and soft dress-up detailing.",
+    "subCategory": "multi",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Multi Edit",
+    "image": "assets/products/celebrity-multi-25000-main.webp",
+    "gallery": [
+      "assets/products/celebrity-multi-25000-main.webp",
+      "assets/products/celebrity-multi-25000-detail-1.webp",
+      "assets/products/celebrity-multi-25000-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 17
+  },
+  {
+    "id": "celebrity-blue",
+    "name": "Blue Celebrity Edit",
+    "price": 17000,
+    "color": "Blue",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 18,
+    "tone": "#1c977b",
+    "accent": "#b82c3e",
+    "description": "A blue festive look designed with easy elegance, detailed accents and celebration styling.",
+    "fabric": "Blue Indian wear silhouette with embroidered or printed accent work.",
+    "subCategory": "celebrity-edit",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Blue Edit",
+    "image": "assets/products/celebrity-blue-main.webp",
+    "gallery": [
+      "assets/products/celebrity-blue-main.webp",
+      "assets/products/celebrity-blue-detail-1.webp",
+      "assets/products/celebrity-blue-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 19
+  },
+  {
+    "id": "celebrity-red-jewellery-work",
+    "name": "Red Jewellery Work Look",
+    "price": 11000,
+    "color": "Red",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 20,
+    "tone": "#e33932",
+    "accent": "#caa05e",
+    "description": "A red look with jewellery-inspired detailing, designed for compact festive styling and special occasions.",
+    "fabric": "Red festive ensemble with jewellery-style embroidery and ornate accents.",
+    "subCategory": "jewellery-work",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Jewellery Work",
+    "image": "assets/products/celebrity-red-jewellery-work-main.webp",
+    "gallery": [
+      "assets/products/celebrity-red-jewellery-work-main.webp",
+      "assets/products/celebrity-red-jewellery-work-detail-1.webp",
+      "assets/products/celebrity-red-jewellery-work-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 21
+  },
+  {
+    "id": "celebrity-multi-11000",
+    "name": "Multi Everyday Festive Look",
+    "price": 11000,
+    "color": "Multi",
+    "category": "celebrity",
+    "label": "What Celebrities Wear",
+    "page_main": 22,
+    "tone": "#258b68",
+    "accent": "#396d5b",
+    "description": "A light multi-toned festive look for easy styling, family occasions and celebratory day wear.",
+    "fabric": "Multi-toned Indian wear with soft handcrafted details and wearable festive finish.",
+    "subCategory": "multi",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Multi Edit",
+    "image": "assets/products/celebrity-multi-11000-main.webp",
+    "gallery": [
+      "assets/products/celebrity-multi-11000-main.webp",
+      "assets/products/celebrity-multi-11000-detail-1.webp",
+      "assets/products/celebrity-multi-11000-detail-2.webp"
+    ],
+    "source": "New Look Book by Fable",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ],
+    "page_detail": 23
   }
 ];

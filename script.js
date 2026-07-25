@@ -15,6 +15,7 @@ const drawerBackdrop = document.querySelector(".drawer-backdrop");
 const modalBackdrop = document.getElementById("modalBackdrop");
 const quickModal = document.getElementById("quickModal");
 const checkoutModal = document.getElementById("checkoutModal");
+const celebrityLightbox = document.getElementById("celebrityLightbox");
 const toast = document.getElementById("toast");
 
 const formatPrice = (value) => new Intl.NumberFormat("en-IN", {
@@ -46,7 +47,7 @@ window.addEventListener("load", () => {
 });
 
 const updateBodyLock = () => {
-  const open = cartDrawer?.classList.contains("open") || quickModal?.classList.contains("open") || checkoutModal?.classList.contains("open") || mobileMenu?.classList.contains("open");
+  const open = cartDrawer?.classList.contains("open") || quickModal?.classList.contains("open") || checkoutModal?.classList.contains("open") || celebrityLightbox?.classList.contains("open") || mobileMenu?.classList.contains("open");
   body.classList.toggle("overlay-open", Boolean(open));
 };
 
@@ -305,13 +306,34 @@ cartItemsElement?.addEventListener("click", (event) => {
 /* Product quick view */
 let quickProductId = null;
 let quickSize = null;
+let quickGallery = [];
+let quickGalleryIndex = 0;
 const closeProductModal = () => {
   quickModal?.classList.remove("open");
   quickModal?.setAttribute("aria-hidden", "true");
   if (!checkoutModal?.classList.contains("open")) modalBackdrop?.classList.remove("open");
   quickProductId = null;
   quickSize = null;
+  quickGallery = [];
+  quickGalleryIndex = 0;
   updateBodyLock();
+};
+
+const setQuickGalleryImage = (index) => {
+  if (!quickGallery.length || !quickModal) return;
+  quickGalleryIndex = (index + quickGallery.length) % quickGallery.length;
+  const product = getProduct(quickProductId);
+  const image = quickModal.querySelector("[data-gallery-image]");
+  const counter = quickModal.querySelector("[data-gallery-counter]");
+  if (image) {
+    image.src = quickGallery[quickGalleryIndex];
+    image.alt = `${product ? product.name : "Fable product"} view ${quickGalleryIndex + 1}`;
+  }
+  if (counter) counter.textContent = `${quickGalleryIndex + 1} / ${quickGallery.length}`;
+  quickModal.querySelectorAll("[data-gallery-thumb]").forEach((button) => {
+    button.classList.toggle("active", Number(button.dataset.galleryThumb) === quickGalleryIndex);
+    button.setAttribute("aria-current", Number(button.dataset.galleryThumb) === quickGalleryIndex ? "true" : "false");
+  });
 };
 
 const openProductModal = (id) => {
@@ -320,11 +342,20 @@ const openProductModal = (id) => {
   closeCart();
   quickProductId = id;
   quickSize = product.sizes[0];
+  quickGallery = Array.isArray(product.gallery) && product.gallery.length ? product.gallery : [product.image];
+  quickGalleryIndex = 0;
+  const hasGallery = quickGallery.length > 1;
   quickModal.innerHTML = `
     <div class="quick-modal-inner">
       <button class="modal-close" type="button" data-modal-close aria-label="Close product details">×</button>
-      <div class="quick-modal-image" style="background:${product.tone}"><img src="${product.image}" alt="${escapeText(product.name)}" /></div>
-      <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${formatPrice(product.price)}</p><p class="quick-description">${escapeText(product.description)}</p><p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p></div>
+      <div class="quick-gallery" style="--tone:${product.tone}">
+        <div class="quick-modal-image" style="background:${product.tone}">
+          <img src="${quickGallery[0]}" alt="${escapeText(product.name)} view 1" data-gallery-image />
+          ${hasGallery ? `<button class="gallery-arrow gallery-prev" type="button" data-gallery-prev aria-label="Previous product image">‹</button><button class="gallery-arrow gallery-next" type="button" data-gallery-next aria-label="Next product image">›</button><span class="gallery-counter" data-gallery-counter>1 / ${quickGallery.length}</span>` : ""}
+        </div>
+        ${hasGallery ? `<div class="gallery-thumbnails" aria-label="Product image thumbnails">${quickGallery.map((image, index) => `<button type="button" class="gallery-thumb ${index === 0 ? "active" : ""}" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${image}" alt="${escapeText(product.name)} thumbnail ${index + 1}" /></button>`).join("")}</div>` : ""}
+      </div>
+      <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${formatPrice(product.price)}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p></div>
     </div>`;
   quickModal.classList.add("open");
   quickModal.setAttribute("aria-hidden", "false");
@@ -334,6 +365,10 @@ const openProductModal = (id) => {
 
 quickModal?.addEventListener("click", (event) => {
   if (event.target.closest("[data-modal-close]")) closeProductModal();
+  if (event.target.closest("[data-gallery-prev]")) setQuickGalleryImage(quickGalleryIndex - 1);
+  if (event.target.closest("[data-gallery-next]")) setQuickGalleryImage(quickGalleryIndex + 1);
+  const thumbButton = event.target.closest("[data-gallery-thumb]");
+  if (thumbButton) setQuickGalleryImage(Number(thumbButton.dataset.galleryThumb));
   const sizeButton = event.target.closest("[data-quick-size]");
   if (sizeButton) {
     quickSize = sizeButton.dataset.quickSize;
@@ -344,6 +379,12 @@ quickModal?.addEventListener("click", (event) => {
     closeProductModal();
     openCart();
   }
+});
+
+window.addEventListener("keydown", (event) => {
+  if (!quickModal?.classList.contains("open")) return;
+  if (event.key === "ArrowLeft") setQuickGalleryImage(quickGalleryIndex - 1);
+  if (event.key === "ArrowRight") setQuickGalleryImage(quickGalleryIndex + 1);
 });
 
 /* Checkout enquiry */
@@ -447,6 +488,7 @@ document.addEventListener("keydown", (event) => {
   closeCart();
   closeProductModal();
   closeCheckout();
+  closeCelebrityLightbox();
 });
 
 /* Cursor and magnetic hover */
@@ -464,8 +506,8 @@ if (window.matchMedia("(pointer: fine)").matches && !reducedMotion) {
     requestAnimationFrame(animateCursor);
   };
   animateCursor();
-  document.addEventListener("mouseover", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card")) ring?.classList.add("hover"); });
-  document.addEventListener("mouseout", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card")) ring?.classList.remove("hover"); });
+  document.addEventListener("mouseover", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card,.celebrity-story-card")) ring?.classList.add("hover"); });
+  document.addEventListener("mouseout", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card,.celebrity-story-card")) ring?.classList.remove("hover"); });
   document.querySelectorAll(".magnetic").forEach((element) => {
     element.addEventListener("mousemove", (event) => {
       const rect = element.getBoundingClientRect();
@@ -477,3 +519,69 @@ if (window.matchMedia("(pointer: fine)").matches && !reducedMotion) {
 
 const year = document.getElementById("year");
 if (year) year.textContent = String(new Date().getFullYear());
+
+
+/* Celebrity story lightbox */
+const celebrityCards = Array.from(document.querySelectorAll("[data-celebrity-card]"));
+const celebrityLightboxImage = document.getElementById("celebrityLightboxImage");
+const celebrityLightboxCredit = document.getElementById("celebrityLightboxCredit");
+const celebrityLightboxTitle = document.getElementById("celebrityLightboxTitle");
+const celebrityLightboxNote = document.getElementById("celebrityLightboxNote");
+const celebrityLightboxQuickView = document.getElementById("celebrityLightboxQuickView");
+let celebrityIndex = 0;
+
+const renderCelebrityLightbox = () => {
+  const card = celebrityCards[celebrityIndex];
+  if (!card || !celebrityLightboxImage) return;
+  celebrityLightboxImage.src = card.dataset.image || "";
+  celebrityLightboxImage.alt = card.querySelector("img")?.alt || card.dataset.title || "Featured Fable look";
+  if (celebrityLightboxCredit) celebrityLightboxCredit.textContent = card.dataset.credit || "Featured appearance";
+  if (celebrityLightboxTitle) celebrityLightboxTitle.textContent = card.dataset.title || "Fable Feature";
+  if (celebrityLightboxNote) celebrityLightboxNote.textContent = card.dataset.note || "Editorial image from the celebrity page.";
+  if (celebrityLightboxQuickView) celebrityLightboxQuickView.dataset.quickViewProduct = card.dataset.product || "";
+};
+
+const openCelebrityLightbox = (index) => {
+  if (!celebrityLightbox || !celebrityCards.length) return;
+  celebrityIndex = (index + celebrityCards.length) % celebrityCards.length;
+  renderCelebrityLightbox();
+  celebrityLightbox.classList.add("open");
+  celebrityLightbox.setAttribute("aria-hidden", "false");
+  updateBodyLock();
+};
+
+const closeCelebrityLightbox = () => {
+  if (!celebrityLightbox) return;
+  celebrityLightbox.classList.remove("open");
+  celebrityLightbox.setAttribute("aria-hidden", "true");
+  updateBodyLock();
+};
+
+const stepCelebrityLightbox = (delta) => {
+  if (!celebrityCards.length) return;
+  celebrityIndex = (celebrityIndex + delta + celebrityCards.length) % celebrityCards.length;
+  renderCelebrityLightbox();
+};
+
+celebrityCards.forEach((card, index) => card.addEventListener("click", () => openCelebrityLightbox(index)));
+
+celebrityLightbox?.addEventListener("click", (event) => {
+  if (event.target.closest("[data-celebrity-close]")) closeCelebrityLightbox();
+  if (event.target.closest("[data-celebrity-prev]")) stepCelebrityLightbox(-1);
+  if (event.target.closest("[data-celebrity-next]")) stepCelebrityLightbox(1);
+  const quickButton = event.target.closest("#celebrityLightboxQuickView");
+  if (quickButton) {
+    const productId = quickButton.dataset.quickViewProduct;
+    closeCelebrityLightbox();
+    if (productId) {
+      const sourceButton = document.querySelector(`[data-quick-view="${productId}"]`) || document.querySelector(`[data-add-product="${productId}"]`);
+      sourceButton?.click();
+    }
+  }
+});
+
+window.addEventListener("keydown", (event) => {
+  if (!celebrityLightbox?.classList.contains("open")) return;
+  if (event.key === "ArrowLeft") stepCelebrityLightbox(-1);
+  if (event.key === "ArrowRight") stepCelebrityLightbox(1);
+});
