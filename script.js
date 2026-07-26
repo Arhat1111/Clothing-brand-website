@@ -33,6 +33,13 @@ const escapeText = (value = "") => String(value)
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
 
+
+const ICON_EXTERNAL = `<svg class="icon icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>`;
+const ICON_CHEVRON_LEFT = `<svg class="icon icon-chevron-left" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>`;
+const ICON_CHEVRON_RIGHT = `<svg class="icon icon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>`;
+const ICON_CLOSE = `<svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+const ICON_ONLY_OPEN = `<span class="icon-only">Open</span>${ICON_EXTERNAL}`;
+
 let toastTimer;
 const showToast = (message) => {
   if (!toast) return;
@@ -159,7 +166,7 @@ const catalogCardMarkup = (product, index) => `
         <img src="${product.image}" alt="${escapeText(product.name)}" loading="lazy" />
       </button>
       <span class="catalog-badge">${escapeText(product.badge)}</span>
-      <button class="catalog-quick" type="button" data-quick-view="${product.id}" aria-label="Quick view ${escapeText(product.name)}">↗</button>
+      <button class="catalog-quick" type="button" data-quick-view="${product.id}" aria-label="Quick view ${escapeText(product.name)}">${ICON_ONLY_OPEN}</button>
       <button class="catalog-add" type="button" data-add-product="${product.id}">${product.sizes.length > 1 ? "Choose size" : "Add to bag"}</button>
     </div>
     <div class="catalog-info">
@@ -347,11 +354,11 @@ const openProductModal = (id) => {
   const hasGallery = quickGallery.length > 1;
   quickModal.innerHTML = `
     <div class="quick-modal-inner">
-      <button class="modal-close" type="button" data-modal-close aria-label="Close product details">×</button>
+      <button class="modal-close" type="button" data-modal-close aria-label="Close product details">${ICON_CLOSE}</button>
       <div class="quick-gallery" style="--tone:${product.tone}">
         <div class="quick-modal-image" style="background:${product.tone}">
           <img src="${quickGallery[0]}" alt="${escapeText(product.name)} view 1" data-gallery-image />
-          ${hasGallery ? `<button class="gallery-arrow gallery-prev" type="button" data-gallery-prev aria-label="Previous product image">‹</button><button class="gallery-arrow gallery-next" type="button" data-gallery-next aria-label="Next product image">›</button><span class="gallery-counter" data-gallery-counter>1 / ${quickGallery.length}</span>` : ""}
+          ${hasGallery ? `<button class="gallery-arrow gallery-prev" type="button" data-gallery-prev aria-label="Previous product image">${ICON_CHEVRON_LEFT}</button><button class="gallery-arrow gallery-next" type="button" data-gallery-next aria-label="Next product image">${ICON_CHEVRON_RIGHT}</button><span class="gallery-counter" data-gallery-counter>1 / ${quickGallery.length}</span>` : ""}
         </div>
         ${hasGallery ? `<div class="gallery-thumbnails" aria-label="Product image thumbnails">${quickGallery.map((image, index) => `<button type="button" class="gallery-thumb ${index === 0 ? "active" : ""}" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${image}" alt="${escapeText(product.name)} thumbnail ${index + 1}" /></button>`).join("")}</div>` : ""}
       </div>
@@ -440,7 +447,7 @@ const openCheckout = () => {
   if (!cart.length || !checkoutModal) return;
   closeCart();
   checkoutModal.innerHTML = `
-    <button class="modal-close" type="button" data-checkout-close aria-label="Close checkout enquiry">×</button>
+    <button class="modal-close" type="button" data-checkout-close aria-label="Close checkout enquiry">${ICON_CLOSE}</button>
     <p class="eyebrow">Complete your selection</p><h2>Order enquiry</h2><p class="checkout-intro">Enter your details below. Your complete order summary will be copied, then Instagram will open so you can send it directly to the Fable team.</p>
     <form class="checkout-form" id="checkoutForm"><label>Full name<input type="text" name="name" required autocomplete="name" /></label><label>Phone number<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" /></label><label>City<input type="text" name="city" required autocomplete="address-level2" /></label><label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label><div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(getCartSubtotal())}</strong></p></div><button class="button button-dark checkout-submit" type="submit">Copy order & open Instagram</button><p class="checkout-disclaimer">This creates an enquiry only. No online payment is collected on this website.</p></form>`;
   checkoutModal.classList.add("open");

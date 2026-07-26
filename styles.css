@@ -683,7 +683,7 @@ body.overlay-open { overflow:hidden; }
     radial-gradient(circle at 50% 22%, rgba(111,35,54,.13), transparent 32%),
     linear-gradient(145deg,#fbf4f0,#e9d0cf); }
 .placeholder-frame::before { content:""; position:absolute; inset:20px; border:1px solid rgba(111,35,54,.16); border-radius:inherit; }
-.placeholder-frame::after { content:"✦"; position:absolute; color:rgba(111,35,54,.15); font-size:100px; animation:slowRotate 18s linear infinite; }
+.placeholder-frame::after { content:""; position:absolute; width:90px; height:90px; border:1px solid rgba(111,35,54,.16); border-radius:50%; box-shadow:0 0 0 28px rgba(111,35,54,.04); animation:slowRotate 18s linear infinite; }
 .placeholder-frame span { position:relative; z-index:2; font:9px var(--ui); letter-spacing:.24em; text-transform:uppercase; color:var(--wine); }
 .celebrity-placeholder h3 { margin:26px 0 9px; font:30px var(--serif); }
 .celebrity-placeholder p { margin:0; color:#746165; font-size:12px; line-height:1.7; }
@@ -986,3 +986,77 @@ body.overlay-open { overflow:hidden; }
     width: 100%;
   }
 }
+
+
+/* Professional SVG icon system: avoids mobile browsers rendering arrows as emoji glyphs */
+.icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.14em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: 0 0 auto;
+}
+.icon-star { stroke-width: 1.35; }
+.icon-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.text-link span,
+.collection-card-copy span,
+.lookbook-tile span,
+.mobile-menu-footer a,
+.contact-details a,
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.catalog-quick,
+.back-to-top,
+.rail-controls button,
+.gallery-arrow,
+.modal-close,
+.celebrity-lightbox-close,
+.celebrity-lightbox-nav {
+  display: grid;
+  place-items: center;
+  -webkit-font-smoothing: antialiased;
+}
+.catalog-quick .icon { width: 17px; height: 17px; }
+.back-to-top .icon { width: 18px; height: 18px; }
+.rail-controls .icon { width: 18px; height: 18px; }
+.gallery-arrow .icon,
+.celebrity-lightbox-nav .icon { width: 20px; height: 20px; }
+.modal-close .icon,
+.celebrity-lightbox-close .icon { width: 18px; height: 18px; }
+.marquee-content i,
+.quote-flower,
+.shop-hero-motif,
+.cart-empty span,
+.catalog-no-results span {
+  display: inline-grid;
+  place-items: center;
+}
+.marquee-content i .icon { width: 13px; height: 13px; }
+.quote-flower .icon,
+.shop-hero-motif .icon,
+.cart-empty span .icon,
+.catalog-no-results span .icon { width: 1em; height: 1em; }
+#clearFilters {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#clearFilters .icon { width: 13px; height: 13px; }

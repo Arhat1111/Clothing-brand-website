@@ -30,7 +30,7 @@
   <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="mobile-menu-pattern" aria-hidden="true"></div>
     <nav aria-label="Mobile navigation"><a href="index.html"><span>01</span>Home</a><a href="products.html"><span>02</span>All Products</a><a href="what-celebrities-wear.html"><span>03</span>Celebrities</a><a href="products.html?category=sarees"><span>04</span>Sarees</a><a href="products.html?category=anarkalis"><span>05</span>Anarkalis</a><a href="index.html#story"><span>06</span>Our Story</a></nav>
-    <div class="mobile-menu-footer"><p>Surat, Gujarat</p><a href="https://www.instagram.com/fablebykavitaanu/" target="_blank" rel="noopener">Instagram ↗</a></div>
+    <div class="mobile-menu-footer"><p>Surat, Gujarat</p><a href="https://www.instagram.com/fablebykavitaanu/" target="_blank" rel="noopener">Instagram <svg class="icon icon-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div>
   </aside>
 
   <main>
@@ -39,7 +39,7 @@
       <div class="shop-hero-images" aria-hidden="true">
         <figure class="shop-portrait shop-portrait-one"><img src="assets/products/lavender-main.webp" alt="" /></figure>
         <figure class="shop-portrait shop-portrait-two"><img src="assets/products/rani-lotus-anarkali-main.webp" alt="" /></figure>
-        <div class="shop-hero-motif">✦</div>
+        <div class="shop-hero-motif"><svg class="icon icon-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.15 4.9 5.35.46-4.05 3.5 1.2 5.24L12 15.52 7.35 18.3l1.2-5.24-4.05-3.5 5.35-.46L12 4.2z"/></svg></div>
       </div>
     </section>
 
@@ -55,9 +55,9 @@
         <label class="catalog-search"><span class="sr-only">Search products</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 5 5"></path></svg><input id="productSearch" type="search" placeholder="Search the collection" autocomplete="off" /></label>
       </div>
 
-      <div class="catalog-meta"><p><span id="productCount">0</span> pieces</p><button type="button" id="clearFilters" hidden>Clear filter ×</button></div>
+      <div class="catalog-meta"><p><span id="productCount">0</span> pieces</p><button type="button" id="clearFilters" hidden>Clear filter <svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <div class="catalog-grid" id="catalogGrid" aria-live="polite"></div>
-      <div class="catalog-no-results" id="noResults" hidden><span>✦</span><h2>No Fable found.</h2><p>Try another search or explore all categories.</p><button type="button" class="button button-outline" id="resetCatalog">Show all products</button></div>
+      <div class="catalog-no-results" id="noResults" hidden><span><svg class="icon icon-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.15 4.9 5.35.46-4.05 3.5 1.2 5.24L12 15.52 7.35 18.3l1.2-5.24-4.05-3.5 5.35-.46L12 4.2z"/></svg></span><h2>No Fable found.</h2><p>Try another search or explore all categories.</p><button type="button" class="button button-outline" id="resetCatalog">Show all products</button></div>
     </section>
 
     <section class="shop-service-strip">
@@ -80,9 +80,9 @@
 
   <div class="drawer-backdrop" data-cart-close></div>
   <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Shopping bag">
-    <div class="cart-head"><div><p class="eyebrow">Your selection</p><h2>Shopping Bag</h2></div><button type="button" data-cart-close aria-label="Close shopping bag">×</button></div>
+    <div class="cart-head"><div><p class="eyebrow">Your selection</p><h2>Shopping Bag</h2></div><button type="button" data-cart-close aria-label="Close shopping bag"><svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="cart-items" id="cartItems"></div>
-    <div class="cart-empty" id="cartEmpty"><span>✦</span><h3>Your bag is waiting.</h3><p>Choose a Fable silhouette and begin your story.</p><a class="button button-outline" href="products.html">Explore collection</a></div>
+    <div class="cart-empty" id="cartEmpty"><span><svg class="icon icon-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.15 4.9 5.35.46-4.05 3.5 1.2 5.24L12 15.52 7.35 18.3l1.2-5.24-4.05-3.5 5.35-.46L12 4.2z"/></svg></span><h3>Your bag is waiting.</h3><p>Choose a Fable silhouette and begin your story.</p><a class="button button-outline" href="products.html">Explore collection</a></div>
     <div class="cart-foot" id="cartFoot"><div class="cart-subtotal"><span>Subtotal</span><strong id="cartSubtotal">₹0</strong></div><p>Shipping and final availability are confirmed by the Fable team.</p><button class="button button-dark" type="button" id="checkoutButton">Complete enquiry</button></div>
   </aside>
 
@@ -90,7 +90,7 @@
   <section class="quick-modal" id="quickModal" aria-hidden="true" aria-label="Product details"></section>
   <section class="checkout-modal" id="checkoutModal" aria-hidden="true" aria-label="Complete order enquiry"></section>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <button class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <button class="back-to-top" type="button" aria-label="Back to top"><svg class="icon icon-up" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 
   <script src="catalog.js"></script>
   <script src="script.js"></script>
