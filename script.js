@@ -2,6 +2,8 @@
 
 const PRODUCTS = Array.isArray(window.FABLE_PRODUCTS) ? window.FABLE_PRODUCTS : [];
 const INSTAGRAM_URL = "https://www.instagram.com/fablebykavitaanu/";
+const WHATSAPP_URL = "https://wa.me/";
+const WHATSAPP_CONSULTATION_URL = "https://wa.me/?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
 const CART_KEY = "fable-shopping-bag-v2";
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const body = document.body;
@@ -448,8 +450,8 @@ const openCheckout = () => {
   closeCart();
   checkoutModal.innerHTML = `
     <button class="modal-close" type="button" data-checkout-close aria-label="Close checkout enquiry">${ICON_CLOSE}</button>
-    <p class="eyebrow">Complete your selection</p><h2>Order enquiry</h2><p class="checkout-intro">Enter your details below. Your complete order summary will be copied, then Instagram will open so you can send it directly to the Fable team.</p>
-    <form class="checkout-form" id="checkoutForm"><label>Full name<input type="text" name="name" required autocomplete="name" /></label><label>Phone number<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" /></label><label>City<input type="text" name="city" required autocomplete="address-level2" /></label><label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label><div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(getCartSubtotal())}</strong></p></div><button class="button button-dark checkout-submit" type="submit">Copy order & open Instagram</button><p class="checkout-disclaimer">This creates an enquiry only. No online payment is collected on this website.</p></form>`;
+    <p class="eyebrow">Complete your selection</p><h2>Order enquiry</h2><p class="checkout-intro">Enter your details below. Your complete order summary will be copied, then WhatsApp will open so you can send it directly to the Fable team.</p>
+    <form class="checkout-form" id="checkoutForm"><label>Full name<input type="text" name="name" required autocomplete="name" /></label><label>Phone number<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" /></label><label>City<input type="text" name="city" required autocomplete="address-level2" /></label><label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label><div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(getCartSubtotal())}</strong></p></div><button class="button button-dark checkout-submit" type="submit">Copy order & open WhatsApp</button><p class="checkout-disclaimer">This creates an enquiry only. No online payment is collected on this website.</p></form>`;
   checkoutModal.classList.add("open");
   checkoutModal.setAttribute("aria-hidden", "false");
   modalBackdrop?.classList.add("open");
@@ -465,8 +467,8 @@ checkoutModal?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const orderText = buildOrderText(new FormData(event.target));
   await copyText(orderText);
-  showToast("Order summary copied - paste it into Instagram");
-  window.open(INSTAGRAM_URL, "_blank", "noopener");
+  showToast("Order summary copied - paste it into WhatsApp");
+  window.open(`${WHATSAPP_URL}?text=${encodeURIComponent(orderText)}`, "_blank", "noopener");
 });
 
 modalBackdrop?.addEventListener("click", () => {
