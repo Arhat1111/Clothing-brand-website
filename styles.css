@@ -1187,3 +1187,543 @@ body.overlay-open { overflow:hidden; }
   .story-origin, .size-guide-main { padding:78px 20px; }
   .story-page-visual { height:460px; }
 }
+
+/* Celebrity page refinements: cropped cards, named titles and per-celebrity scrollers */
+.celebrity-cast .celebrity-feature-layout {
+  grid-template-columns: minmax(260px, .78fr) minmax(0, 1.55fr);
+  gap: 34px;
+}
+.celebrity-cast-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+.celebrity-person-card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 252, 247, .86);
+  border: 1px solid rgba(111, 35, 54, .12);
+  box-shadow: 0 18px 45px rgba(76, 38, 47, .08);
+}
+.celebrity-person-featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: .85fr 1fr;
+  align-items: stretch;
+  background: linear-gradient(128deg, #fffaf5 0%, #f8e4e5 100%);
+  border-color: rgba(111, 35, 54, .20);
+}
+.celebrity-person-media {
+  position: relative;
+  height: clamp(330px, 34vw, 455px);
+  overflow: hidden;
+  background: #eadbd6;
+}
+.celebrity-person-featured .celebrity-person-media { height: clamp(390px, 38vw, 540px); }
+.celebrity-person-track {
+  height: 100%;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.celebrity-person-track::-webkit-scrollbar { display: none; }
+.celebrity-frame {
+  flex: 0 0 100%;
+  position: relative;
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  scroll-snap-align: start;
+  overflow: hidden;
+}
+.celebrity-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+  display: block;
+  filter: saturate(.98) contrast(.98);
+  transition: transform .55s ease, filter .45s ease;
+}
+.celebrity-frame:hover img,
+.celebrity-frame:focus-visible img {
+  transform: scale(1.025);
+  filter: saturate(1.04) contrast(1.02);
+}
+.celebrity-person-copy {
+  padding: 22px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.celebrity-person-featured .celebrity-person-copy {
+  justify-content: center;
+  padding: 36px;
+}
+.celebrity-person-copy p {
+  margin: 0;
+  font: 10px var(--ui);
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  color: #8a6e74;
+}
+.celebrity-person-copy h3 {
+  margin: 0;
+  font-size: clamp(34px, 3.6vw, 60px);
+  line-height: .96;
+  letter-spacing: -.04em;
+}
+.celebrity-person-card:not(.celebrity-person-featured) .celebrity-person-copy h3 { font-size: clamp(30px, 2.9vw, 45px); }
+.celebrity-person-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
+  color: #6f2336;
+  font-size: 13px;
+}
+.celebrity-highlight-label {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--wine);
+  color: #fff4f2;
+  font: 9px var(--ui);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.celebrity-person-actions { margin-top: auto; }
+.celebrity-person-actions .text-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.celebrity-mini-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, .9);
+  color: #2a171b;
+  box-shadow: 0 12px 25px rgba(50, 25, 30, .16);
+  cursor: pointer;
+}
+.celebrity-mini-prev { left: 12px; }
+.celebrity-mini-next { right: 12px; }
+.celebrity-mini-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 15px;
+  z-index: 4;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+.celebrity-mini-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .52);
+  box-shadow: 0 0 0 1px rgba(53, 24, 30, .14);
+}
+.celebrity-mini-dots span.is-active { background: #fff; }
+.celebrity-lightbox-figure { max-height: 76vh; }
+.celebrity-lightbox-figure img { object-fit: contain; }
+body[data-page="celebrities"] .celebrity-card-main img { object-position: center 30%; }
+body[data-page="celebrities"] .celebrity-card-float img { object-position: center 18%; }
+
+/* Home Shreya spotlight */
+.hero-visual img { object-position: center 28%; }
+.shreya-spotlight {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(280px, .62fr);
+  gap: 7vw;
+  align-items: center;
+  background: linear-gradient(180deg, #fffdf9 0%, #f9eceb 100%);
+  border-top: 1px solid rgba(111, 35, 54, .08);
+}
+.shreya-spotlight-copy h2 {
+  margin: 0;
+  font-size: clamp(48px, 6.2vw, 94px);
+  line-height: .92;
+  letter-spacing: -.045em;
+}
+.shreya-spotlight-copy h2 em { color: var(--wine); }
+.shreya-spotlight-copy p:not(.eyebrow) {
+  max-width: 560px;
+  margin: 28px 0 0;
+  color: #665257;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.shreya-spotlight-copy .button { margin-top: 28px; }
+.shreya-spotlight-image {
+  position: relative;
+  margin: 0;
+  min-height: 560px;
+  overflow: hidden;
+  border-radius: 260px 260px 18px 18px;
+  background: #eadbd6;
+  box-shadow: var(--shadow);
+}
+.shreya-spotlight-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+  display: block;
+}
+.shreya-spotlight-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(37,16,21,.46), transparent 50%);
+}
+.shreya-spotlight-image figcaption {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 24px;
+  z-index: 2;
+  color: #fff;
+  font: 11px var(--ui);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+@media (max-width: 1180px) {
+  .celebrity-cast .celebrity-feature-layout { grid-template-columns: 1fr; }
+  .celebrity-feature-copy { position: relative; top: 0; }
+}
+@media (max-width: 860px) {
+  .celebrity-cast-grid { grid-template-columns: 1fr; }
+  .celebrity-person-featured { grid-column: auto; grid-template-columns: 1fr; }
+  .celebrity-person-media, .celebrity-person-featured .celebrity-person-media { height: min(118vw, 520px); }
+  .celebrity-person-featured .celebrity-person-copy { padding: 24px 20px; }
+  .shreya-spotlight { grid-template-columns: 1fr; gap: 34px; padding: 78px 20px; }
+  .shreya-spotlight-image { min-height: 520px; border-radius: 210px 210px 18px 18px; }
+}
+@media (max-width: 620px) {
+  .celebrity-cast { padding-top: 56px; }
+  .celebrity-cast-grid { gap: 18px; }
+  .celebrity-person-media, .celebrity-person-featured .celebrity-person-media { height: min(126vw, 470px); }
+  .celebrity-person-copy { padding: 18px 16px 20px; }
+  .celebrity-person-copy h3 { font-size: clamp(31px, 11vw, 44px) !important; }
+  .celebrity-mini-nav { width: 36px; height: 36px; }
+  .shreya-spotlight-image { min-height: 460px; }
+  .hero-visual img { object-position: center 34%; }
+}
+
+/* Combined home hero + celebrity moment update */
+.hero-visual.hero-collage {
+  width: min(42vw, 620px);
+  height: min(73vh, 780px);
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
+  isolation: isolate;
+}
+.hero-collage-main {
+  position: absolute;
+  right: 0;
+  top: 2%;
+  width: 100%;
+  height: 94%;
+  overflow: hidden;
+  background: #eadbd6;
+  border-radius: 240px 240px 26px 26px;
+  box-shadow: 0 34px 90px rgba(71, 35, 43, .15);
+}
+.hero-collage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none;
+  filter: saturate(1.02) contrast(1.03);
+}
+.hero-collage-main img { object-position: center 28%; }
+.hero-collage-main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(32, 15, 18, .52), rgba(32, 15, 18, .12) 34%, rgba(32, 15, 18, 0) 62%);
+  pointer-events: none;
+}
+.hero-collage-caption {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  bottom: 28px;
+  z-index: 2;
+  color: white;
+}
+.hero-collage-kicker {
+  margin: 0 0 10px;
+  font: 10px var(--ui);
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  color: rgba(255,255,255,.78);
+}
+.hero-collage-caption h3 {
+  margin: 0;
+  font: clamp(28px, 3vw, 40px)/1.02 var(--serif);
+  letter-spacing: -.03em;
+}
+.hero-collage-tag {
+  display: inline-flex;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  backdrop-filter: blur(8px);
+  color: rgba(255,255,255,.9);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font: 10px var(--ui);
+}
+.hero-collage-note {
+  position: absolute;
+  left: -8%;
+  bottom: 8%;
+  z-index: 3;
+  width: min(260px, 46%);
+  padding: 20px 20px 18px;
+  border-radius: 26px;
+  background: rgba(255, 252, 248, .92);
+  border: 1px solid rgba(111, 35, 54, .08);
+  box-shadow: 0 24px 55px rgba(71, 35, 43, .10);
+  backdrop-filter: blur(10px);
+}
+.hero-collage-note > span {
+  display: inline-block;
+  font: 10px var(--ui);
+  text-transform: uppercase;
+  letter-spacing: .2em;
+  color: var(--wine);
+  margin-bottom: 10px;
+}
+.hero-collage-note strong {
+  display: block;
+  font: 30px/1 var(--serif);
+  letter-spacing: -.03em;
+  color: #2d181d;
+}
+.hero-collage-note p {
+  margin: 10px 0 0;
+  color: #6f5d61;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.hero-collage-note a {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 10px var(--ui);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: #2d181d;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(42,23,27,.18);
+}
+.hero-collage-note .icon { width: 14px; height: 14px; }
+.hero-collage::after { display: none; }
+.hero-collage-orbit {
+  position: absolute;
+  right: -7%;
+  top: -2%;
+  width: 152px;
+  height: 152px;
+  border-radius: 50%;
+  border: 1px solid rgba(111, 35, 54, .14);
+  box-shadow: 0 0 0 32px rgba(180,139,85,.045);
+  z-index: -1;
+}
+.as-seen-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 6vw;
+  background: rgba(255, 253, 249, .86);
+  border-bottom: 1px solid rgba(111, 35, 54, .09);
+  border-top: 1px solid rgba(111, 35, 54, .05);
+}
+.as-seen-strip > span {
+  font: 10px var(--ui);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--wine);
+  white-space: nowrap;
+}
+.as-seen-names {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-width: 0;
+  color: #3b2328;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.as-seen-names strong {
+  font-family: var(--serif);
+  font-size: clamp(18px, 2.05vw, 31px);
+  font-weight: 400;
+  letter-spacing: -.02em;
+}
+.as-seen-names i {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: rgba(111,35,54,.42);
+}
+.as-seen-strip a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 10px var(--ui);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(42,23,27,.18);
+  padding-bottom: 6px;
+}
+.as-seen-strip .icon { width: 14px; height: 14px; }
+@media (max-width: 1180px) {
+  .hero-visual.hero-collage { width: min(45vw, 560px); height: min(66vh, 700px); }
+  .hero-collage-note { left: -3%; width: min(240px, 52%); }
+}
+@media (max-width: 860px) {
+  .as-seen-strip { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+  .as-seen-names { width: 100%; justify-content: flex-start; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .as-seen-names::-webkit-scrollbar { display: none; }
+}
+@media (max-width: 620px) {
+  .hero-visual.hero-collage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: .36;
+    border-radius: 0;
+  }
+  .hero-collage-main {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .hero-collage-main img { object-position: center 31%; }
+  .hero-collage-caption {
+    left: 20px;
+    right: 20px;
+    bottom: 24px;
+  }
+  .hero-collage-caption h3 { font-size: 26px; }
+  .hero-collage-tag { margin-top: 10px; padding: 8px 12px; font-size: 9px; }
+  .hero-collage-note,
+  .hero-collage-orbit { display: none; }
+  .as-seen-strip { gap: 14px; }
+  .as-seen-names { gap: 12px; }
+  .as-seen-names strong { font-size: 22px; }
+}
+body[data-page="celebrities"] .celebrity-card-main img { object-position: center 30%; }
+body[data-page="celebrities"] .celebrity-card-float img { object-position: center 18%; }
+
+/* Home Shreya spotlight */
+.hero-visual img { object-position: center 28%; }
+.shreya-spotlight {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(280px, .62fr);
+  gap: 7vw;
+  align-items: center;
+  background: linear-gradient(180deg, #fffdf9 0%, #f9eceb 100%);
+  border-top: 1px solid rgba(111, 35, 54, .08);
+}
+.shreya-spotlight-copy h2 {
+  margin: 0;
+  font-size: clamp(48px, 6.2vw, 94px);
+  line-height: .92;
+  letter-spacing: -.045em;
+}
+.shreya-spotlight-copy h2 em { color: var(--wine); }
+.shreya-spotlight-copy p:not(.eyebrow) {
+  max-width: 560px;
+  margin: 28px 0 0;
+  color: #665257;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.shreya-spotlight-copy .button { margin-top: 28px; }
+.shreya-spotlight-image {
+  position: relative;
+  margin: 0;
+  min-height: 560px;
+  overflow: hidden;
+  border-radius: 260px 260px 18px 18px;
+  background: #eadbd6;
+  box-shadow: var(--shadow);
+}
+.shreya-spotlight-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+  display: block;
+}
+.shreya-spotlight-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(37,16,21,.46), transparent 50%);
+}
+.shreya-spotlight-image figcaption {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 24px;
+  z-index: 2;
+  color: #fff;
+  font: 11px var(--ui);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+@media (max-width: 1180px) {
+  .celebrity-cast .celebrity-feature-layout { grid-template-columns: 1fr; }
+  .celebrity-feature-copy { position: relative; top: 0; }
+}
+@media (max-width: 860px) {
+  .celebrity-cast-grid { grid-template-columns: 1fr; }
+  .celebrity-person-featured { grid-column: auto; grid-template-columns: 1fr; }
+  .celebrity-person-media, .celebrity-person-featured .celebrity-person-media { height: min(118vw, 520px); }
+  .celebrity-person-featured .celebrity-person-copy { padding: 24px 20px; }
+  .shreya-spotlight { grid-template-columns: 1fr; gap: 34px; padding: 78px 20px; }
+  .shreya-spotlight-image { min-height: 520px; border-radius: 210px 210px 18px 18px; }
+}
+@media (max-width: 620px) {
+  .celebrity-cast { padding-top: 56px; }
+  .celebrity-cast-grid { gap: 18px; }
+  .celebrity-person-media, .celebrity-person-featured .celebrity-person-media { height: min(126vw, 470px); }
+  .celebrity-person-copy { padding: 18px 16px 20px; }
+  .celebrity-person-copy h3 { font-size: clamp(31px, 11vw, 44px) !important; }
+  .celebrity-mini-nav { width: 36px; height: 36px; }
+  .shreya-spotlight-image { min-height: 460px; }
+  .hero-visual img { object-position: center 34%; }
+}

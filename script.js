@@ -515,8 +515,8 @@ if (window.matchMedia("(pointer: fine)").matches && !reducedMotion) {
     requestAnimationFrame(animateCursor);
   };
   animateCursor();
-  document.addEventListener("mouseover", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card,.celebrity-story-card")) ring?.classList.add("hover"); });
-  document.addEventListener("mouseout", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card,.celebrity-story-card")) ring?.classList.remove("hover"); });
+  document.addEventListener("mouseover", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card,.celebrity-story-card,.celebrity-person-card,.celebrity-frame")) ring?.classList.add("hover"); });
+  document.addEventListener("mouseout", (event) => { if (event.target.closest("a,button,.catalog-card,.product-card,.celebrity-story-card,.celebrity-person-card,.celebrity-frame")) ring?.classList.remove("hover"); });
   document.querySelectorAll(".magnetic").forEach((element) => {
     element.addEventListener("mousemove", (event) => {
       const rect = element.getBoundingClientRect();
@@ -593,4 +593,30 @@ window.addEventListener("keydown", (event) => {
   if (!celebrityLightbox?.classList.contains("open")) return;
   if (event.key === "ArrowLeft") stepCelebrityLightbox(-1);
   if (event.key === "ArrowRight") stepCelebrityLightbox(1);
+});
+
+
+/* Mini sliders for celebrity cards */
+document.querySelectorAll("[data-celebrity-mini-slider]").forEach((slider) => {
+  const track = slider.querySelector(".celebrity-person-track");
+  const frames = Array.from(slider.querySelectorAll(".celebrity-frame"));
+  const prev = slider.querySelector("[data-celebrity-mini-prev]");
+  const next = slider.querySelector("[data-celebrity-mini-next]");
+  const dots = Array.from(slider.querySelectorAll(".celebrity-mini-dots span"));
+  if (!track || frames.length < 2) return;
+  let index = 0;
+  const updateDots = () => dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
+  const goTo = (nextIndex) => {
+    index = (nextIndex + frames.length) % frames.length;
+    track.scrollTo({ left: frames[index].offsetLeft, behavior: reducedMotion ? "auto" : "smooth" });
+    updateDots();
+  };
+  prev?.addEventListener("click", (event) => { event.stopPropagation(); goTo(index - 1); });
+  next?.addEventListener("click", (event) => { event.stopPropagation(); goTo(index + 1); });
+  track.addEventListener("scroll", () => {
+    const width = track.clientWidth || 1;
+    index = Math.round(track.scrollLeft / width);
+    updateDots();
+  }, { passive: true });
+  updateDots();
 });
