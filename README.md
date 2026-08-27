@@ -24,3 +24,19 @@ Latest update:
 
 ## Favicon / Google icon
 A branded Fable monogram favicon has been added in ICO, SVG, PNG, Apple Touch Icon, and Web Manifest formats. Upload the files to the website root so browsers and Google can pick up the icon. Google may take time to refresh cached search-result icons after deployment.
+
+## WhatsApp updates popup and admin dashboard
+
+This version adds a WhatsApp updates popup to the public pages. It asks for the customer's name and WhatsApp number, then saves the entry in browser localStorage under `fable-whatsapp-update-leads-v1`.
+
+Open `admin.html` to view the admin dashboard. Demo passcode: `FABLE2026`.
+
+Admin features included:
+- view saved subscriber names and phone numbers
+- search subscribers
+- export CSV
+- copy all numbers
+- open a pre-filled WhatsApp chat per subscriber
+- mark subscribers as messaged after opening WhatsApp
+
+Important: Because this is a static HTML/CSS/JS website, the included admin dashboard stores data only in the browser. For live production, connect the popup to a real database such as Firebase/Google Sheets and use the official WhatsApp Business API or an approved provider to send automated messages.

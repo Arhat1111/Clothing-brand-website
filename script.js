@@ -5,6 +5,10 @@ const INSTAGRAM_URL = "https://www.instagram.com/fablebykavitaanu/";
 const WHATSAPP_URL = "https://wa.me/";
 const WHATSAPP_CONSULTATION_URL = "https://wa.me/?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
 const CART_KEY = "fable-shopping-bag-v2";
+const LEADS_KEY = "fable-whatsapp-update-leads-v1";
+const UPDATES_JOINED_KEY = "fable-updates-joined-v1";
+const UPDATES_DISMISSED_KEY = "fable-updates-dismissed-session-v1";
+const ADMIN_PIN = "FABLE2026";
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const body = document.body;
 const header = document.getElementById("siteHeader");
@@ -18,6 +22,7 @@ const modalBackdrop = document.getElementById("modalBackdrop");
 const quickModal = document.getElementById("quickModal");
 const checkoutModal = document.getElementById("checkoutModal");
 const celebrityLightbox = document.getElementById("celebrityLightbox");
+const updatesPopup = document.getElementById("updatesPopup");
 const toast = document.getElementById("toast");
 
 const formatPrice = (value) => new Intl.NumberFormat("en-IN", {
@@ -56,7 +61,7 @@ window.addEventListener("load", () => {
 });
 
 const updateBodyLock = () => {
-  const open = cartDrawer?.classList.contains("open") || quickModal?.classList.contains("open") || checkoutModal?.classList.contains("open") || celebrityLightbox?.classList.contains("open") || mobileMenu?.classList.contains("open");
+  const open = cartDrawer?.classList.contains("open") || quickModal?.classList.contains("open") || checkoutModal?.classList.contains("open") || celebrityLightbox?.classList.contains("open") || updatesPopup?.classList.contains("open") || mobileMenu?.classList.contains("open");
   body.classList.toggle("overlay-open", Boolean(open));
 };
 
@@ -569,7 +574,223 @@ document.addEventListener("keydown", (event) => {
   closeProductModal();
   closeCheckout();
   closeCelebrityLightbox();
+  closeUpdatesPopup();
 });
+
+
+/* WhatsApp updates popup and admin dashboard */
+const readLeads = () => {
+  try {
+    const data = JSON.parse(localStorage.getItem(LEADS_KEY) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveLeads = (leads) => localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+
+const normalizePhone = (value = "") => {
+  let digits = String(value).replace(/\D/g, "");
+  if (digits.length === 10) digits = `91${digits}`;
+  return digits;
+};
+
+const formatLeadDate = (value) => {
+  if (!value) return "-";
+  try { return new Date(value).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }); }
+  catch { return value; }
+};
+
+const closeUpdatesPopup = () => {
+  if (!updatesPopup) return;
+  updatesPopup.classList.remove("open");
+  updatesPopup.setAttribute("aria-hidden", "true");
+  sessionStorage.setItem(UPDATES_DISMISSED_KEY, "true");
+  updateBodyLock();
+};
+
+const openUpdatesPopup = () => {
+  if (!updatesPopup || body.dataset.page === "admin") return;
+  if (localStorage.getItem(UPDATES_JOINED_KEY) === "true") return;
+  if (sessionStorage.getItem(UPDATES_DISMISSED_KEY) === "true") return;
+  updatesPopup.classList.add("open");
+  updatesPopup.setAttribute("aria-hidden", "false");
+  updateBodyLock();
+};
+
+window.addEventListener("load", () => {
+  window.setTimeout(openUpdatesPopup, 1450);
+});
+
+updatesPopup?.addEventListener("click", (event) => {
+  if (event.target.closest("[data-updates-close]")) closeUpdatesPopup();
+});
+
+document.getElementById("updatesForm")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const form = new FormData(event.currentTarget);
+  const name = String(form.get("name") || "").trim();
+  const rawPhone = String(form.get("phone") || "").trim();
+  const phone = normalizePhone(rawPhone);
+  if (!name || phone.length < 11) {
+    showToast("Please enter a valid name and WhatsApp number");
+    return;
+  }
+  const leads = readLeads();
+  const existingIndex = leads.findIndex((lead) => lead.phone === phone);
+  const lead = {
+    id: existingIndex >= 0 ? leads[existingIndex].id : `lead-${Date.now()}`,
+    name,
+    rawPhone,
+    phone,
+    consent: true,
+    sourcePage: document.title || body.dataset.page || "Website",
+    createdAt: existingIndex >= 0 ? leads[existingIndex].createdAt : new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "Subscribed",
+    lastMessageAt: existingIndex >= 0 ? leads[existingIndex].lastMessageAt || "" : ""
+  };
+  if (existingIndex >= 0) leads[existingIndex] = { ...leads[existingIndex], ...lead };
+  else leads.unshift(lead);
+  saveLeads(leads);
+  localStorage.setItem(UPDATES_JOINED_KEY, "true");
+  closeUpdatesPopup();
+  showToast("Thank you - your WhatsApp updates are saved");
+});
+
+const personalizeMessage = (template, lead) => String(template || "")
+  .replaceAll("{name}", lead.name || "there")
+  .replaceAll("{phone}", lead.phone || "");
+
+const whatsappLeadUrl = (lead, message) => `https://wa.me/${lead.phone}?text=${encodeURIComponent(personalizeMessage(message, lead))}`;
+
+const toCsvCell = (value = "") => `"${String(value).replaceAll('"', '""')}"`;
+const downloadTextFile = (filename, content, type = "text/plain") => {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
+const adminDashboard = document.getElementById("adminDashboard");
+const adminLogin = document.getElementById("adminLogin");
+const adminLeadRows = document.getElementById("adminLeadRows");
+const adminEmpty = document.getElementById("adminEmpty");
+const adminLeadCount = document.getElementById("adminLeadCount");
+const adminSearch = document.getElementById("adminSearch");
+const broadcastMessage = document.getElementById("broadcastMessage");
+let adminFilter = "";
+
+const setAdminVisible = (visible) => {
+  if (!adminDashboard || !adminLogin) return;
+  adminDashboard.hidden = !visible;
+  adminLogin.hidden = visible;
+  if (visible) renderAdminLeads();
+};
+
+const renderAdminLeads = () => {
+  if (!adminLeadRows || !adminDashboard) return;
+  const leads = readLeads();
+  const q = adminFilter.trim().toLowerCase();
+  const filtered = leads.filter((lead) => !q || [lead.name, lead.phone, lead.rawPhone, lead.sourcePage, lead.status].join(" ").toLowerCase().includes(q));
+  if (adminLeadCount) adminLeadCount.textContent = String(leads.length);
+  if (adminEmpty) adminEmpty.hidden = filtered.length > 0;
+  adminLeadRows.innerHTML = filtered.map((lead) => `
+    <tr>
+      <td><strong>${escapeText(lead.name)}</strong><span>${escapeText(lead.sourcePage || "Website")}</span></td>
+      <td>${escapeText(lead.rawPhone || lead.phone)}<span>wa.me/${escapeText(lead.phone)}</span></td>
+      <td>${formatLeadDate(lead.createdAt)}<span>Last sent: ${formatLeadDate(lead.lastMessageAt)}</span></td>
+      <td><span class="admin-status">${escapeText(lead.status || "Subscribed")}</span></td>
+      <td class="admin-actions-cell">
+        <button type="button" data-admin-whatsapp="${escapeText(lead.id)}">WhatsApp</button>
+        <button type="button" data-admin-delete="${escapeText(lead.id)}">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+};
+
+document.getElementById("adminLoginForm")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const pin = new FormData(event.currentTarget).get("pin");
+  if (pin === ADMIN_PIN) {
+    sessionStorage.setItem("fable-admin-auth", "true");
+    setAdminVisible(true);
+    showToast("Admin dashboard unlocked");
+  } else {
+    showToast("Incorrect admin passcode");
+  }
+});
+
+adminSearch?.addEventListener("input", (event) => {
+  adminFilter = event.target.value;
+  renderAdminLeads();
+});
+
+adminLeadRows?.addEventListener("click", (event) => {
+  const whatsappButton = event.target.closest("[data-admin-whatsapp]");
+  const deleteButton = event.target.closest("[data-admin-delete]");
+  const leads = readLeads();
+  if (whatsappButton) {
+    const id = whatsappButton.dataset.adminWhatsapp;
+    const lead = leads.find((item) => item.id === id);
+    if (!lead) return;
+    const message = broadcastMessage?.value || "Hi {name}, Fable by Kavita Anu has a new festive update for you. Reply here for styling help or a free consultation.";
+    window.open(whatsappLeadUrl(lead, message), "_blank", "noopener");
+    const updated = leads.map((item) => item.id === id ? { ...item, lastMessageAt: new Date().toISOString(), status: "Messaged" } : item);
+    saveLeads(updated);
+    renderAdminLeads();
+  }
+  if (deleteButton) {
+    const id = deleteButton.dataset.adminDelete;
+    if (!confirm("Delete this subscriber?")) return;
+    saveLeads(leads.filter((lead) => lead.id !== id));
+    renderAdminLeads();
+  }
+});
+
+document.getElementById("exportLeads")?.addEventListener("click", () => {
+  const leads = readLeads();
+  const rows = [["Name", "WhatsApp", "Raw Phone", "Status", "Source Page", "Created At", "Last Message At"], ...leads.map((lead) => [lead.name, lead.phone, lead.rawPhone, lead.status, lead.sourcePage, lead.createdAt, lead.lastMessageAt])];
+  downloadTextFile(`fable-whatsapp-leads-${new Date().toISOString().slice(0,10)}.csv`, rows.map((row) => row.map(toCsvCell).join(",")).join("\n"), "text/csv");
+});
+
+document.getElementById("copyLeadNumbers")?.addEventListener("click", async () => {
+  const numbers = readLeads().map((lead) => lead.phone).join("\n");
+  await copyText(numbers);
+  showToast("All WhatsApp numbers copied");
+});
+
+document.getElementById("clearLeads")?.addEventListener("click", () => {
+  if (!confirm("Clear all saved subscribers from this browser?")) return;
+  saveLeads([]);
+  renderAdminLeads();
+  showToast("Subscriber list cleared");
+});
+
+document.getElementById("openBroadcastQueue")?.addEventListener("click", () => {
+  const leads = readLeads();
+  const message = broadcastMessage?.value || "Hi {name}, Fable by Kavita Anu has a new festive update for you. Reply here for styling help or a free consultation.";
+  const next = leads.find((lead) => lead.status !== "Messaged") || leads[0];
+  if (!next) {
+    showToast("No subscribers saved yet");
+    return;
+  }
+  window.open(whatsappLeadUrl(next, message), "_blank", "noopener");
+  const updated = leads.map((lead) => lead.id === next.id ? { ...lead, lastMessageAt: new Date().toISOString(), status: "Messaged" } : lead);
+  saveLeads(updated);
+  renderAdminLeads();
+  showToast(`Opened WhatsApp for ${next.name}`);
+});
+
+if (body.dataset.page === "admin") {
+  setAdminVisible(sessionStorage.getItem("fable-admin-auth") === "true");
+}
 
 /* Cursor and magnetic hover */
 if (window.matchMedia("(pointer: fine)").matches && !reducedMotion) {
