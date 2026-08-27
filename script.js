@@ -158,6 +158,76 @@ const noResults = document.getElementById("noResults");
 const clearFilters = document.getElementById("clearFilters");
 const resetCatalog = document.getElementById("resetCatalog");
 const validCategories = ["all", "sarees", "anarkalis", "drapes", "festive"];
+
+const shopHeroEyebrow = document.getElementById("shopHeroEyebrow");
+const shopHeroTitle = document.getElementById("shopHeroTitle");
+const shopHeroDescription = document.getElementById("shopHeroDescription");
+const shopHeroImageOne = document.getElementById("shopHeroImageOne");
+const shopHeroImageTwo = document.getElementById("shopHeroImageTwo");
+
+const categoryHeroContent = {
+  all: {
+    eyebrow: "The complete collection",
+    title: "Find your<br /><em>next Fable.</em>",
+    description: "Explore statement sarees, Rakhi festive wear, anarkalis, drape sets and capes from the Fable lookbooks.",
+    imageOne: "assets/products/lavender-main.webp",
+    imageOneAlt: "Lavender jewel saree",
+    imageTwo: "assets/products/rani-lotus-anarkali-main.webp",
+    imageTwoAlt: "Rani lotus anarkali"
+  },
+  sarees: {
+    eyebrow: "Saree collection",
+    title: "Sarees,<br /><em>only sarees.</em>",
+    description: "Browse Fable’s signature sarees, tissue sarees, heritage art sarees and festive saree edits without mixed-category imagery.",
+    imageOne: "assets/products/blue-main.webp",
+    imageOneAlt: "Blue signature saree",
+    imageTwo: "assets/products/lavender-main.webp",
+    imageTwoAlt: "Lavender jewel saree"
+  },
+  anarkalis: {
+    eyebrow: "Anarkali collection",
+    title: "Anarkalis<br /><em>with graceful movement.</em>",
+    description: "Explore only Fable anarkali silhouettes, from Rani lotus tones to jacketed and neutral festive pieces.",
+    imageOne: "assets/products/rani-lotus-anarkali-main.webp",
+    imageOneAlt: "Rani lotus anarkali",
+    imageTwo: "assets/products/grey-anarkali-main.webp",
+    imageTwoAlt: "Grey anarkali"
+  },
+  drapes: {
+    eyebrow: "Drape set collection",
+    title: "Modern drapes,<br /><em>styled with ease.</em>",
+    description: "Shop only Fable drape sets and drape saree silhouettes, matched with the right imagery for the category.",
+    imageOne: "assets/products/purple-drape-main.webp",
+    imageOneAlt: "Purple drape set",
+    imageTwo: "assets/products/golden-drape-main.webp",
+    imageTwoAlt: "Golden drape set"
+  },
+  festive: {
+    eyebrow: "Festive wear collection",
+    title: "Festive wear<br /><em>made for celebration.</em>",
+    description: "Discover shararas, capes, bandhej and kurta-dhoti sets from Fable’s celebration-ready edit.",
+    imageOne: "assets/products/green-cape-main.webp",
+    imageOneAlt: "Green cape set",
+    imageTwo: "assets/products/red-bandhej-main.webp",
+    imageTwoAlt: "Red Bandhej set"
+  }
+};
+
+const updateCategoryHero = (category) => {
+  const hero = categoryHeroContent[category] || categoryHeroContent.all;
+  if (shopHeroEyebrow) shopHeroEyebrow.textContent = hero.eyebrow;
+  if (shopHeroTitle) shopHeroTitle.innerHTML = hero.title;
+  if (shopHeroDescription) shopHeroDescription.textContent = hero.description;
+  if (shopHeroImageOne) {
+    shopHeroImageOne.src = hero.imageOne;
+    shopHeroImageOne.alt = hero.imageOneAlt;
+  }
+  if (shopHeroImageTwo) {
+    shopHeroImageTwo.src = hero.imageTwo;
+    shopHeroImageTwo.alt = hero.imageTwoAlt;
+  }
+};
+
 let activeCategory = "all";
 let activeSearch = "";
 
@@ -179,6 +249,7 @@ const catalogCardMarkup = (product, index) => `
 const setCategory = (category, updateUrl = true) => {
   activeCategory = validCategories.includes(category) ? category : "all";
   categoryTabs?.querySelectorAll("button").forEach((button) => button.classList.toggle("active", button.dataset.category === activeCategory));
+  updateCategoryHero(activeCategory);
   if (updateUrl && window.history?.replaceState) {
     const url = new URL(window.location.href);
     if (activeCategory === "all") url.searchParams.delete("category");
