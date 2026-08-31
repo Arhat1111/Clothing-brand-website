@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-95XXSLB0LH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-95XXSLB0LH');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="favicon.ico?v=4" sizes="any" />
@@ -220,7 +229,14 @@
     <div class="cart-head"><div><p class="eyebrow">Your selection</p><h2>Shopping Bag</h2></div><button type="button" data-cart-close aria-label="Close shopping bag"><svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-empty" id="cartEmpty"><span><svg class="icon icon-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.15 4.9 5.35.46-4.05 3.5 1.2 5.24L12 15.52 7.35 18.3l1.2-5.24-4.05-3.5 5.35-.46L12 4.2z"/></svg></span><h3>Your bag is waiting.</h3><p>Choose a Fable silhouette and begin your story.</p><a class="button button-outline" href="products.html">Explore collection</a></div>
-    <div class="cart-foot" id="cartFoot"><div class="cart-subtotal"><span>Subtotal</span><strong id="cartSubtotal">₹0</strong></div><p>Shipping and final availability are confirmed by the Fable team.</p><button class="button button-dark" type="button" id="checkoutButton">Complete enquiry</button></div>
+    <div class="cart-foot" id="cartFoot">
+      <div class="cart-subtotal"><span>Subtotal</span><strong id="cartSubtotal">₹0</strong></div>
+      <div class="cart-discount-panel" id="cartDiscountPanel">
+        <div class="cart-discount-row"><span>WhatsApp updates discount</span><strong id="cartDiscount">−₹0</strong></div>
+        <small id="cartDiscountNote">Enter your phone number in the updates popup to unlock 5% off your first order.</small>
+      </div>
+      <div class="cart-total"><span>Estimated total</span><strong id="cartTotal">₹0</strong></div>
+      <p>Shipping and final availability are confirmed by the Fable team.</p><button class="button button-dark" type="button" id="checkoutButton">Complete enquiry</button></div>
   </aside>
 
   <div class="modal-backdrop" id="modalBackdrop"></div>
@@ -232,13 +248,13 @@
     <div class="updates-popup-panel" role="dialog" aria-modal="true" aria-labelledby="updatesPopupTitle">
       <button class="updates-popup-close" type="button" data-updates-close aria-label="Close updates popup"><svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <p class="eyebrow">Fable updates</p>
-      <h2 id="updatesPopupTitle">Join the Fable circle.</h2>
-      <p class="updates-popup-copy">Get new drops, celebrity looks, styling notes and festive edits directly on WhatsApp.</p>
+      <h2 id="updatesPopupTitle">Unlock 5% off.</h2>
+      <p class="updates-popup-copy">Enter your WhatsApp number for daily Fable updates and receive an automatic 5% first-order discount in your shopping bag.</p>
       <form class="updates-form" id="updatesForm">
         <label>Full name<input type="text" name="name" placeholder="Your name" autocomplete="name" required /></label>
         <label>WhatsApp number<input type="tel" name="phone" placeholder="10-digit mobile number" autocomplete="tel" required /></label>
-        <label class="updates-consent"><input type="checkbox" name="consent" required /> <span>I agree to receive Fable updates on WhatsApp.</span></label>
-        <button class="button button-dark" type="submit">Join updates</button>
+        <label class="updates-consent"><input type="checkbox" name="consent" required /> <span>I agree to receive Fable updates on WhatsApp and understand my 5% discount is valid once for this number.</span></label>
+        <button class="button button-dark" type="submit">Register & apply 5% off</button>
       </form>
       <button class="updates-later" type="button" data-updates-close>Maybe later</button>
     </div>

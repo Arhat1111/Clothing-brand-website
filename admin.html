@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-95XXSLB0LH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-95XXSLB0LH');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="favicon.ico?v=4" sizes="any" />
@@ -21,7 +30,7 @@
   <div class="page-loader" aria-hidden="true"><div class="loader-mark"><span>F</span><small>FABLE</small></div></div>
   <div class="cursor-dot" aria-hidden="true"></div><div class="cursor-ring" aria-hidden="true"></div>
 
-  <div class="announcement-bar"><p>Admin dashboard for WhatsApp update subscribers</p><a href="products.html">Back to shop</a></div>
+  <div class="announcement-bar"><p>Admin dashboard for WhatsApp update subscribers and first-order discount tracking</p><a href="products.html">Back to shop</a></div>
 
   <header class="site-header shop-header" id="siteHeader">
     <a class="brand" href="index.html" aria-label="Fable by Kavita Anu home"><span class="brand-name">Fable</span><span class="brand-byline">by Kavita Anu</span></a>
@@ -83,7 +92,7 @@
           <div class="admin-count-badge"><div><strong id="adminLeadCount">0</strong><span>contacts</span></div></div>
         </div>
 
-        <p class="admin-note"><strong>Important:</strong> this downloadable static website stores signups in the browser using localStorage. To collect all real customer numbers centrally and send truly automatic WhatsApp messages, connect this form to Firebase/Sheets plus the official WhatsApp Business API.</p>
+        <p class="admin-note"><strong>Important:</strong> this downloadable static website stores signups and discount usage in the browser using localStorage. To collect all real customer numbers centrally, prevent discount reuse across devices, and send truly automatic WhatsApp messages, connect this form to Firebase/Sheets plus the official WhatsApp Business API.</p>
 
         <div class="admin-actions">
           <button type="button" id="exportLeads">Export CSV</button>
@@ -107,7 +116,7 @@
             <div class="admin-table-wrap">
               <table class="admin-table">
                 <thead>
-                  <tr><th>Name</th><th>Phone</th><th>Joined</th><th>Status</th><th>Actions</th></tr>
+                  <tr><th>Name</th><th>Phone</th><th>Joined</th><th>Discount</th><th>Status</th><th>Actions</th></tr>
                 </thead>
                 <tbody id="adminLeadRows"></tbody>
               </table>

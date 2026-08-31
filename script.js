@@ -8,6 +8,10 @@ const CART_KEY = "fable-shopping-bag-v2";
 const LEADS_KEY = "fable-whatsapp-update-leads-v1";
 const UPDATES_JOINED_KEY = "fable-updates-joined-v1";
 const UPDATES_DISMISSED_KEY = "fable-updates-dismissed-session-v1";
+const DISCOUNT_PHONE_KEY = "fable-active-discount-phone-v1";
+const DISCOUNT_USED_PHONES_KEY = "fable-discount-used-phones-v1";
+const DISCOUNT_LEDGER_KEY = "fable-discount-phone-ledger-v2";
+const DISCOUNT_RATE = 0.05;
 const ADMIN_PIN = "FABLE2026";
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const body = document.body;
@@ -300,6 +304,111 @@ if (catalogGrid) {
   resetCatalog?.addEventListener("click", reset);
 }
 
+
+/* WhatsApp update discount helpers */
+const normalizeDiscountPhone = (value = "") => {
+  let digits = String(value).replace(/\D/g, "");
+  if (digits.length === 10) digits = `91${digits}`;
+  return digits;
+};
+
+const readLeadRecords = () => {
+  try {
+    const data = JSON.parse(localStorage.getItem(LEADS_KEY) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveLeadRecords = (leads) => localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+
+const readUsedDiscountPhones = () => {
+  try {
+    const data = JSON.parse(localStorage.getItem(DISCOUNT_USED_PHONES_KEY) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveUsedDiscountPhones = (phones) => localStorage.setItem(DISCOUNT_USED_PHONES_KEY, JSON.stringify([...new Set(phones.map(normalizeDiscountPhone).filter(Boolean))]));
+
+const readDiscountLedger = () => {
+  try {
+    const data = JSON.parse(localStorage.getItem(DISCOUNT_LEDGER_KEY) || "{}");
+    return data && typeof data === "object" && !Array.isArray(data) ? data : {};
+  } catch {
+    return {};
+  }
+};
+
+const saveDiscountLedger = (ledger) => localStorage.setItem(DISCOUNT_LEDGER_KEY, JSON.stringify(ledger));
+
+const getDiscountLedgerEntry = (phone) => {
+  const normalized = normalizeDiscountPhone(phone);
+  if (!normalized) return null;
+  const ledger = readDiscountLedger();
+  return ledger[normalized] || null;
+};
+
+const setDiscountLedgerEntry = (phone, patch) => {
+  const normalized = normalizeDiscountPhone(phone);
+  if (!normalized) return null;
+  const ledger = readDiscountLedger();
+  const current = ledger[normalized] || {};
+  ledger[normalized] = {
+    phone: normalized,
+    discountRate: DISCOUNT_RATE,
+    ...current,
+    ...patch,
+    updatedAt: new Date().toISOString(),
+  };
+  saveDiscountLedger(ledger);
+  return ledger[normalized];
+};
+
+const isDiscountUsedForPhone = (phone) => {
+  const normalized = normalizeDiscountPhone(phone);
+  if (!normalized) return true;
+  const ledgerEntry = getDiscountLedgerEntry(normalized);
+  if (ledgerEntry?.status === "used" || ledgerEntry?.usedAt) return true;
+  if (readUsedDiscountPhones().includes(normalized)) return true;
+  const lead = readLeadRecords().find((item) => item.phone === normalized);
+  return Boolean(lead?.discountUsedAt);
+};
+
+const getActiveDiscountLead = () => {
+  const phone = normalizeDiscountPhone(localStorage.getItem(DISCOUNT_PHONE_KEY) || "");
+  if (!phone || isDiscountUsedForPhone(phone)) return null;
+  return readLeadRecords().find((lead) => lead.phone === phone && lead.consent !== false) || null;
+};
+
+const calculateCartDiscount = (subtotal) => {
+  const activeLead = getActiveDiscountLead();
+  if (!activeLead || subtotal <= 0) return { activeLead: null, discount: 0, total: subtotal };
+  const discount = Math.round(subtotal * DISCOUNT_RATE);
+  return { activeLead, discount, total: Math.max(subtotal - discount, 0) };
+};
+
+const markDiscountUsed = (phone) => {
+  const normalized = normalizeDiscountPhone(phone);
+  if (!normalized) return;
+  const usedAt = new Date().toISOString();
+  const used = readUsedDiscountPhones();
+  if (!used.includes(normalized)) used.push(normalized);
+  saveUsedDiscountPhones(used);
+  setDiscountLedgerEntry(normalized, { status: "used", usedAt, eligible: false });
+  const leads = readLeadRecords().map((lead) => lead.phone === normalized ? {
+    ...lead,
+    discountEligible: false,
+    discountUsedAt: lead.discountUsedAt || usedAt,
+    status: lead.status === "Subscribed" ? "Discount used" : lead.status
+  } : lead);
+  saveLeadRecords(leads);
+  if (localStorage.getItem(DISCOUNT_PHONE_KEY) !== normalized) localStorage.setItem(DISCOUNT_PHONE_KEY, normalized);
+};
+
 /* Cart */
 let cart = [];
 try {
@@ -345,13 +454,26 @@ const cartItemsElement = document.getElementById("cartItems");
 const cartEmpty = document.getElementById("cartEmpty");
 const cartFoot = document.getElementById("cartFoot");
 const cartSubtotal = document.getElementById("cartSubtotal");
+const cartDiscountElement = document.getElementById("cartDiscount");
+const cartDiscountPanel = document.getElementById("cartDiscountPanel");
+const cartDiscountNote = document.getElementById("cartDiscountNote");
+const cartTotal = document.getElementById("cartTotal");
 
 const renderCart = () => {
   const detailed = cart.map((item) => ({ ...item, product: getProduct(item.id) })).filter((item) => item.product);
   const totalQty = detailed.reduce((sum, item) => sum + item.qty, 0);
   const subtotal = detailed.reduce((sum, item) => sum + item.product.price * item.qty, 0);
+  const { activeLead, discount, total } = calculateCartDiscount(subtotal);
   document.querySelectorAll("[data-cart-count]").forEach((element) => { element.textContent = String(totalQty); });
   if (cartSubtotal) cartSubtotal.textContent = formatPrice(subtotal);
+  if (cartDiscountElement) cartDiscountElement.textContent = discount ? `−${formatPrice(discount)}` : "−₹0";
+  if (cartTotal) cartTotal.textContent = formatPrice(total);
+  if (cartDiscountPanel) cartDiscountPanel.classList.toggle("active", Boolean(activeLead && discount));
+  if (cartDiscountNote) {
+    if (activeLead && discount) cartDiscountNote.textContent = `5% first-order discount applied for ${activeLead.name}. This offer is linked to ${activeLead.rawPhone || activeLead.phone}.`;
+    else if (normalizeDiscountPhone(localStorage.getItem(DISCOUNT_PHONE_KEY) || "") && !activeLead) cartDiscountNote.textContent = "The 5% updates discount for this WhatsApp number has already been used.";
+    else cartDiscountNote.textContent = "Enter your phone number in the updates popup to unlock 5% off your first order.";
+  }
   if (cartEmpty) cartEmpty.classList.toggle("visible", detailed.length === 0);
   cartFoot?.classList.toggle("hidden", detailed.length === 0);
   if (!cartItemsElement) return;
@@ -499,7 +621,14 @@ const buildOrderText = (formData) => {
     const product = getProduct(item.id);
     if (product) lines.push(`${index + 1}. ${product.name} | Size: ${item.size} | Qty: ${item.qty} | ${formatPrice(product.price * item.qty)}`);
   });
-  lines.push("", `Estimated subtotal: ${formatPrice(getCartSubtotal())}`);
+  const subtotal = getCartSubtotal();
+  const { activeLead, discount, total } = calculateCartDiscount(subtotal);
+  lines.push("", `Estimated subtotal: ${formatPrice(subtotal)}`);
+  if (activeLead && discount) {
+    lines.push(`WhatsApp updates discount (5%): -${formatPrice(discount)}`);
+    lines.push(`Estimated total after discount: ${formatPrice(total)}`);
+    lines.push(`Discount linked to: ${activeLead.rawPhone || activeLead.phone}`);
+  }
   const note = String(formData.get("note") || "").trim();
   if (note) lines.push("", `Note: ${note}`);
   lines.push("", "Please confirm availability, final price, shipping and payment details.");
@@ -527,7 +656,11 @@ const openCheckout = () => {
   checkoutModal.innerHTML = `
     <button class="modal-close" type="button" data-checkout-close aria-label="Close checkout enquiry">${ICON_CLOSE}</button>
     <p class="eyebrow">Complete your selection</p><h2>Order enquiry</h2><p class="checkout-intro">Enter your details below. Your complete order summary will be copied, then WhatsApp will open so you can send it directly to the Fable team.</p>
-    <form class="checkout-form" id="checkoutForm"><label>Full name<input type="text" name="name" required autocomplete="name" /></label><label>Phone number<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" /></label><label>City<input type="text" name="city" required autocomplete="address-level2" /></label><label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label><div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(getCartSubtotal())}</strong></p></div><button class="button button-dark checkout-submit" type="submit">Copy order & open WhatsApp</button><p class="checkout-disclaimer">This creates an enquiry only. No online payment is collected on this website.</p></form>`;
+    ${(() => {
+      const subtotal = getCartSubtotal();
+      const { activeLead, discount, total } = calculateCartDiscount(subtotal);
+      return `<form class="checkout-form" id="checkoutForm"><label>Full name<input type="text" name="name" required autocomplete="name" value="${activeLead ? escapeText(activeLead.name) : ""}" /></label><label>Phone number<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" value="${activeLead ? escapeText(activeLead.rawPhone || activeLead.phone) : ""}" /></label><label>City<input type="text" name="city" required autocomplete="address-level2" /></label><label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label><div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(subtotal)}</strong></p>${activeLead && discount ? `<p class="discount-applied"><span>WhatsApp updates discount</span><strong>−${formatPrice(discount)}</strong></p><p><span>Estimated total</span><strong>${formatPrice(total)}</strong></p>` : `<p><span>Estimated total</span><strong>${formatPrice(subtotal)}</strong></p>`}</div><button class="button button-dark checkout-submit" type="submit">Copy order & open WhatsApp</button><p class="checkout-disclaimer">This creates an enquiry only. No online payment is collected on this website. The 5% updates discount is linked to the registered WhatsApp number and is valid once.</p></form>`;
+    })()}`;
   checkoutModal.classList.add("open");
   checkoutModal.setAttribute("aria-hidden", "false");
   modalBackdrop?.classList.add("open");
@@ -541,9 +674,18 @@ checkoutModal?.addEventListener("click", (event) => {
 checkoutModal?.addEventListener("submit", async (event) => {
   if (event.target.id !== "checkoutForm") return;
   event.preventDefault();
-  const orderText = buildOrderText(new FormData(event.target));
+  const formData = new FormData(event.target);
+  const activeLead = getActiveDiscountLead();
+  const formPhone = normalizeDiscountPhone(formData.get("phone"));
+  if (activeLead && formPhone !== activeLead.phone) {
+    showToast("Please use the registered WhatsApp number to keep the 5% discount");
+    return;
+  }
+  const orderText = buildOrderText(formData);
   await copyText(orderText);
-  showToast("Order summary copied - paste it into WhatsApp");
+  if (activeLead) markDiscountUsed(activeLead.phone);
+  renderCart();
+  showToast(activeLead ? "Order copied and 5% discount marked as used" : "Order summary copied - paste it into WhatsApp");
   window.open(`${WHATSAPP_URL}?text=${encodeURIComponent(orderText)}`, "_blank", "noopener");
 });
 
@@ -579,22 +721,9 @@ document.addEventListener("keydown", (event) => {
 
 
 /* WhatsApp updates popup and admin dashboard */
-const readLeads = () => {
-  try {
-    const data = JSON.parse(localStorage.getItem(LEADS_KEY) || "[]");
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveLeads = (leads) => localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
-
-const normalizePhone = (value = "") => {
-  let digits = String(value).replace(/\D/g, "");
-  if (digits.length === 10) digits = `91${digits}`;
-  return digits;
-};
+const readLeads = readLeadRecords;
+const saveLeads = saveLeadRecords;
+const normalizePhone = normalizeDiscountPhone;
 
 const formatLeadDate = (value) => {
   if (!value) return "-";
@@ -639,24 +768,44 @@ document.getElementById("updatesForm")?.addEventListener("submit", (event) => {
   }
   const leads = readLeads();
   const existingIndex = leads.findIndex((lead) => lead.phone === phone);
+  const alreadyUsed = isDiscountUsedForPhone(phone);
+  const existing = existingIndex >= 0 ? leads[existingIndex] : {};
+  const ledgerEntry = getDiscountLedgerEntry(phone);
   const lead = {
-    id: existingIndex >= 0 ? leads[existingIndex].id : `lead-${Date.now()}`,
+    id: existingIndex >= 0 ? existing.id : `lead-${Date.now()}`,
     name,
     rawPhone,
     phone,
     consent: true,
     sourcePage: document.title || body.dataset.page || "Website",
-    createdAt: existingIndex >= 0 ? leads[existingIndex].createdAt : new Date().toISOString(),
+    createdAt: existingIndex >= 0 ? existing.createdAt : new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    status: "Subscribed",
-    lastMessageAt: existingIndex >= 0 ? leads[existingIndex].lastMessageAt || "" : ""
+    status: alreadyUsed ? (existing.status || "Discount used") : "Subscribed",
+    lastMessageAt: existingIndex >= 0 ? existing.lastMessageAt || "" : "",
+    discountEligible: !alreadyUsed,
+    discountRate: DISCOUNT_RATE,
+    discountUsedAt: existing.discountUsedAt || ledgerEntry?.usedAt || ""
   };
-  if (existingIndex >= 0) leads[existingIndex] = { ...leads[existingIndex], ...lead };
+  if (existingIndex >= 0) leads[existingIndex] = { ...existing, ...lead };
   else leads.unshift(lead);
   saveLeads(leads);
+  if (alreadyUsed) {
+    setDiscountLedgerEntry(phone, { status: "used", eligible: false, usedAt: lead.discountUsedAt || ledgerEntry?.usedAt || "used-before" });
+  } else {
+    setDiscountLedgerEntry(phone, {
+      status: "available",
+      eligible: true,
+      registeredAt: ledgerEntry?.registeredAt || lead.createdAt,
+      name,
+      rawPhone,
+      sourcePage: lead.sourcePage,
+    });
+    localStorage.setItem(DISCOUNT_PHONE_KEY, phone);
+  }
   localStorage.setItem(UPDATES_JOINED_KEY, "true");
   closeUpdatesPopup();
-  showToast("Thank you - your WhatsApp updates are saved");
+  renderCart();
+  showToast(alreadyUsed ? "Updates saved. This number has already used the 5% discount." : "Updates saved - 5% discount applied to your bag");
 });
 
 const personalizeMessage = (template, lead) => String(template || "")
@@ -706,6 +855,7 @@ const renderAdminLeads = () => {
       <td><strong>${escapeText(lead.name)}</strong><span>${escapeText(lead.sourcePage || "Website")}</span></td>
       <td>${escapeText(lead.rawPhone || lead.phone)}<span>wa.me/${escapeText(lead.phone)}</span></td>
       <td>${formatLeadDate(lead.createdAt)}<span>Last sent: ${formatLeadDate(lead.lastMessageAt)}</span></td>
+      <td><span class="admin-status ${lead.discountUsedAt ? "used" : ""}">${lead.discountUsedAt ? "5% used" : "5% available"}</span><span>${lead.discountUsedAt ? formatLeadDate(lead.discountUsedAt) : "First order only"}</span></td>
       <td><span class="admin-status">${escapeText(lead.status || "Subscribed")}</span></td>
       <td class="admin-actions-cell">
         <button type="button" data-admin-whatsapp="${escapeText(lead.id)}">WhatsApp</button>
@@ -756,7 +906,7 @@ adminLeadRows?.addEventListener("click", (event) => {
 
 document.getElementById("exportLeads")?.addEventListener("click", () => {
   const leads = readLeads();
-  const rows = [["Name", "WhatsApp", "Raw Phone", "Status", "Source Page", "Created At", "Last Message At"], ...leads.map((lead) => [lead.name, lead.phone, lead.rawPhone, lead.status, lead.sourcePage, lead.createdAt, lead.lastMessageAt])];
+  const rows = [["Name", "WhatsApp", "Raw Phone", "Status", "Discount Eligible", "Discount Used At", "Source Page", "Created At", "Last Message At"], ...leads.map((lead) => [lead.name, lead.phone, lead.rawPhone, lead.status, lead.discountUsedAt ? "No" : "Yes", lead.discountUsedAt || "", lead.sourcePage, lead.createdAt, lead.lastMessageAt])];
   downloadTextFile(`fable-whatsapp-leads-${new Date().toISOString().slice(0,10)}.csv`, rows.map((row) => row.map(toCsvCell).join(",")).join("\n"), "text/csv");
 });
 

@@ -40,3 +40,21 @@ Admin features included:
 - mark subscribers as messaged after opening WhatsApp
 
 Important: Because this is a static HTML/CSS/JS website, the included admin dashboard stores data only in the browser. For live production, connect the popup to a real database such as Firebase/Google Sheets and use the official WhatsApp Business API or an approved provider to send automated messages.
+
+
+## WhatsApp updates discount
+
+The website popup now collects name + WhatsApp number and applies a 5% first-order discount automatically in the shopping bag.
+
+How the one-time rule works in this static version:
+- The entered WhatsApp number is normalized to digits only. Indian 10-digit numbers are stored as `91XXXXXXXXXX`.
+- Subscriber entries are saved under `fable-whatsapp-update-leads-v1`.
+- A separate discount ledger is saved under `fable-discount-phone-ledger-v2`.
+- If the ledger says the phone number is `used`, or the number exists in the legacy used-phone list, the 5% discount will not apply again.
+- When the customer submits the order enquiry, the same normalized phone number must be used in checkout. Then the ledger is marked `used` with a timestamp.
+
+Important: This static version prevents repeat discount use in the same browser/device storage. For live cross-device enforcement and real phone ownership verification, connect the popup to Firebase/Supabase/Google Sheets, verify the phone number with OTP, and check the central discount ledger before applying the discount.
+
+## Google Analytics
+
+The Google tag `G-95XXSLB0LH` has been inserted once immediately after the `<head>` tag on every HTML page.

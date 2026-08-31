@@ -2052,3 +2052,66 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
   .admin-dashboard-card, .admin-login-card { padding: 22px; }
   .admin-actions button, .admin-tools button { flex: 1 1 100%; }
 }
+
+/* First-order WhatsApp discount */
+.cart-discount-panel {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px dashed rgba(111, 35, 54, .22);
+  background: rgba(253, 239, 238, .56);
+}
+.cart-discount-panel.active {
+  border-style: solid;
+  background: linear-gradient(135deg, rgba(255, 252, 248, .95), rgba(247, 228, 229, .9));
+  box-shadow: 0 12px 34px rgba(111, 35, 54, .08);
+}
+.cart-discount-row,
+.cart-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.cart-discount-row span,
+.cart-total span {
+  font: 10px var(--ui);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.cart-discount-row strong {
+  color: var(--wine);
+  font: 20px var(--serif);
+  font-weight: 400;
+}
+.cart-discount-panel small {
+  display: block;
+  margin-top: 8px;
+  color: #80676c;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.cart-total {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.cart-total strong {
+  font: 28px var(--serif);
+  font-weight: 400;
+  color: var(--ink);
+}
+.checkout-summary .discount-applied strong,
+.checkout-summary .discount-applied span { color: var(--wine); }
+.updates-popup-copy::after {
+  content: "5% first-order discount · one use per WhatsApp number";
+  display: inline-flex;
+  margin-top: 14px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(111, 35, 54, .08);
+  color: var(--wine);
+  font: 10px var(--ui);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.admin-status.used { background: rgba(42, 23, 27, .08); color: #6c585d; }
