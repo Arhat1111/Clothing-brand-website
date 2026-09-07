@@ -1,6 +1,8 @@
 "use strict";
 
 const PRODUCTS = Array.isArray(window.FABLE_PRODUCTS) ? window.FABLE_PRODUCTS : [];
+const isShowcaseProduct = (product) => product?.category === "celebrity";
+const SALE_PRODUCTS = PRODUCTS.filter((product) => !isShowcaseProduct(product));
 const INSTAGRAM_URL = "https://www.instagram.com/fablebykavitaanu/";
 const WHATSAPP_URL = "https://wa.me/";
 const WHATSAPP_CONSULTATION_URL = "https://wa.me/?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
@@ -135,7 +137,7 @@ const featuredCardMarkup = (product) => `
 const featuredRail = document.getElementById("featuredRail");
 if (featuredRail) {
   const featuredIds = ["teal-embroidered-drape-set", "silver-beaded-one-shoulder-gown", "ivory-lace-tiered-dress", "red-embellished-draped-gown", "white-botanical-asymmetric-dress", "lavender-sheer-coord-set", "plum-embroidered-cape-dress", "pastel-yellow-chiffon-set", "fuchsia-ruffle-coord-set", "mauve-lime-asymmetric-dress", "grey-red-belted-dress", "rust-ivory-panel-dress", "red-grey-ombre-shirt-dress", "grey-floral-sleeve-dress", "white-blue-floral-dress", "white-black-floral-wrap-dress", "ivory-ruffle-hem-dress", "color-block-zip-dress", "ivory-printed-ruffle-dress", "blue", "golden-tissue", "shreenathji", "black", "purple-drape", "rani-lotus-anarkali", "green-cape", "wine-kurta-dhoti"];
-  featuredRail.innerHTML = featuredIds.map(getProduct).filter(Boolean).map(featuredCardMarkup).join("");
+  featuredRail.innerHTML = featuredIds.map(getProduct).filter((product) => product && !isShowcaseProduct(product)).map(featuredCardMarkup).join("");
 }
 
 const productRail = featuredRail;
@@ -280,7 +282,7 @@ const setCategory = (category, updateUrl = true) => {
 const renderCatalog = () => {
   if (!catalogGrid) return;
   const query = activeSearch.trim().toLowerCase();
-  const filtered = PRODUCTS.filter((product) => {
+  const filtered = SALE_PRODUCTS.filter((product) => {
     const categoryMatch = activeCategory === "all" || product.category === activeCategory;
     const searchMatch = !query || `${product.name} ${product.categoryLabel} ${product.description}`.toLowerCase().includes(query);
     return categoryMatch && searchMatch;
@@ -422,7 +424,10 @@ const markDiscountUsed = (phone) => {
 let cart = [];
 try {
   const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-  if (Array.isArray(saved)) cart = saved.filter((item) => getProduct(item.id) && item.qty > 0);
+  if (Array.isArray(saved)) cart = saved.filter((item) => {
+    const product = getProduct(item.id);
+    return product && !isShowcaseProduct(product) && item.qty > 0;
+  });
 } catch (error) {
   cart = [];
 }
@@ -435,6 +440,10 @@ const cartKey = (id, size) => `${id}::${size}`;
 const addToCart = (id, size) => {
   const product = getProduct(id);
   if (!product) return;
+  if (isShowcaseProduct(product)) {
+    showToast("This celebrity look is showcase only");
+    return;
+  }
   const chosenSize = size || product.sizes[0];
   const existing = cart.find((item) => cartKey(item.id, item.size) === cartKey(id, chosenSize));
   if (existing) existing.qty += 1;
@@ -571,7 +580,7 @@ const openProductModal = (id) => {
         </div>
         ${hasGallery ? `<div class="gallery-thumbnails" aria-label="Product image thumbnails">${quickGallery.map((image, index) => `<button type="button" class="gallery-thumb ${index === 0 ? "active" : ""}" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${image}" alt="${escapeText(product.name)} thumbnail ${index + 1}" /></button>`).join("")}</div>` : ""}
       </div>
-      <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${formatPrice(product.price)}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p></div>
+      <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${isShowcaseProduct(product) ? "Showcase only" : formatPrice(product.price)}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}${isShowcaseProduct(product) ? `<p class="quick-showcase-note">This celebrity look is for showcase/inspiration only and is not available for sale through the shop.</p>` : `<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p>`}</div>
     </div>`;
   quickModal.classList.add("open");
   quickModal.setAttribute("aria-hidden", "false");
@@ -710,6 +719,11 @@ document.addEventListener("click", (event) => {
   if (addButton) {
     const product = getProduct(addButton.dataset.addProduct);
     if (!product) return;
+    if (isShowcaseProduct(product)) {
+      openProductModal(product.id);
+      showToast("This celebrity look is showcase only");
+      return;
+    }
     if (product.sizes.length > 1) openProductModal(product.id);
     else {
       addToCart(product.id, product.sizes[0]);
