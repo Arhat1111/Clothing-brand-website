@@ -134,7 +134,7 @@ const featuredCardMarkup = (product) => `
 
 const featuredRail = document.getElementById("featuredRail");
 if (featuredRail) {
-  const featuredIds = ["blue", "golden-tissue", "shreenathji", "black", "purple-drape", "rani-lotus-anarkali", "green-cape", "wine-kurta-dhoti"];
+  const featuredIds = ["teal-embroidered-drape-set", "silver-beaded-one-shoulder-gown", "ivory-lace-tiered-dress", "red-embellished-draped-gown", "white-botanical-asymmetric-dress", "lavender-sheer-coord-set", "plum-embroidered-cape-dress", "pastel-yellow-chiffon-set", "fuchsia-ruffle-coord-set", "mauve-lime-asymmetric-dress", "grey-red-belted-dress", "rust-ivory-panel-dress", "red-grey-ombre-shirt-dress", "grey-floral-sleeve-dress", "white-blue-floral-dress", "white-black-floral-wrap-dress", "ivory-ruffle-hem-dress", "color-block-zip-dress", "ivory-printed-ruffle-dress", "blue", "golden-tissue", "shreenathji", "black", "purple-drape", "rani-lotus-anarkali", "green-cape", "wine-kurta-dhoti"];
   featuredRail.innerHTML = featuredIds.map(getProduct).filter(Boolean).map(featuredCardMarkup).join("");
 }
 
@@ -166,7 +166,7 @@ const productCount = document.getElementById("productCount");
 const noResults = document.getElementById("noResults");
 const clearFilters = document.getElementById("clearFilters");
 const resetCatalog = document.getElementById("resetCatalog");
-const validCategories = ["all", "sarees", "anarkalis", "drapes", "festive"];
+const validCategories = ["all", "sarees", "anarkalis", "drapes", "festive", "dresses"];
 
 const shopHeroEyebrow = document.getElementById("shopHeroEyebrow");
 const shopHeroTitle = document.getElementById("shopHeroTitle");
@@ -178,7 +178,7 @@ const categoryHeroContent = {
   all: {
     eyebrow: "The complete collection",
     title: "Find your<br /><em>next Fable.</em>",
-    description: "Explore statement sarees, Rakhi festive wear, anarkalis, drape sets and capes from the Fable lookbooks.",
+    description: "Explore statement sarees, Rakhi festive wear, anarkalis, drape sets, capes and the new dress edit from the Fable lookbooks.",
     imageOne: "assets/products/lavender-main.webp",
     imageOneAlt: "Lavender jewel saree",
     imageTwo: "assets/products/rani-lotus-anarkali-main.webp",
@@ -206,8 +206,8 @@ const categoryHeroContent = {
     eyebrow: "Drape set collection",
     title: "Modern drapes,<br /><em>styled with ease.</em>",
     description: "Shop only Fable drape sets and drape saree silhouettes, matched with the right imagery for the category.",
-    imageOne: "assets/products/purple-drape-main.webp",
-    imageOneAlt: "Purple drape set",
+    imageOne: "assets/products/teal-embroidered-drape-set-main.webp",
+    imageOneAlt: "Teal embroidered drape set",
     imageTwo: "assets/products/golden-drape-main.webp",
     imageTwoAlt: "Golden drape set"
   },
@@ -215,10 +215,19 @@ const categoryHeroContent = {
     eyebrow: "Festive wear collection",
     title: "Festive wear<br /><em>made for celebration.</em>",
     description: "Discover shararas, capes, bandhej and kurta-dhoti sets from Fable’s celebration-ready edit.",
-    imageOne: "assets/products/green-cape-main.webp",
-    imageOneAlt: "Green cape set",
-    imageTwo: "assets/products/red-bandhej-main.webp",
-    imageTwoAlt: "Red Bandhej set"
+    imageOne: "assets/products/red-embellished-draped-gown-main.webp",
+    imageOneAlt: "Red embellished draped gown",
+    imageTwo: "assets/products/silver-beaded-one-shoulder-gown-main.webp",
+    imageTwoAlt: "Silver beaded one-shoulder gown"
+  },
+  dresses: {
+    eyebrow: "New dress edit",
+    title: "Dresses<br /><em>for everyday occasions.</em>",
+    description: "Shop the new ₹7,500 and ₹9,500 Fable dress edits, including AI-styled model looks and the original product views.",
+    imageOne: "assets/products/ivory-lace-tiered-dress-main.webp",
+    imageOneAlt: "Ivory lace tiered dress",
+    imageTwo: "assets/products/white-blue-floral-dress-main.webp",
+    imageTwoAlt: "White blue floral dress"
   }
 };
 

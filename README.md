@@ -58,3 +58,19 @@ Important: This static version prevents repeat discount use in the same browser/
 ## Google Analytics
 
 The Google tag `G-95XXSLB0LH` has been inserted once immediately after the `<head>` tag on every HTML page.
+
+
+## Latest update - New dress products
+- Added 10 new dress products from the two latest uploads.
+- First group is priced at ₹7,500 each.
+- Second group is priced at ₹9,500 each and includes AI-styled model images plus original product photos in the gallery slider.
+- Added a new Dresses category tab on the Shop page.
+- Added the new dress products into the home page product slider.
+- Kept the Google tag installed once per HTML page immediately after `<head>`.
+
+
+## Latest dress product update
+- Added 5 new ₹7,500 products to the Dresses category.
+- Product cards use AI model cover images first.
+- Original mannequin photos are preserved inside each product popup/gallery slider.
+- Google tag G-95XXSLB0LH is included exactly once on each HTML page.

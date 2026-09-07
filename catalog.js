@@ -1,5 +1,557 @@
 window.FABLE_PRODUCTS = [
   {
+    "id": "teal-embroidered-drape-set",
+    "name": "Teal Embroidered Drape Set",
+    "price": 9500,
+    "color": "Teal",
+    "category": "drapes",
+    "categoryLabel": "Drape Sets",
+    "badge": "AI Model Edit",
+    "tone": "#4f7480",
+    "accent": "#c8d9dd",
+    "description": "A teal draped co-ord set with a delicate embellished top and a softly cascading front drape.",
+    "fabric": "Contemporary teal drape set with sheer embroidery, fluid pleating and a graceful festive silhouette.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-drapes",
+    "image": "assets/products/teal-embroidered-drape-set-main.webp",
+    "gallery": [
+      "assets/products/teal-embroidered-drape-set-main.webp",
+      "assets/products/teal-embroidered-drape-set-original.webp",
+      "assets/products/teal-embroidered-drape-set-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "silver-beaded-one-shoulder-gown",
+    "name": "Silver Beaded One-Shoulder Gown",
+    "price": 9500,
+    "color": "Silver",
+    "category": "festive",
+    "categoryLabel": "Festive Wear",
+    "badge": "AI Model Edit",
+    "tone": "#bfb6bc",
+    "accent": "#ece4ea",
+    "description": "A silver beaded one-shoulder gown with sculpted floral detailing and an elongated occasion silhouette.",
+    "fabric": "Shimmering embellished gown with a statement neck flower, soft net texture and an elegant evening drape.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-festive",
+    "image": "assets/products/silver-beaded-one-shoulder-gown-main.webp",
+    "gallery": [
+      "assets/products/silver-beaded-one-shoulder-gown-main.webp",
+      "assets/products/silver-beaded-one-shoulder-gown-original.webp",
+      "assets/products/silver-beaded-one-shoulder-gown-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "ivory-lace-tiered-dress",
+    "name": "Ivory Lace Tiered Dress",
+    "price": 9500,
+    "color": "Ivory Lace",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "AI Model Edit",
+    "tone": "#f2ebe1",
+    "accent": "#d9c8b7",
+    "description": "An ivory lace dress with tiered layers, soft ruffles and a romantic boho-inspired silhouette.",
+    "fabric": "Textured lace dress with tasseled sleeves, layered skirt panels and airy occasion movement.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-dresses",
+    "image": "assets/products/ivory-lace-tiered-dress-main.webp",
+    "gallery": [
+      "assets/products/ivory-lace-tiered-dress-main.webp",
+      "assets/products/ivory-lace-tiered-dress-original.webp",
+      "assets/products/ivory-lace-tiered-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "red-embellished-draped-gown",
+    "name": "Red Embellished Draped Gown",
+    "price": 9500,
+    "color": "Ruby Red",
+    "category": "festive",
+    "categoryLabel": "Festive Wear",
+    "badge": "AI Model Edit",
+    "tone": "#c41f2d",
+    "accent": "#8f1a22",
+    "description": "A dramatic ruby red draped gown with embellished bodice detailing and fluid cape-inspired sleeves.",
+    "fabric": "Statement festive drape with rich embellishment, flowing sleeves and a sculpted ruched lower silhouette.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-festive",
+    "image": "assets/products/red-embellished-draped-gown-main.webp",
+    "gallery": [
+      "assets/products/red-embellished-draped-gown-main.webp",
+      "assets/products/red-embellished-draped-gown-original.webp",
+      "assets/products/red-embellished-draped-gown-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "white-botanical-asymmetric-dress",
+    "name": "White Botanical Asymmetric Dress",
+    "price": 7500,
+    "color": "White Botanical",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#f4efe8",
+    "accent": "#1d1d1d",
+    "description": "A crisp white shirt-style dress with black botanical line art and an asymmetric layered fall.",
+    "fabric": "Structured white dress with collar, contrast line embroidery and an asymmetric hemline.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "new-dresses",
+    "image": "assets/products/white-botanical-asymmetric-dress-main.webp",
+    "gallery": [
+      "assets/products/white-botanical-asymmetric-dress-main.webp",
+      "assets/products/white-botanical-asymmetric-dress-original.webp",
+      "assets/products/white-botanical-asymmetric-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "lavender-sheer-coord-set",
+    "name": "Lavender Sheer Co-ord Set",
+    "price": 7500,
+    "color": "Lavender",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#b8b1f4",
+    "accent": "#7e77d2",
+    "description": "A soft lavender co-ord set with a cropped shirt-style top, sheer sleeves and a flowing grid-panel skirt.",
+    "fabric": "Light lavender co-ord with organza-style skirt panels, soft transparency and shirt collar detailing.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "new-dresses",
+    "image": "assets/products/lavender-sheer-coord-set-main.webp",
+    "gallery": [
+      "assets/products/lavender-sheer-coord-set-main.webp",
+      "assets/products/lavender-sheer-coord-set-original.webp",
+      "assets/products/lavender-sheer-coord-set-detail-1.webp",
+      "assets/products/lavender-sheer-coord-set-detail-2.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "plum-embroidered-cape-dress",
+    "name": "Plum Embroidered Cape Dress",
+    "price": 7500,
+    "color": "Plum",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#56306d",
+    "accent": "#e7d4ef",
+    "description": "A deep plum flared dress finished with an embroidered cape-style yoke for a graceful occasion look.",
+    "fabric": "Flared plum silhouette with embroidered upper layer and soft festive movement.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "new-dresses",
+    "image": "assets/products/plum-embroidered-cape-dress-main.webp",
+    "gallery": [
+      "assets/products/plum-embroidered-cape-dress-main.webp",
+      "assets/products/plum-embroidered-cape-dress-original.webp",
+      "assets/products/plum-embroidered-cape-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "pastel-yellow-chiffon-set",
+    "name": "Pastel Yellow Chiffon Set",
+    "price": 7500,
+    "color": "Pastel Yellow",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#f4e8a8",
+    "accent": "#2f67a8",
+    "description": "A pastel yellow layered set with a floral embroidered collar, blue button accents and a breezy sheer skirt.",
+    "fabric": "Soft pastel co-ord with sheer layering, embroidered collar and lightweight festive finish.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "new-dresses",
+    "image": "assets/products/pastel-yellow-chiffon-set-main.webp",
+    "gallery": [
+      "assets/products/pastel-yellow-chiffon-set-main.webp",
+      "assets/products/pastel-yellow-chiffon-set-original.webp",
+      "assets/products/pastel-yellow-chiffon-set-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "fuchsia-ruffle-coord-set",
+    "name": "Fuchsia Ruffle Co-ord Set",
+    "price": 7500,
+    "color": "Fuchsia",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#e91d74",
+    "accent": "#be145d",
+    "description": "A vibrant fuchsia co-ord set with a ruched wrap-style top and flowing asymmetric ruffle skirt.",
+    "fabric": "Bright fuchsia two-piece look with soft sheer sleeves, pleated bodice and ruffled skirt hem.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "new-dresses",
+    "image": "assets/products/fuchsia-ruffle-coord-set-main.webp",
+    "gallery": [
+      "assets/products/fuchsia-ruffle-coord-set-main.webp",
+      "assets/products/fuchsia-ruffle-coord-set-original.webp",
+      "assets/products/fuchsia-ruffle-coord-set-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "mauve-lime-asymmetric-dress",
+    "name": "Mauve Lime Asymmetric Dress",
+    "price": 7500,
+    "color": "Mauve Lime",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#b9859a",
+    "accent": "#82a84a",
+    "description": "A playful mauve and lime color-block dress with a teal collar, short sleeves and an asymmetric skirt fall.",
+    "fabric": "Contemporary color-block dress with shirt collar, contrast trims and asymmetric movement.",
+    "source": "New product upload",
+    "subCategory": "new-dresses",
+    "image": "assets/products/mauve-lime-asymmetric-dress-main.webp",
+    "gallery": [
+      "assets/products/mauve-lime-asymmetric-dress-main.webp",
+      "assets/products/mauve-lime-asymmetric-dress-original.webp",
+      "assets/products/mauve-lime-asymmetric-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "grey-red-belted-dress",
+    "name": "Grey Red Belted Dress",
+    "price": 7500,
+    "color": "Grey Red",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#b9b1aa",
+    "accent": "#c3192d",
+    "description": "A clean grey, black and red paneled dress with a waist belt and contrast seam detailing.",
+    "fabric": "Paneled dress with soft waist definition, contrast stitching and modern everyday festive styling.",
+    "source": "New product upload",
+    "subCategory": "new-dresses",
+    "image": "assets/products/grey-red-belted-dress-main.webp",
+    "gallery": [
+      "assets/products/grey-red-belted-dress-main.webp",
+      "assets/products/grey-red-belted-dress-original.webp",
+      "assets/products/grey-red-belted-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "rust-ivory-panel-dress",
+    "name": "Rust Ivory Panel Dress",
+    "price": 7500,
+    "color": "Rust Ivory",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#c87a44",
+    "accent": "#7f6655",
+    "description": "A rust, ivory and taupe paneled midi dress with short puff sleeves and a soft sculpted shape.",
+    "fabric": "Color-block midi silhouette with soft sleeves, curved paneling and relaxed festive elegance.",
+    "source": "New product upload",
+    "subCategory": "new-dresses",
+    "image": "assets/products/rust-ivory-panel-dress-main.webp",
+    "gallery": [
+      "assets/products/rust-ivory-panel-dress-main.webp",
+      "assets/products/rust-ivory-panel-dress-original.webp",
+      "assets/products/rust-ivory-panel-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "red-grey-ombre-shirt-dress",
+    "name": "Red Grey Ombre Shirt Dress",
+    "price": 7500,
+    "color": "Red Grey",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#d42f42",
+    "accent": "#85817a",
+    "description": "A red-to-grey shirt dress finished with sheer black floral sleeves for a bold contemporary look.",
+    "fabric": "Long shirt-dress silhouette with soft ombre effect and floral sheer sleeve detailing.",
+    "source": "New product upload",
+    "subCategory": "new-dresses",
+    "image": "assets/products/red-grey-ombre-shirt-dress-main.webp",
+    "gallery": [
+      "assets/products/red-grey-ombre-shirt-dress-main.webp",
+      "assets/products/red-grey-ombre-shirt-dress-original.webp",
+      "assets/products/red-grey-ombre-shirt-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "grey-floral-sleeve-dress",
+    "name": "Grey Floral Sleeve Dress",
+    "price": 7500,
+    "color": "Soft Grey",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Dress Edit",
+    "tone": "#b8aaa5",
+    "accent": "#171313",
+    "description": "A soft grey midi dress with black sheer floral sleeves and a clean collared front.",
+    "fabric": "Minimal grey dress with sheer floral sleeves, collared neckline and easy A-line fall.",
+    "source": "New product upload",
+    "subCategory": "new-dresses",
+    "image": "assets/products/grey-floral-sleeve-dress-main.webp",
+    "gallery": [
+      "assets/products/grey-floral-sleeve-dress-main.webp",
+      "assets/products/grey-floral-sleeve-dress-original.webp",
+      "assets/products/grey-floral-sleeve-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "white-blue-floral-dress",
+    "name": "White Blue Floral Dress",
+    "price": 9500,
+    "color": "White Blue Floral",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "AI Model Edit",
+    "tone": "#f1e7d7",
+    "accent": "#2b76b6",
+    "description": "A sleeveless white dress with a blue floral statement motif, green stem work and orange flower accents.",
+    "fabric": "Light floral dress with botanical appliqué-inspired artwork and a soft A-line shape.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-dresses",
+    "image": "assets/products/white-blue-floral-dress-main.webp",
+    "gallery": [
+      "assets/products/white-blue-floral-dress-main.webp",
+      "assets/products/white-blue-floral-dress-original.webp",
+      "assets/products/white-blue-floral-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "white-black-floral-wrap-dress",
+    "name": "White Black Floral Wrap Dress",
+    "price": 9500,
+    "color": "White Black Floral",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "AI Model Edit",
+    "tone": "#efe7dd",
+    "accent": "#181616",
+    "description": "A white wrap-style dress with a bold black floral artwork across the skirt and a clean waist tie.",
+    "fabric": "Wrap dress silhouette with shirt collar, waist tie and oversized botanical placement artwork.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-dresses",
+    "image": "assets/products/white-black-floral-wrap-dress-main.webp",
+    "gallery": [
+      "assets/products/white-black-floral-wrap-dress-main.webp",
+      "assets/products/white-black-floral-wrap-dress-original.webp",
+      "assets/products/white-black-floral-wrap-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "ivory-ruffle-hem-dress",
+    "name": "Ivory Ruffle Hem Dress",
+    "price": 9500,
+    "color": "Ivory",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "AI Model Edit",
+    "tone": "#f4eee6",
+    "accent": "#d7c5aa",
+    "description": "A minimalist ivory sleeveless dress finished with sculptural floral ruffles along the asymmetric hem.",
+    "fabric": "Clean ivory dress with a soft straight fall and textured 3D floral hem detailing.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-dresses",
+    "image": "assets/products/ivory-ruffle-hem-dress-main.webp",
+    "gallery": [
+      "assets/products/ivory-ruffle-hem-dress-main.webp",
+      "assets/products/ivory-ruffle-hem-dress-original.webp",
+      "assets/products/ivory-ruffle-hem-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "color-block-zip-dress",
+    "name": "Color Block Zip Dress",
+    "price": 9500,
+    "color": "Ivory Multi",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "AI Model Edit",
+    "tone": "#f0e3d4",
+    "accent": "#823128",
+    "description": "A collared ivory dress with a zip neckline, rolled sleeves and bold red, plum and green color blocking.",
+    "fabric": "Linen-feel modern dress with zip-front detail, pockets and contrast geometric panels.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-dresses",
+    "image": "assets/products/color-block-zip-dress-main.webp",
+    "gallery": [
+      "assets/products/color-block-zip-dress-main.webp",
+      "assets/products/color-block-zip-dress-original.webp",
+      "assets/products/color-block-zip-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "ivory-printed-ruffle-dress",
+    "name": "Ivory Printed Ruffle Dress",
+    "price": 9500,
+    "color": "Ivory Print",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "AI Model Edit",
+    "tone": "#f3e8d8",
+    "accent": "#62564b",
+    "description": "An ivory sleeveless dress with a ruffled front placket and a gathered skirt with delicate printed motifs.",
+    "fabric": "Soft ivory dress with ruffled neckline, cinched waist and light printed flared skirt.",
+    "source": "New product upload + AI model styling",
+    "subCategory": "ai-model-dresses",
+    "image": "assets/products/ivory-printed-ruffle-dress-main.webp",
+    "gallery": [
+      "assets/products/ivory-printed-ruffle-dress-main.webp",
+      "assets/products/ivory-printed-ruffle-dress-original.webp",
+      "assets/products/ivory-printed-ruffle-dress-detail-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
     "id": "blue",
     "name": "Blue Signature Saree",
     "price": 35000,

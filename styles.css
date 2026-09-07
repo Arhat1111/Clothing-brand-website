@@ -2115,3 +2115,9 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
   text-transform: uppercase;
 }
 .admin-status.used { background: rgba(42, 23, 27, .08); color: #6c585d; }
+
+
+/* New dress edit category tile */
+.collection-grid-five { grid-auto-rows:360px; }
+.collection-card-dresses img { object-position:center 28%; }
+@media (max-width:760px) { .collection-grid-five { display:block; } .collection-card-dresses { height:365px; } }
