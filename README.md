@@ -74,3 +74,7 @@ The Google tag `G-95XXSLB0LH` has been inserted once immediately after the `<hea
 - Product cards use AI model cover images first.
 - Original mannequin photos are preserved inside each product popup/gallery slider.
 - Google tag G-95XXSLB0LH is included exactly once on each HTML page.
+
+
+## No-celebrity-shop fix
+Celebrity/showcase looks are not saleable. The shop now filters out all products with category `celebrity`, `showcaseOnly: true`, `saleable: false`, or known showcase IDs. Upload the full ZIP contents to replace the existing live files, especially `catalog.js`, `script.js`, and `products.html`.

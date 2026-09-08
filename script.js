@@ -1,7 +1,8 @@
 "use strict";
 
 const PRODUCTS = Array.isArray(window.FABLE_PRODUCTS) ? window.FABLE_PRODUCTS : [];
-const isShowcaseProduct = (product) => product?.category === "celebrity";
+const SHOWCASE_ONLY_IDS = new Set(["red-bandhej", "green-cape", "wine-kurta-dhoti", "golden-drape"]);
+const isShowcaseProduct = (product) => product?.category === "celebrity" || product?.showcaseOnly === true || product?.saleable === false || SHOWCASE_ONLY_IDS.has(product?.id);
 const SALE_PRODUCTS = PRODUCTS.filter((product) => !isShowcaseProduct(product));
 const INSTAGRAM_URL = "https://www.instagram.com/fablebykavitaanu/";
 const WHATSAPP_URL = "https://wa.me/";
@@ -122,7 +123,7 @@ const featuredCardMarkup = (product) => `
   <article class="product-card commerce-card" style="--tone:${product.tone}">
     <div class="product-image">
       <button class="product-image-button" type="button" data-quick-view="${product.id}" aria-label="View ${escapeText(product.name)}">
-        <img src="${product.image}" alt="${escapeText(product.name)}" loading="lazy" />
+        <img src="${product.image}" alt="${escapeText(product.name)}" loading="lazy" decoding="async" />
       </button>
       <span class="product-tag">${escapeText(product.badge)}</span>
       <button class="product-quick-action" type="button" data-quick-view="${product.id}">View & choose size</button>
@@ -136,7 +137,7 @@ const featuredCardMarkup = (product) => `
 
 const featuredRail = document.getElementById("featuredRail");
 if (featuredRail) {
-  const featuredIds = ["teal-embroidered-drape-set", "silver-beaded-one-shoulder-gown", "ivory-lace-tiered-dress", "red-embellished-draped-gown", "white-botanical-asymmetric-dress", "lavender-sheer-coord-set", "plum-embroidered-cape-dress", "pastel-yellow-chiffon-set", "fuchsia-ruffle-coord-set", "mauve-lime-asymmetric-dress", "grey-red-belted-dress", "rust-ivory-panel-dress", "red-grey-ombre-shirt-dress", "grey-floral-sleeve-dress", "white-blue-floral-dress", "white-black-floral-wrap-dress", "ivory-ruffle-hem-dress", "color-block-zip-dress", "ivory-printed-ruffle-dress", "blue", "golden-tissue", "shreenathji", "black", "purple-drape", "rani-lotus-anarkali", "green-cape", "wine-kurta-dhoti"];
+  const featuredIds = ["teal-embroidered-drape-set", "silver-beaded-one-shoulder-gown", "ivory-lace-tiered-dress", "red-embellished-draped-gown", "white-botanical-asymmetric-dress", "lavender-sheer-coord-set", "plum-embroidered-cape-dress", "pastel-yellow-chiffon-set", "fuchsia-ruffle-coord-set", "mauve-lime-asymmetric-dress", "grey-red-belted-dress", "rust-ivory-panel-dress", "red-grey-ombre-shirt-dress", "grey-floral-sleeve-dress", "white-blue-floral-dress", "white-black-floral-wrap-dress", "ivory-ruffle-hem-dress", "color-block-zip-dress", "ivory-printed-ruffle-dress", "blue", "golden-tissue", "shreenathji", "black", "purple-drape", "rani-lotus-anarkali"];
   featuredRail.innerHTML = featuredIds.map(getProduct).filter((product) => product && !isShowcaseProduct(product)).map(featuredCardMarkup).join("");
 }
 
@@ -207,16 +208,16 @@ const categoryHeroContent = {
   drapes: {
     eyebrow: "Drape set collection",
     title: "Modern drapes,<br /><em>styled with ease.</em>",
-    description: "Shop only Fable drape sets and drape saree silhouettes, matched with the right imagery for the category.",
+    description: "Shop only Fable drape sets and drape saree silhouettes. Celebrity/appearance looks are excluded from this shop category.",
     imageOne: "assets/products/teal-embroidered-drape-set-main.webp",
     imageOneAlt: "Teal embroidered drape set",
-    imageTwo: "assets/products/golden-drape-main.webp",
-    imageTwoAlt: "Golden drape set"
+    imageTwo: "assets/products/purple-drape-main.webp",
+    imageTwoAlt: "Purple drape set"
   },
   festive: {
     eyebrow: "Festive wear collection",
     title: "Festive wear<br /><em>made for celebration.</em>",
-    description: "Discover shararas, capes, bandhej and kurta-dhoti sets from Fable’s celebration-ready edit.",
+    description: "Discover celebration-ready festive edits from Fable. Celebrity/appearance looks stay only on the Celebrities showcase page.",
     imageOne: "assets/products/red-embellished-draped-gown-main.webp",
     imageOneAlt: "Red embellished draped gown",
     imageTwo: "assets/products/silver-beaded-one-shoulder-gown-main.webp",
@@ -255,7 +256,7 @@ const catalogCardMarkup = (product, index) => `
   <article class="catalog-card catalog-in" style="--tone:${product.tone};--delay:${Math.min(index * 35, 280)}ms">
     <div class="catalog-image">
       <button class="product-image-button" type="button" data-quick-view="${product.id}" aria-label="View ${escapeText(product.name)}">
-        <img src="${product.image}" alt="${escapeText(product.name)}" loading="lazy" />
+        <img src="${product.image}" alt="${escapeText(product.name)}" loading="lazy" decoding="async" />
       </button>
       <span class="catalog-badge">${escapeText(product.badge)}</span>
       <button class="catalog-quick" type="button" data-quick-view="${product.id}" aria-label="Quick view ${escapeText(product.name)}">${ICON_ONLY_OPEN}</button>
@@ -575,10 +576,10 @@ const openProductModal = (id) => {
       <button class="modal-close" type="button" data-modal-close aria-label="Close product details">${ICON_CLOSE}</button>
       <div class="quick-gallery" style="--tone:${product.tone}">
         <div class="quick-modal-image" style="background:${product.tone}">
-          <img src="${quickGallery[0]}" alt="${escapeText(product.name)} view 1" data-gallery-image />
+          <img src="${quickGallery[0]}" alt="${escapeText(product.name)} view 1" data-gallery-image decoding="async" />
           ${hasGallery ? `<button class="gallery-arrow gallery-prev" type="button" data-gallery-prev aria-label="Previous product image">${ICON_CHEVRON_LEFT}</button><button class="gallery-arrow gallery-next" type="button" data-gallery-next aria-label="Next product image">${ICON_CHEVRON_RIGHT}</button><span class="gallery-counter" data-gallery-counter>1 / ${quickGallery.length}</span>` : ""}
         </div>
-        ${hasGallery ? `<div class="gallery-thumbnails" aria-label="Product image thumbnails">${quickGallery.map((image, index) => `<button type="button" class="gallery-thumb ${index === 0 ? "active" : ""}" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${image}" alt="${escapeText(product.name)} thumbnail ${index + 1}" /></button>`).join("")}</div>` : ""}
+        ${hasGallery ? `<div class="gallery-thumbnails" aria-label="Product image thumbnails">${quickGallery.map((image, index) => `<button type="button" class="gallery-thumb ${index === 0 ? "active" : ""}" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${image}" alt="${escapeText(product.name)} thumbnail ${index + 1}" loading="lazy" decoding="async" /></button>`).join("")}</div>` : ""}
       </div>
       <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${isShowcaseProduct(product) ? "Showcase only" : formatPrice(product.price)}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}${isShowcaseProduct(product) ? `<p class="quick-showcase-note">This celebrity look is for showcase/inspiration only and is not available for sale through the shop.</p>` : `<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p>`}</div>
     </div>`;

@@ -1000,21 +1000,21 @@ window.FABLE_PRODUCTS = [
     "name": "Red Bandhej Set",
     "price": 35000,
     "color": "Red Bandhej",
-    "category": "festive",
+    "category": "celebrity",
     "label": "Bandhej",
     "page_main": 6,
     "tone": "#cb1432",
     "accent": "#b78b4a",
-    "description": "A rich red bandhej-inspired festive set with statement dupatta and gold accents.",
+    "description": "A rich red bandhej-inspired festive set with statement dupatta and gold accents. This look is kept only for celebrity/showcase inspiration and is not available for sale on the shop page.",
     "fabric": "Bandhej-style festive kurta set with embellished border and flowing dupatta.",
     "image": "assets/products/red-bandhej-main.webp",
     "gallery": [
       "assets/products/red-bandhej-main.webp"
     ],
-    "source": "RAKHI FABLE 2026",
+    "source": "Showcase only — not for sale",
     "subCategory": "bandhej",
-    "categoryLabel": "Festive Wear",
-    "badge": "Bandhej",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Showcase only",
     "sizes": [
       "XS",
       "S",
@@ -1022,7 +1022,9 @@ window.FABLE_PRODUCTS = [
       "L",
       "XL",
       "Custom fit"
-    ]
+    ],
+    "showcaseOnly": true,
+    "saleable": false
   },
   {
     "id": "beige-anarkali",
@@ -1145,21 +1147,21 @@ window.FABLE_PRODUCTS = [
     "name": "Golden Drape Set",
     "price": 11000,
     "color": "Golden",
-    "category": "drapes",
+    "category": "celebrity",
     "label": "Drape Set",
     "page_main": 12,
     "tone": "#dcc28a",
     "accent": "#b78b4a",
-    "description": "A minimal golden drape set with delicate handwork for intimate festive occasions.",
+    "description": "A minimal golden drape set with delicate handwork for intimate festive occasions. This look is kept only for celebrity/showcase inspiration and is not available for sale on the shop page.",
     "fabric": "Golden draped two-piece look with embellished blouse and flowing lower.",
     "image": "assets/products/golden-drape-main.webp",
     "gallery": [
       "assets/products/golden-drape-main.webp"
     ],
-    "source": "RAKHI FABLE 2026",
+    "source": "Showcase only — not for sale",
     "subCategory": "rakhi-drapes",
-    "categoryLabel": "Drape Sets",
-    "badge": "Drape Set",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Showcase only",
     "sizes": [
       "Ready blouse",
       "XS",
@@ -1168,7 +1170,9 @@ window.FABLE_PRODUCTS = [
       "L",
       "XL",
       "Custom fit"
-    ]
+    ],
+    "showcaseOnly": true,
+    "saleable": false
   },
   {
     "id": "white-drape-saree",
@@ -1205,21 +1209,21 @@ window.FABLE_PRODUCTS = [
     "name": "Green Cape Set",
     "price": 18000,
     "color": "Green",
-    "category": "festive",
+    "category": "celebrity",
     "label": "Cape Set",
     "page_main": 14,
     "tone": "#b7ead9",
     "accent": "#3b7f79",
-    "description": "A fresh green cape set with embellished pants and a sheer layer for a contemporary Indian look.",
+    "description": "A fresh green cape set with embellished pants and a sheer layer for a contemporary Indian look. This look is kept only for celebrity/showcase inspiration and is not available for sale on the shop page.",
     "fabric": "Green cape co-ord with embellished trousers, crop top and flowy overlay.",
     "image": "assets/products/green-cape-main.webp",
     "gallery": [
       "assets/products/green-cape-main.webp"
     ],
-    "source": "RAKHI FABLE 2026",
+    "source": "Showcase only — not for sale",
     "subCategory": "cape",
-    "categoryLabel": "Festive Wear",
-    "badge": "Cape Set",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Showcase only",
     "sizes": [
       "XS",
       "S",
@@ -1227,28 +1231,30 @@ window.FABLE_PRODUCTS = [
       "L",
       "XL",
       "Custom fit"
-    ]
+    ],
+    "showcaseOnly": true,
+    "saleable": false
   },
   {
     "id": "wine-kurta-dhoti",
     "name": "Wine Kurta Dhoti",
     "price": 18000,
     "color": "Wine",
-    "category": "festive",
+    "category": "celebrity",
     "label": "Kurta Dhoti",
     "page_main": 15,
     "tone": "#8c183b",
     "accent": "#d09952",
-    "description": "A wine kurta dhoti set with rich neckline embroidery and asymmetrical festive styling.",
+    "description": "A wine kurta dhoti set with rich neckline embroidery and asymmetrical festive styling. This look is kept only for celebrity/showcase inspiration and is not available for sale on the shop page.",
     "fabric": "Wine kurta with dhoti-style lower and embroidered yoke detailing.",
     "image": "assets/products/wine-kurta-dhoti-main.webp",
     "gallery": [
       "assets/products/wine-kurta-dhoti-main.webp"
     ],
-    "source": "RAKHI FABLE 2026",
+    "source": "Showcase only — not for sale",
     "subCategory": "kurta-dhoti",
-    "categoryLabel": "Festive Wear",
-    "badge": "Kurta Dhoti",
+    "categoryLabel": "What Celebrities Wear",
+    "badge": "Showcase only",
     "sizes": [
       "XS",
       "S",
@@ -1256,7 +1262,9 @@ window.FABLE_PRODUCTS = [
       "L",
       "XL",
       "Custom fit"
-    ]
+    ],
+    "showcaseOnly": true,
+    "saleable": false
   },
   {
     "id": "celebrity-red",
