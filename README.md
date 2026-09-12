@@ -78,3 +78,9 @@ The Google tag `G-95XXSLB0LH` has been inserted once immediately after the `<hea
 
 ## No-celebrity-shop fix
 Celebrity/showcase looks are not saleable. The shop now filters out all products with category `celebrity`, `showcaseOnly: true`, `saleable: false`, or known showcase IDs. Upload the full ZIP contents to replace the existing live files, especially `catalog.js`, `script.js`, and `products.html`.
+
+
+## 2026-09-12 price update
+- Shreenathji Art Saree price updated to ₹35,000.
+- Grey Anarkali price updated to ₹17,000.
+- Cache-busting updated to `v=20260912-pricefix`.

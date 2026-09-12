@@ -649,7 +649,7 @@ window.FABLE_PRODUCTS = [
   {
     "id": "shreenathji",
     "name": "Shreenathji Art Saree",
-    "price": 42000,
+    "price": 35000,
     "color": "Shreenathji",
     "category": "sarees",
     "label": "Heritage Art",
@@ -1116,7 +1116,7 @@ window.FABLE_PRODUCTS = [
   {
     "id": "grey-anarkali",
     "name": "Grey Anarkali",
-    "price": 21000,
+    "price": 17000,
     "color": "Grey",
     "category": "anarkalis",
     "label": "Anarkali",
