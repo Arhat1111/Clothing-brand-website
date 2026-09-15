@@ -9,6 +9,7 @@ module.exports = async function handler(req, res) {
     email: Boolean(process.env.RESEND_API_KEY),
     emailFrom: Boolean(process.env.EMAIL_FROM),
     businessEmail: Boolean(process.env.BUSINESS_EMAIL),
+    ownerNotifications: Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM && process.env.BUSINESS_EMAIL),
     razorpay: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
   });
 };

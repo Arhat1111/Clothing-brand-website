@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260915-vercel-supabase" />
+  <link rel="stylesheet" href="styles.css?v=20260915-owner-live" />
 </head>
 <body data-page="admin">
   <div class="page-loader" aria-hidden="true"><div class="loader-mark"><span>F</span><small>FABLE</small></div></div>
@@ -101,6 +101,21 @@
           <button type="button" id="exportLeads">Export subscribers CSV</button>
         </div>
 
+        <div class="admin-owner-panel">
+          <div class="admin-owner-copy">
+            <p class="eyebrow">Owner live alerts</p>
+            <h3>Send order details to the owner.</h3>
+            <p id="ownerLiveStatus">Checking owner notification setup...</p>
+          </div>
+          <div class="admin-owner-controls">
+            <label class="admin-toggle"><input type="checkbox" id="ownerLiveRefresh" checked /> Live refresh every 15 seconds</label>
+            <label>Owner WhatsApp number <span>optional manual send</span><input type="tel" id="ownerWhatsappInput" placeholder="91XXXXXXXXXX" /></label>
+            <button type="button" id="saveOwnerWhatsapp">Save owner WhatsApp</button>
+            <button type="button" id="notifyLatestOwner">Email latest order to owner</button>
+            <button type="button" id="openLatestOwnerWhatsapp">Open latest order in WhatsApp</button>
+          </div>
+        </div>
+
         <div class="admin-grid">
           <section class="admin-table-panel" style="grid-column: 1 / -1;">
             <div class="admin-table-top">
@@ -113,7 +128,7 @@
             <div class="admin-table-wrap">
               <table class="admin-table">
                 <thead>
-                  <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr>
+                  <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr>
                 </thead>
                 <tbody id="adminOrderRows"></tbody>
               </table>
@@ -166,7 +181,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-to-top" type="button" aria-label="Back to top"><svg class="icon icon-up" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 
-  <script src="catalog.js?v=20260915-vercel-supabase"></script>
-  <script src="script.js?v=20260915-vercel-supabase"></script>
+  <script src="catalog.js?v=20260915-owner-live"></script>
+  <script src="script.js?v=20260915-owner-live"></script>
 </body>
 </html>

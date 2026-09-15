@@ -192,7 +192,7 @@ const sendConfirmationEmail = async (order) => {
   const payload = {
     from,
     to: [order.customer_email],
-    ...(businessEmail ? { bcc: [businessEmail], reply_to: businessEmail } : {}),
+    ...(businessEmail ? { reply_to: businessEmail } : {}),
     subject: `Fable order confirmed - ${order.id}`,
     html,
     text: buildPlainOrderText(order, items),
@@ -208,9 +208,86 @@ const sendConfirmationEmail = async (order) => {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) return { sent: false, error: result.message || result.error || 'Email provider error', status: response.status };
-    return { sent: true, id: result.id, businessCopy: Boolean(businessEmail) };
+    return { sent: true, id: result.id };
   } catch (error) {
     return { sent: false, error: error.message || 'Email provider network error' };
+  }
+};
+
+
+const getOrderItems = (order) => {
+  if (Array.isArray(order.items_json)) return order.items_json;
+  if (Array.isArray(order.items)) return order.items;
+  try { return JSON.parse(order.items_json || '[]'); } catch { return []; }
+};
+
+const buildOwnerOrderHtml = (order, items, event = 'paid') => {
+  const isPaid = String(order.payment_status || order.paymentStatus || '').includes('paid') || event === 'paid';
+  const itemsHtml = items.map((item) => `
+    <tr>
+      <td style="padding:10px 8px;border-bottom:1px solid #eadfdb">${escapeHtml(item.name)}</td>
+      <td style="padding:10px 8px;border-bottom:1px solid #eadfdb">${escapeHtml(item.size || 'Custom')}</td>
+      <td style="padding:10px 8px;border-bottom:1px solid #eadfdb;text-align:center">${Number(item.qty || 1)}</td>
+      <td style="padding:10px 8px;border-bottom:1px solid #eadfdb;text-align:right">₹${Number(item.lineTotal || item.unitPrice || 0).toLocaleString('en-IN')}</td>
+    </tr>`).join('');
+  return `
+    <div style="font-family:Arial,sans-serif;line-height:1.58;color:#2b2422;background:#fffaf8;padding:24px;border-radius:18px;border:1px solid #eadfdb">
+      <p style="margin:0 0 8px;letter-spacing:.12em;text-transform:uppercase;color:#8a3148;font-size:11px">${isPaid ? 'Paid order received' : 'New website order enquiry'}</p>
+      <h2 style="margin:0 0 18px;font-family:Georgia,serif;font-weight:400;font-size:30px">Fable order details</h2>
+      <div style="background:#fff;padding:16px 18px;border-radius:14px;border:1px solid #eee1dd;margin-bottom:18px">
+        <p style="margin:4px 0"><strong>Order ID:</strong> ${escapeHtml(order.id)}</p>
+        <p style="margin:4px 0"><strong>Status:</strong> ${escapeHtml(order.status || '')} / ${escapeHtml(order.payment_status || order.paymentStatus || '')}</p>
+        ${order.razorpay_payment_id ? `<p style="margin:4px 0"><strong>Razorpay Payment ID:</strong> ${escapeHtml(order.razorpay_payment_id)}</p>` : ''}
+        ${order.razorpay_order_id ? `<p style="margin:4px 0"><strong>Razorpay Order ID:</strong> ${escapeHtml(order.razorpay_order_id)}</p>` : ''}
+      </div>
+      <div style="background:#fff;padding:16px 18px;border-radius:14px;border:1px solid #eee1dd;margin-bottom:18px">
+        <p style="margin:4px 0"><strong>Customer:</strong> ${escapeHtml(order.customer_name || '')}</p>
+        <p style="margin:4px 0"><strong>Email:</strong> ${escapeHtml(order.customer_email || '')}</p>
+        <p style="margin:4px 0"><strong>Phone:</strong> ${escapeHtml(order.customer_phone || '')}</p>
+        <p style="margin:4px 0"><strong>City:</strong> ${escapeHtml(order.customer_city || '')}</p>
+        <p style="margin:4px 0"><strong>Address:</strong> ${escapeHtml(order.customer_address || '')}</p>
+        ${order.note ? `<p style="margin:4px 0"><strong>Note:</strong> ${escapeHtml(order.note)}</p>` : ''}
+      </div>
+      <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #eee1dd;border-radius:14px;overflow:hidden">
+        <thead><tr style="background:#f8ece8"><th style="text-align:left;padding:10px 8px">Item</th><th style="text-align:left;padding:10px 8px">Size</th><th style="padding:10px 8px">Qty</th><th style="text-align:right;padding:10px 8px">Amount</th></tr></thead>
+        <tbody>${itemsHtml || '<tr><td colspan="4" style="padding:12px">Items saved in dashboard.</td></tr>'}</tbody>
+      </table>
+      <div style="margin-top:18px;background:#2a171b;color:#fff;padding:16px 18px;border-radius:14px">
+        <p style="margin:3px 0"><strong>Subtotal:</strong> ₹${Number(order.subtotal || 0).toLocaleString('en-IN')}</p>
+        ${Number(order.discount || 0) ? `<p style="margin:3px 0"><strong>Discount:</strong> -₹${Number(order.discount || 0).toLocaleString('en-IN')} ${escapeHtml(order.discount_label || '')}</p>` : ''}
+        <p style="margin:3px 0;font-size:18px"><strong>Total:</strong> ₹${Number(order.total || 0).toLocaleString('en-IN')}</p>
+      </div>
+    </div>`;
+};
+
+const sendOwnerOrderEmail = async (order, event = 'paid') => {
+  if (!process.env.RESEND_API_KEY) return { sent: false, skipped: true, reason: 'RESEND_API_KEY missing' };
+  const businessEmail = safeText(process.env.BUSINESS_EMAIL).toLowerCase();
+  if (!businessEmail || !businessEmail.includes('@')) return { sent: false, skipped: true, reason: 'BUSINESS_EMAIL missing' };
+  const from = process.env.EMAIL_FROM || 'Fable by Kavita Anu <orders@fablebykavitaanu.in>';
+  const items = getOrderItems(order);
+  const isPaid = String(order.payment_status || order.paymentStatus || '').includes('paid') || event === 'paid';
+  const payload = {
+    from,
+    to: [businessEmail],
+    subject: `${isPaid ? 'New paid Fable order' : 'New Fable order enquiry'} - ${order.id}`,
+    html: buildOwnerOrderHtml(order, items, event),
+    text: buildPlainOrderText(order, items),
+  };
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) return { sent: false, error: result.message || result.error || 'Email provider error', status: response.status };
+    return { sent: true, id: result.id, to: businessEmail };
+  } catch (error) {
+    return { sent: false, error: error.message || 'Owner email provider network error' };
   }
 };
 
@@ -225,4 +302,6 @@ module.exports = {
   rowToSubscriber,
   buildOrderRecord,
   sendConfirmationEmail,
+  sendOwnerOrderEmail,
+  getOrderItems,
 };

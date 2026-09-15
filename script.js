@@ -10,6 +10,7 @@ const FABLE_WHATSAPP_NUMBER = ""; // Add Fable WhatsApp number with country code
 const FABLE_API_BASE_URL = ""; // Vercel + Supabase: leave blank when the site is hosted on Vercel. If the site stays on GitHub Pages, paste your Vercel URL here, e.g. https://fable-orders.vercel.app
 const RAZORPAY_CHECKOUT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
 const FABLE_ADMIN_TOKEN_KEY = "fable-admin-api-token-v1";
+const FABLE_OWNER_WHATSAPP_KEY = "fable-owner-whatsapp-v1";
 const WHATSAPP_CONSULTATION_URL = "https://wa.me/?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
 const CART_KEY = "fable-shopping-bag-v2";
 const LEADS_KEY = "fable-whatsapp-update-leads-v1";
@@ -821,7 +822,7 @@ const showPaymentSuccess = (order, emailResult = {}) => {
       <p><span>Paid total</span><strong>${formatPrice(total)}</strong></p>
       ${customerEmail ? `<p><span>Email</span><strong>${escapeText(customerEmail)}</strong></p>` : ""}
     </div>
-    <p class="checkout-disclaimer">${emailResult?.sent ? "A confirmation email has been sent to the customer." : "Confirmation email may take a few minutes. Your order is safely saved with us."}</p>
+    <p class="checkout-disclaimer">${(emailResult?.sent || emailResult?.customer?.sent) ? "A confirmation email has been sent to the customer." : "Confirmation email may take a few minutes. Your order is safely saved with us."}</p>
     <button class="button button-dark" type="button" data-checkout-close>Continue browsing</button>
   `;
   checkoutModal.classList.add("open");
@@ -1245,9 +1246,20 @@ const adminApiStatus = document.getElementById("adminApiStatus");
 const adminTokenInput = document.getElementById("adminTokenInput");
 const saveAdminTokenButton = document.getElementById("saveAdminToken");
 const refreshAdminDataButton = document.getElementById("refreshAdminData");
+const ownerLiveStatus = document.getElementById("ownerLiveStatus");
+const ownerLiveRefresh = document.getElementById("ownerLiveRefresh");
+const ownerWhatsappInput = document.getElementById("ownerWhatsappInput");
+const saveOwnerWhatsappButton = document.getElementById("saveOwnerWhatsapp");
+const notifyLatestOwnerButton = document.getElementById("notifyLatestOwner");
+const openLatestOwnerWhatsappButton = document.getElementById("openLatestOwnerWhatsapp");
 
 const getAdminToken = () => sessionStorage.getItem(FABLE_ADMIN_TOKEN_KEY) || "";
 const setAdminToken = (token) => sessionStorage.setItem(FABLE_ADMIN_TOKEN_KEY, token || "");
+const getOwnerWhatsapp = () => localStorage.getItem(FABLE_OWNER_WHATSAPP_KEY) || "";
+const setOwnerWhatsapp = (value) => localStorage.setItem(FABLE_OWNER_WHATSAPP_KEY, String(value || "").replace(/\D/g, ""));
+let latestAdminOrders = [];
+let adminLiveTimer = null;
+let knownAdminOrderIds = new Set();
 
 const fetchAdminOrders = async () => {
   if (!hasFableApi()) return readOrderRecords();
@@ -1255,26 +1267,101 @@ const fetchAdminOrders = async () => {
   return Array.isArray(data.orders) ? data.orders : [];
 };
 
-const renderAdminOrders = async () => {
+const buildAdminOrderText = (order) => {
+  const customer = order.customer || {};
+  const items = Array.isArray(order.items) ? order.items : [];
+  const lines = [
+    "FABLE BY KAVITA ANU - OWNER ORDER ALERT",
+    "",
+    `Order ID: ${order.id || ""}`,
+    `Status: ${order.status || ""} / ${order.paymentStatus || ""}`,
+    `Payment ID: ${order.razorpayPaymentId || "Not available"}`,
+    "",
+    `Customer: ${customer.name || ""}`,
+    `Email: ${customer.email || ""}`,
+    `Phone: ${customer.phone || ""}`,
+    `City: ${customer.city || ""}`,
+    `Address: ${customer.address || ""}`,
+    "",
+    "Items:",
+    ...items.map((item, index) => `${index + 1}. ${item.name} | Size: ${item.size || "Custom"} | Qty: ${item.qty || 1} | ${formatPrice(Number(item.lineTotal || item.unitPrice || 0))}`),
+    "",
+    `Subtotal: ${formatPrice(Number(order.subtotal || 0))}`,
+  ];
+  if (Number(order.discount || 0)) lines.push(`Discount: -${formatPrice(Number(order.discount || 0))} ${order.discountLabel || ""}`);
+  lines.push(`Total: ${formatPrice(Number(order.total || 0))}`);
+  if (order.note) lines.push("", `Note: ${order.note}`);
+  return lines.join("\n");
+};
+
+const getAdminOrderById = (id) => latestAdminOrders.find((order) => String(order.id) === String(id));
+
+const notifyOwnerByEmail = async (orderId) => {
+  if (!getAdminToken()) throw new Error("Enter and save the Admin API Token first.");
+  return fableApi("/api/notify-owner", {
+    method: "POST",
+    headers: { "X-Admin-Token": getAdminToken() },
+    body: JSON.stringify({ orderId }),
+  });
+};
+
+const openOwnerWhatsappForOrder = (order) => {
+  const number = getOwnerWhatsapp();
+  if (!number) {
+    showToast("Add and save owner WhatsApp number first");
+    ownerWhatsappInput?.focus();
+    return;
+  }
+  window.open(`https://wa.me/${number}?text=${encodeURIComponent(buildAdminOrderText(order))}`, "_blank", "noopener");
+};
+
+const updateOwnerLiveStatus = async () => {
+  if (!ownerLiveStatus) return;
+  try {
+    const health = hasFableApi() ? await fableApi("/api/health") : { supabase: false, ownerNotifications: false, email: false, businessEmail: false };
+    const supabaseText = health.supabase ? "Supabase live" : "Supabase missing";
+    const emailText = health.ownerNotifications ? "owner email alerts active" : "add RESEND_API_KEY, EMAIL_FROM and BUSINESS_EMAIL in Vercel for automatic owner emails";
+    ownerLiveStatus.textContent = `${supabaseText}. ${emailText}. Admin page auto-refreshes new orders when the toggle is on.`;
+  } catch (error) {
+    ownerLiveStatus.textContent = `Could not check owner alert setup: ${error.message}`;
+  }
+};
+
+const startAdminLiveRefresh = () => {
+  window.clearInterval(adminLiveTimer);
+  if (!ownerLiveRefresh?.checked || body.dataset.page !== "admin") return;
+  adminLiveTimer = window.setInterval(() => renderAdminOrders({ silent: false }), 15000);
+};
+
+const renderAdminOrders = async ({ silent = false } = {}) => {
   if (!adminOrderRows) return;
   if (adminApiStatus) adminApiStatus.textContent = hasFableApi() ? "Connecting to Supabase..." : "Local demo mode: deploy on Vercel or add your Vercel API URL in script.js for central storage.";
   try {
     const orders = await fetchAdminOrders();
+    const orderIds = new Set(orders.map((order) => String(order.id || "")));
+    const freshOrders = orders.filter((order) => order?.id && !knownAdminOrderIds.has(String(order.id)));
+    if (knownAdminOrderIds.size && freshOrders.length && !silent) {
+      showToast(`${freshOrders.length} new live order received`);
+    }
+    knownAdminOrderIds = orderIds;
+    latestAdminOrders = orders;
     if (adminOrderCount) adminOrderCount.textContent = String(orders.length);
     if (adminOrderEmpty) adminOrderEmpty.hidden = orders.length > 0;
     adminOrderRows.innerHTML = orders.map((order) => {
       const customer = order.customer || {};
       const items = Array.isArray(order.items) ? order.items : [];
       const itemText = items.map((item) => `${item.name} x ${item.qty} (${item.size || "Custom"})`).join("; ");
+      const id = escapeText(order.id || "");
       return `<tr>
         <td><strong>${escapeText(order.id || "Order")}</strong><span>${formatLeadDate(order.createdAt)}</span></td>
         <td><strong>${escapeText(customer.name || "")}</strong><span>${escapeText(customer.phone || "")}</span><span>${escapeText(customer.email || "")}</span></td>
         <td>${escapeText(itemText || "-")}</td>
         <td><strong>${formatPrice(Number(order.total || 0))}</strong><span>${escapeText(order.discountLabel || "")}</span></td>
         <td><span class="admin-status">${escapeText(order.status || "enquiry_received")}</span><span>${escapeText(order.paymentStatus || "not_paid")}</span></td>
+        <td class="admin-actions-cell"><button type="button" data-admin-copy-order="${id}">Copy</button><button type="button" data-admin-owner-email="${id}">Email owner</button><button type="button" data-admin-owner-whatsapp="${id}">WhatsApp owner</button></td>
       </tr>`;
     }).join("");
-    if (adminApiStatus) adminApiStatus.textContent = hasFableApi() ? "Connected to Supabase." : "Showing orders saved in this browser only.";
+    if (adminApiStatus) adminApiStatus.textContent = hasFableApi() ? `Connected to Supabase. Live refresh ${ownerLiveRefresh?.checked ? "on" : "off"}.` : "Showing orders saved in this browser only.";
   } catch (error) {
     adminOrderRows.innerHTML = "";
     if (adminOrderEmpty) adminOrderEmpty.hidden = false;
@@ -1282,19 +1369,83 @@ const renderAdminOrders = async () => {
   }
 };
 
+adminOrderRows?.addEventListener("click", async (event) => {
+  const copyButton = event.target.closest("[data-admin-copy-order]");
+  const emailButton = event.target.closest("[data-admin-owner-email]");
+  const whatsappButton = event.target.closest("[data-admin-owner-whatsapp]");
+  const orderId = copyButton?.dataset.adminCopyOrder || emailButton?.dataset.adminOwnerEmail || whatsappButton?.dataset.adminOwnerWhatsapp;
+  if (!orderId) return;
+  const order = getAdminOrderById(orderId);
+  if (!order) return;
+  if (copyButton) {
+    await copyText(buildAdminOrderText(order));
+    showToast("Order details copied");
+  }
+  if (emailButton) {
+    emailButton.disabled = true;
+    emailButton.textContent = "Sending...";
+    try {
+      const result = await notifyOwnerByEmail(orderId);
+      showToast(result.ownerEmail?.sent ? "Order emailed to owner" : "Owner email was not sent");
+    } catch (error) {
+      showToast(error.message || "Owner email failed");
+    } finally {
+      emailButton.disabled = false;
+      emailButton.textContent = "Email owner";
+    }
+  }
+  if (whatsappButton) openOwnerWhatsappForOrder(order);
+});
+
 saveAdminTokenButton?.addEventListener("click", () => {
   setAdminToken(adminTokenInput?.value || "");
   showToast("Admin API token saved for this session");
-  renderAdminOrders();
+  renderAdminOrders({ silent: true });
+  updateOwnerLiveStatus();
 });
 refreshAdminDataButton?.addEventListener("click", () => {
-  renderAdminOrders();
+  renderAdminOrders({ silent: true });
   renderAdminLeads();
+  updateOwnerLiveStatus();
+});
+ownerLiveRefresh?.addEventListener("change", () => {
+  startAdminLiveRefresh();
+  renderAdminOrders({ silent: true });
+});
+saveOwnerWhatsappButton?.addEventListener("click", () => {
+  setOwnerWhatsapp(ownerWhatsappInput?.value || "");
+  if (ownerWhatsappInput) ownerWhatsappInput.value = getOwnerWhatsapp();
+  showToast("Owner WhatsApp number saved on this device");
+});
+notifyLatestOwnerButton?.addEventListener("click", async () => {
+  const latest = latestAdminOrders[0];
+  if (!latest) return showToast("No order available yet");
+  notifyLatestOwnerButton.disabled = true;
+  notifyLatestOwnerButton.textContent = "Sending...";
+  try {
+    const result = await notifyOwnerByEmail(latest.id);
+    showToast(result.ownerEmail?.sent ? "Latest order emailed to owner" : "Owner email was not sent");
+  } catch (error) {
+    showToast(error.message || "Owner email failed");
+  } finally {
+    notifyLatestOwnerButton.disabled = false;
+    notifyLatestOwnerButton.textContent = "Email latest order to owner";
+  }
+});
+openLatestOwnerWhatsappButton?.addEventListener("click", () => {
+  const latest = latestAdminOrders[0];
+  if (!latest) return showToast("No order available yet");
+  openOwnerWhatsappForOrder(latest);
 });
 
 if (body.dataset.page === "admin") {
   if (adminTokenInput) adminTokenInput.value = getAdminToken();
-  window.setTimeout(renderAdminOrders, 50);
+  if (ownerWhatsappInput) ownerWhatsappInput.value = getOwnerWhatsapp();
+  window.setTimeout(() => {
+    renderAdminOrders({ silent: true });
+    updateOwnerLiveStatus();
+    startAdminLiveRefresh();
+  }, 50);
 }
 
 /* Cursor and magnetic hover */

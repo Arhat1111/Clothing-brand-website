@@ -1,4 +1,4 @@
-const { json, cors, requireAdmin, supabaseRequest, rowToOrder, buildOrderRecord, sendConfirmationEmail } = require('./_utils');
+const { json, cors, requireAdmin, supabaseRequest, rowToOrder, buildOrderRecord, sendConfirmationEmail, sendOwnerOrderEmail } = require('./_utils');
 
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;
@@ -11,8 +11,10 @@ module.exports = async function handler(req, res) {
         prefer: 'return=representation',
       });
       const saved = Array.isArray(rows) && rows[0] ? rows[0] : record;
-      const email = saved.payment_status === 'payment_pending' ? { sent: false, skipped: true, reason: 'payment_pending' } : await sendConfirmationEmail(saved);
-      return json(res, 200, { ok: true, order: rowToOrder(saved), email });
+      const shouldNotify = saved.payment_status !== 'payment_pending';
+      const email = shouldNotify ? await sendConfirmationEmail(saved) : { sent: false, skipped: true, reason: 'payment_pending' };
+      const ownerEmail = shouldNotify ? await sendOwnerOrderEmail(saved, saved.payment_status === 'paid' ? 'paid' : 'enquiry') : { sent: false, skipped: true, reason: 'payment_pending' };
+      return json(res, 200, { ok: true, order: rowToOrder(saved), email, ownerEmail });
     }
 
     if (req.method === 'GET') {

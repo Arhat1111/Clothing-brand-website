@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { json, cors, supabaseRequest, safeText, rowToOrder, sendConfirmationEmail } = require('./_utils');
+const { json, cors, supabaseRequest, safeText, rowToOrder, sendConfirmationEmail, sendOwnerOrderEmail } = require('./_utils');
 
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;
@@ -16,6 +16,7 @@ module.exports = async function handler(req, res) {
     if (expected !== razorpay_signature) return json(res, 400, { ok: false, error: 'Payment signature verification failed.' });
     let saved = null;
     let email = { sent: false, skipped: true };
+    let ownerEmail = { sent: false, skipped: true };
     if (local_order_id) {
       const rows = await supabaseRequest('orders', {
         method: 'PATCH',
@@ -29,9 +30,12 @@ module.exports = async function handler(req, res) {
         prefer: 'return=representation',
       }, `?id=eq.${encodeURIComponent(local_order_id)}`);
       saved = Array.isArray(rows) && rows[0] ? rows[0] : null;
-      if (saved) email = await sendConfirmationEmail(saved);
+      if (saved) {
+        email = await sendConfirmationEmail(saved);
+        ownerEmail = await sendOwnerOrderEmail(saved, 'paid');
+      }
     }
-    return json(res, 200, { ok: true, order: saved ? rowToOrder(saved) : null, email });
+    return json(res, 200, { ok: true, order: saved ? rowToOrder(saved) : null, email, ownerEmail });
   } catch (error) {
     return json(res, error.status || 500, { ok: false, error: error.message || 'Server error' });
   }

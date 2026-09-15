@@ -2143,3 +2143,93 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
 }
 .admin-table td span { display:block; opacity:.66; font-size:.86rem; margin-top:4px; }
 .admin-table-panel h3 { margin: 0; font-family: Italiana, serif; font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 400; }
+
+
+/* Owner live order alerts */
+.admin-owner-panel {
+  margin-top: 24px;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: minmax(240px, .8fr) minmax(280px, 1fr);
+  gap: 22px;
+  border: 1px solid rgba(111, 35, 54, .11);
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(250,236,236,.74));
+}
+.admin-owner-copy h3 {
+  margin: 0 0 12px;
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 400;
+  letter-spacing: -.03em;
+}
+.admin-owner-copy p:not(.eyebrow) {
+  margin: 0;
+  color: #6f5d61;
+  line-height: 1.7;
+}
+.admin-owner-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+.admin-owner-controls label {
+  flex: 1 1 230px;
+  display: grid;
+  gap: 7px;
+  font: 10px var(--ui);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--wine);
+}
+.admin-owner-controls label span {
+  display: inline;
+  color: #8d7880;
+  font-size: 9px;
+  letter-spacing: .12em;
+}
+.admin-owner-controls input[type="tel"] {
+  width: 100%;
+  border: 1px solid rgba(42, 23, 27, .18);
+  border-radius: 999px;
+  padding: 13px 16px;
+  background: #fff;
+  font: 14px var(--sans);
+}
+.admin-owner-controls button {
+  border: 1px solid rgba(42, 23, 27, .16);
+  background: #fff;
+  color: #2d181d;
+  padding: 13px 16px;
+  cursor: pointer;
+  font: 10px var(--ui);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.admin-owner-controls button:hover,
+.admin-actions-cell button:hover { background: #2d181d; color: #fff; }
+.admin-toggle {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  gap: 10px !important;
+  flex: 1 1 100% !important;
+  padding: 12px 14px;
+  border: 1px solid rgba(42, 23, 27, .1);
+  border-radius: 999px;
+  background: rgba(255,255,255,.72);
+}
+.admin-toggle input { width: auto; accent-color: #2d181d; }
+.admin-actions-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 210px;
+}
+.admin-actions-cell button {
+  padding: 10px 11px;
+  font-size: 9px;
+}
+@media (max-width: 900px) {
+  .admin-owner-panel { grid-template-columns: 1fr; }
+}

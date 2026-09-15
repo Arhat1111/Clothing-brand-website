@@ -57,3 +57,14 @@ fetch('/api/test-email', {
 ```
 
 If it returns `ok: true`, Resend is working. If not, check Vercel Function Logs and Resend Logs.
+
+
+## Owner live alerts added
+
+The automatic WhatsApp redirect has been removed. Owner order details are now handled safely through:
+
+1. Automatic owner email after verified Razorpay payment if `RESEND_API_KEY`, `EMAIL_FROM`, and `BUSINESS_EMAIL` exist in Vercel.
+2. Manual resend button in `admin.html` through `/api/notify-owner`, protected by `ADMIN_TOKEN`.
+3. Optional manual WhatsApp button inside the admin page after the owner WhatsApp number is saved locally on the admin device.
+
+Automatic WhatsApp sending is not included because WhatsApp Business Cloud API requires Meta setup, templates, and a server token.
