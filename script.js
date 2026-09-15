@@ -770,15 +770,15 @@ const openRazorpayCheckout = ({ keyId, razorpayOrder, order, formData, submitBut
             razorpayPaymentId: response.razorpay_payment_id,
             updatedAt: new Date().toISOString(),
           };
-          saveOrderLocally(verifyResult.order || paidOrder);
-          await copyText(buildOrderText(formData, verifyResult.order || paidOrder));
+          const finalOrder = verifyResult.order || paidOrder;
+          saveOrderLocally(finalOrder);
+          await copyText(buildOrderText(formData, finalOrder));
           if (activeLead) markDiscountUsed(activeLead.phone);
           cart = [];
           saveCart();
           renderCart();
-          closeCheckout();
+          showPaymentSuccess(finalOrder, verifyResult.email);
           showToast(verifyResult.email?.sent ? "Payment successful. Order saved and email sent." : "Payment successful. Order saved.");
-          window.open(fableWhatsappUrl(buildOrderText(formData, verifyResult.order || paidOrder)), "_blank", "noopener");
           resolve(verifyResult);
         } catch (verifyError) {
           reject(verifyError);
@@ -802,7 +802,32 @@ const saveSubscriberToApi = async (lead) => {
 
 const fableWhatsappUrl = (text) => {
   const number = String(FABLE_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+  if (!number) return "";
   return `${WHATSAPP_URL}${number}?text=${encodeURIComponent(text)}`;
+};
+
+const showPaymentSuccess = (order, emailResult = {}) => {
+  if (!checkoutModal) return;
+  const customerEmail = order?.customer?.email || order?.customer_email || "";
+  const orderId = order?.id || "Fable order";
+  const total = Number(order?.total || 0);
+  checkoutModal.innerHTML = `
+    <button class="modal-close" type="button" data-checkout-close aria-label="Close payment confirmation">${ICON_CLOSE}</button>
+    <p class="eyebrow">Payment received</p>
+    <h2>Thank you for your order</h2>
+    <p class="checkout-intro">Your Razorpay payment was successful and your order has been saved to the Fable admin dashboard.</p>
+    <div class="checkout-summary success-summary">
+      <p><span>Order ID</span><strong>${escapeText(orderId)}</strong></p>
+      <p><span>Paid total</span><strong>${formatPrice(total)}</strong></p>
+      ${customerEmail ? `<p><span>Email</span><strong>${escapeText(customerEmail)}</strong></p>` : ""}
+    </div>
+    <p class="checkout-disclaimer">${emailResult?.sent ? "A confirmation email has been sent to the customer." : "Confirmation email may take a few minutes. Your order is safely saved with us."}</p>
+    <button class="button button-dark" type="button" data-checkout-close>Continue browsing</button>
+  `;
+  checkoutModal.classList.add("open");
+  checkoutModal.setAttribute("aria-hidden", "false");
+  modalBackdrop?.classList.add("open");
+  updateBodyLock();
 };
 
 /* Checkout enquiry */

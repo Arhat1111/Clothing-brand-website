@@ -148,40 +148,70 @@ const buildOrderRecord = (order) => {
 
 const escapeHtml = (value) => String(value || '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char]));
 
+const buildPlainOrderText = (order, items) => {
+  const lines = [
+    'Fable by Kavita Anu - Order Confirmation',
+    '',
+    `Order ID: ${order.id}`,
+    `Customer: ${order.customer_name || ''}`,
+    `Phone: ${order.customer_phone || ''}`,
+    `City: ${order.customer_city || ''}`,
+    `Address: ${order.customer_address || ''}`,
+    '',
+    'Items:',
+    ...items.map((item, index) => `${index + 1}. ${item.name} | Size: ${item.size || 'Custom'} | Qty: ${Number(item.qty || 1)} | ₹${Number(item.lineTotal || item.unitPrice || 0).toLocaleString('en-IN')}`),
+    '',
+    `Total: ₹${Number(order.total || 0).toLocaleString('en-IN')}`,
+    order.razorpay_payment_id ? `Razorpay Payment ID: ${order.razorpay_payment_id}` : '',
+  ].filter(Boolean);
+  return lines.join('\n');
+};
+
 const sendConfirmationEmail = async (order) => {
-  if (!process.env.RESEND_API_KEY || !order.customer_email) return { sent: false, skipped: true };
+  if (!process.env.RESEND_API_KEY) return { sent: false, skipped: true, reason: 'RESEND_API_KEY missing' };
+  if (!order.customer_email) return { sent: false, skipped: true, reason: 'Customer email missing' };
+  const from = process.env.EMAIL_FROM || 'Fable by Kavita Anu <orders@fablebykavitaanu.in>';
+  const businessEmail = safeText(process.env.BUSINESS_EMAIL).toLowerCase();
   const items = (() => {
     if (Array.isArray(order.items_json)) return order.items_json;
     try { return JSON.parse(order.items_json || '[]'); } catch { return []; }
   })();
-  const itemsHtml = items.map((item) => `<li>${escapeHtml(item.name)} — Size: ${escapeHtml(item.size || 'Custom')} — Qty: ${Number(item.qty || 1)}</li>`).join('');
+  const itemsHtml = items.map((item) => `<li>${escapeHtml(item.name)} — Size: ${escapeHtml(item.size || 'Custom')} — Qty: ${Number(item.qty || 1)} — ₹${Number(item.lineTotal || item.unitPrice || 0).toLocaleString('en-IN')}</li>`).join('');
   const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#2b2422">
-      <h2>Thank you for your Fable by Kavita Anu enquiry</h2>
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#2b2422;background:#fffaf8;padding:24px;border-radius:14px">
+      <h2 style="margin:0 0 14px;font-family:Georgia,serif;font-weight:400">Thank you for your Fable by Kavita Anu order</h2>
       <p>Hi ${escapeHtml(order.customer_name || 'there')},</p>
-      <p>We have received your order enquiry. Our team will confirm availability, final pricing, shipping and payment details shortly.</p>
+      <p>Your payment has been received and your order has been saved successfully. Our team will contact you shortly to confirm dispatch and delivery details.</p>
       <p><strong>Order ID:</strong> ${escapeHtml(order.id)}</p>
-      <ul>${itemsHtml}</ul>
-      <p><strong>Estimated total:</strong> ₹${Number(order.total || 0).toLocaleString('en-IN')}</p>
-      <p>Fable by Kavita Anu</p>
+      ${order.razorpay_payment_id ? `<p><strong>Razorpay Payment ID:</strong> ${escapeHtml(order.razorpay_payment_id)}</p>` : ''}
+      <h3 style="font-size:16px;margin-top:22px">Selected pieces</h3>
+      <ul>${itemsHtml || '<li>Order items saved in dashboard.</li>'}</ul>
+      <p><strong>Total paid:</strong> ₹${Number(order.total || 0).toLocaleString('en-IN')}</p>
+      <p style="margin-top:22px">Fable by Kavita Anu</p>
     </div>`;
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: process.env.EMAIL_FROM || 'Fable by Kavita Anu <orders@yourdomain.com>',
-      to: [order.customer_email],
-      reply_to: process.env.BUSINESS_EMAIL || undefined,
-      subject: `Fable order enquiry received - ${order.id}`,
-      html,
-    }),
-  });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) return { sent: false, error: result.message || 'Email provider error' };
-  return { sent: true, id: result.id };
+  const payload = {
+    from,
+    to: [order.customer_email],
+    ...(businessEmail ? { bcc: [businessEmail], reply_to: businessEmail } : {}),
+    subject: `Fable order confirmed - ${order.id}`,
+    html,
+    text: buildPlainOrderText(order, items),
+  };
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) return { sent: false, error: result.message || result.error || 'Email provider error', status: response.status };
+    return { sent: true, id: result.id, businessCopy: Boolean(businessEmail) };
+  } catch (error) {
+    return { sent: false, error: error.message || 'Email provider network error' };
+  }
 };
 
 module.exports = {
