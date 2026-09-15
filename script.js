@@ -8,6 +8,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/fablebykavitaanu/";
 const WHATSAPP_URL = "https://wa.me/";
 const FABLE_WHATSAPP_NUMBER = ""; // Add Fable WhatsApp number with country code, e.g. 91XXXXXXXXXX
 const FABLE_API_BASE_URL = ""; // Vercel + Supabase: leave blank when the site is hosted on Vercel. If the site stays on GitHub Pages, paste your Vercel URL here, e.g. https://fable-orders.vercel.app
+const RAZORPAY_CHECKOUT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
 const FABLE_ADMIN_TOKEN_KEY = "fable-admin-api-token-v1";
 const WHATSAPP_CONSULTATION_URL = "https://wa.me/?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
 const CART_KEY = "fable-shopping-bag-v2";
@@ -697,6 +698,103 @@ const sendOrderToApi = async (order) => {
   return fableApi("/api/orders", { method: "POST", body: JSON.stringify(order) });
 };
 
+const createRazorpayOrder = async (order) => fableApi("/api/razorpay-create-order", {
+  method: "POST",
+  body: JSON.stringify({
+    amount: Math.round(Number(order.total || 0) * 100),
+    receipt: order.id,
+  }),
+});
+
+const verifyRazorpayPayment = async (payload) => fableApi("/api/razorpay-verify-payment", {
+  method: "POST",
+  body: JSON.stringify(payload),
+});
+
+let razorpayLoadPromise = null;
+const loadRazorpayCheckout = () => {
+  if (window.Razorpay) return Promise.resolve();
+  if (razorpayLoadPromise) return razorpayLoadPromise;
+  razorpayLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = RAZORPAY_CHECKOUT_SRC;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Razorpay Checkout could not load. Please check your internet connection."));
+    document.head.appendChild(script);
+  });
+  return razorpayLoadPromise;
+};
+
+const openRazorpayCheckout = ({ keyId, razorpayOrder, order, formData, submitButton, activeLead }) => new Promise(async (resolve, reject) => {
+  try {
+    await loadRazorpayCheckout();
+    const options = {
+      key: keyId,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency || "INR",
+      name: "Fable by Kavita Anu",
+      description: `Order ${order.id}`,
+      order_id: razorpayOrder.id,
+      prefill: {
+        name: order.customer.name,
+        email: order.customer.email,
+        contact: order.customer.phone,
+      },
+      notes: {
+        local_order_id: order.id,
+      },
+      theme: {
+        color: "#2b1a1d",
+      },
+      modal: {
+        ondismiss: () => {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Pay with Razorpay";
+          }
+          reject(new Error("Payment window closed before completion."));
+        },
+      },
+      handler: async (response) => {
+        try {
+          const verifyResult = await verifyRazorpayPayment({
+            ...response,
+            local_order_id: order.id,
+          });
+          const paidOrder = {
+            ...order,
+            status: "paid_order_received",
+            paymentStatus: "paid",
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            updatedAt: new Date().toISOString(),
+          };
+          saveOrderLocally(verifyResult.order || paidOrder);
+          await copyText(buildOrderText(formData, verifyResult.order || paidOrder));
+          if (activeLead) markDiscountUsed(activeLead.phone);
+          cart = [];
+          saveCart();
+          renderCart();
+          closeCheckout();
+          showToast(verifyResult.email?.sent ? "Payment successful. Order saved and email sent." : "Payment successful. Order saved.");
+          window.open(fableWhatsappUrl(buildOrderText(formData, verifyResult.order || paidOrder)), "_blank", "noopener");
+          resolve(verifyResult);
+        } catch (verifyError) {
+          reject(verifyError);
+        }
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.on("payment.failed", (response) => {
+      reject(new Error(response?.error?.description || "Payment failed."));
+    });
+    rzp.open();
+  } catch (error) {
+    reject(error);
+  }
+});
+
 const saveSubscriberToApi = async (lead) => {
   if (!hasFableApi()) return { ok: false, skipped: true, reason: "api_not_configured" };
   return fableApi("/api/subscribers", { method: "POST", body: JSON.stringify(lead) });
@@ -768,8 +866,8 @@ const openCheckout = () => {
   checkoutModal.innerHTML = `
     <button class="modal-close" type="button" data-checkout-close aria-label="Close checkout enquiry">${ICON_CLOSE}</button>
     <p class="eyebrow">Complete your selection</p>
-    <h2>Send order enquiry</h2>
-    <p class="checkout-intro">Enter the customer details below. The order will be saved to the Supabase admin dashboard through Vercel, and an email confirmation will be sent if Resend is configured.</p>
+    <h2>Secure checkout</h2>
+    <p class="checkout-intro">Enter the customer details below. The order will be saved to the admin dashboard and then Razorpay Checkout will open for payment.</p>
     ${(() => {
       const subtotal = getCartSubtotal();
       const { activeLead, discount, total } = calculateCartDiscount(subtotal);
@@ -781,8 +879,8 @@ const openCheckout = () => {
         <label>Full delivery address<textarea name="address" required placeholder="House / building, area, city, pincode"></textarea></label>
         <label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label>
         <div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(subtotal)}</strong></p>${activeLead && discount ? `<p class="discount-applied"><span>WhatsApp updates discount</span><strong>−${formatPrice(discount)}</strong></p><p><span>Estimated total</span><strong>${formatPrice(total)}</strong></p>` : `<p><span>Estimated total</span><strong>${formatPrice(subtotal)}</strong></p>`}</div>
-        <button class="button button-dark checkout-submit" type="submit">Submit order enquiry</button>
-        <p class="checkout-disclaimer">Payment is not collected until Razorpay keys are added. This saves the order enquiry and can send the customer email through the Vercel backend.</p>
+        <button class="button button-dark checkout-submit" type="submit">Pay with Razorpay</button>
+        <p class="checkout-disclaimer">Secure payment is processed by Razorpay. Order confirmation email sends after successful payment if Resend is configured.</p>
       </form>`;
     })()}`;
   checkoutModal.classList.add("open");
@@ -811,33 +909,31 @@ checkoutModal?.addEventListener("submit", async (event) => {
   const orderText = buildOrderText(formData, order);
   if (submitButton) {
     submitButton.disabled = true;
-    submitButton.textContent = "Saving order...";
+    submitButton.textContent = "Creating payment...";
   }
   try {
-    const apiResult = await sendOrderToApi(order);
-    const savedOrder = apiResult.order || order;
-    saveOrderLocally(savedOrder);
-    await copyText(buildOrderText(formData, savedOrder));
-    if (activeLead) markDiscountUsed(activeLead.phone);
-    cart = [];
-    saveCart();
-    renderCart();
-    closeCheckout();
-    showToast(apiResult.email?.sent ? "Order saved and customer email sent" : "Order saved. Email will work after Resend is connected.");
-    window.open(fableWhatsappUrl(buildOrderText(formData, savedOrder)), "_blank", "noopener");
+    order.status = "payment_pending";
+    order.paymentStatus = "payment_pending";
+    const razorpayResult = await createRazorpayOrder(order);
+    order.razorpayOrderId = razorpayResult.order.id;
+    const pendingSave = await sendOrderToApi(order);
+    const pendingOrder = pendingSave.order || order;
+    saveOrderLocally(pendingOrder);
+    if (submitButton) submitButton.textContent = "Opening Razorpay...";
+    await openRazorpayCheckout({
+      keyId: razorpayResult.keyId,
+      razorpayOrder: razorpayResult.order,
+      order: pendingOrder,
+      formData,
+      submitButton,
+      activeLead,
+    });
   } catch (error) {
-    saveOrderLocally(order);
-    await copyText(orderText);
-    if (activeLead) markDiscountUsed(activeLead.phone);
-    renderCart();
-    closeCheckout();
-    showToast("Order saved locally. Connect Vercel + Supabase to save centrally.");
-    window.open(fableWhatsappUrl(orderText), "_blank", "noopener");
     console.warn(error);
-  } finally {
+    showToast(error.message || "Payment could not start. Please try again.");
     if (submitButton) {
       submitButton.disabled = false;
-      submitButton.textContent = "Submit order enquiry";
+      submitButton.textContent = "Pay with Razorpay";
     }
   }
 });

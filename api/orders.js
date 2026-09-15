@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
         prefer: 'return=representation',
       });
       const saved = Array.isArray(rows) && rows[0] ? rows[0] : record;
-      const email = await sendConfirmationEmail(saved);
+      const email = saved.payment_status === 'payment_pending' ? { sent: false, skipped: true, reason: 'payment_pending' } : await sendConfirmationEmail(saved);
       return json(res, 200, { ok: true, order: rowToOrder(saved), email });
     }
 
