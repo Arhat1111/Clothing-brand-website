@@ -32,7 +32,7 @@ Open `VERCEL_SUPABASE_SETUP.md` and follow the steps.
 Default frontend passcode:
 
 ```txt
-FABLE2026
+[private admin passcode]
 ```
 
 For live Supabase data, also enter your private `ADMIN_TOKEN` from Vercel environment variables.

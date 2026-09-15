@@ -101,7 +101,7 @@ Open:
 First passcode:
 
 ```txt
-FABLE2026
+[private admin passcode]
 ```
 
 Then enter the same `ADMIN_TOKEN` that you added in Vercel environment variables. This lets the admin page read central orders and subscribers from Supabase.

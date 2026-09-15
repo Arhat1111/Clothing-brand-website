@@ -60,7 +60,7 @@ Open:
 Login with:
 
 ```txt
-FABLE2026
+[private admin passcode]
 ```
 
 Then enter your Vercel `ADMIN_TOKEN` in the Admin API Token field and click `Save token`.
