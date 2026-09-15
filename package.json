@@ -1,0 +1,13 @@
+{
+  "name": "fable-by-kavita-anu-vercel-supabase",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static Fable website with Vercel API routes, Supabase order storage, and Resend email support.",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

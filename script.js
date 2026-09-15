@@ -6,9 +6,13 @@ const isShowcaseProduct = (product) => product?.category === "celebrity" || prod
 const SALE_PRODUCTS = PRODUCTS.filter((product) => !isShowcaseProduct(product));
 const INSTAGRAM_URL = "https://www.instagram.com/fablebykavitaanu/";
 const WHATSAPP_URL = "https://wa.me/";
+const FABLE_WHATSAPP_NUMBER = ""; // Add Fable WhatsApp number with country code, e.g. 91XXXXXXXXXX
+const FABLE_API_BASE_URL = ""; // Vercel + Supabase: leave blank when the site is hosted on Vercel. If the site stays on GitHub Pages, paste your Vercel URL here, e.g. https://fable-orders.vercel.app
+const FABLE_ADMIN_TOKEN_KEY = "fable-admin-api-token-v1";
 const WHATSAPP_CONSULTATION_URL = "https://wa.me/?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
 const CART_KEY = "fable-shopping-bag-v2";
 const LEADS_KEY = "fable-whatsapp-update-leads-v1";
+const ORDERS_KEY = "fable-orders-local-v1";
 const UPDATES_JOINED_KEY = "fable-updates-joined-v1";
 const UPDATES_DISMISSED_KEY = "fable-updates-dismissed-session-v1";
 const DISCOUNT_PHONE_KEY = "fable-active-discount-phone-v1";
@@ -613,6 +617,96 @@ window.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight") setQuickGalleryImage(quickGalleryIndex + 1);
 });
 
+
+/* Vercel + Supabase API helpers */
+const hasFableApi = () => true;
+const getFableApiBase = () => String(FABLE_API_BASE_URL || "").trim().replace(/\/$/, "");
+const fableApi = async (path, options = {}) => {
+  if (!hasFableApi()) throw new Error("Fable API URL is not configured yet.");
+  const apiBase = getFableApiBase();
+  const response = await fetch(`${apiBase}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+  const text = await response.text();
+  let data = {};
+  try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+  if (!response.ok || data.ok === false) throw new Error(data.error || `Request failed (${response.status})`);
+  return data;
+};
+
+const readOrderRecords = () => {
+  try {
+    const data = JSON.parse(localStorage.getItem(ORDERS_KEY) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch { return []; }
+};
+const saveOrderRecords = (orders) => localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+const saveOrderLocally = (order) => {
+  const orders = readOrderRecords();
+  const existingIndex = orders.findIndex((item) => item.id === order.id);
+  if (existingIndex >= 0) orders[existingIndex] = order;
+  else orders.unshift(order);
+  saveOrderRecords(orders.slice(0, 500));
+};
+
+const buildOrderPayload = (formData) => {
+  const subtotal = getCartSubtotal();
+  const { activeLead, discount, total } = calculateCartDiscount(subtotal);
+  const items = cart.map((item) => {
+    const product = getProduct(item.id);
+    return product ? {
+      id: product.id,
+      name: product.name,
+      category: product.categoryLabel || product.category || "",
+      size: item.size,
+      qty: item.qty,
+      unitPrice: product.price,
+      lineTotal: product.price * item.qty,
+      image: product.image || "",
+    } : null;
+  }).filter(Boolean);
+  return {
+    id: `fable-${Date.now()}`,
+    source: "website",
+    status: "enquiry_received",
+    paymentStatus: "not_paid",
+    customer: {
+      name: String(formData.get("name") || "").trim(),
+      email: String(formData.get("email") || "").trim(),
+      phone: String(formData.get("phone") || "").trim(),
+      city: String(formData.get("city") || "").trim(),
+      address: String(formData.get("address") || "").trim(),
+    },
+    note: String(formData.get("note") || "").trim(),
+    items,
+    subtotal,
+    discount,
+    total,
+    discountPhone: activeLead ? activeLead.phone : "",
+    discountLabel: activeLead && discount ? "5% WhatsApp updates discount" : "",
+    createdAt: new Date().toISOString(),
+  };
+};
+
+const sendOrderToApi = async (order) => {
+  if (!hasFableApi()) return { ok: false, skipped: true, reason: "api_not_configured" };
+  return fableApi("/api/orders", { method: "POST", body: JSON.stringify(order) });
+};
+
+const saveSubscriberToApi = async (lead) => {
+  if (!hasFableApi()) return { ok: false, skipped: true, reason: "api_not_configured" };
+  return fableApi("/api/subscribers", { method: "POST", body: JSON.stringify(lead) });
+};
+
+const fableWhatsappUrl = (text) => {
+  const number = String(FABLE_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+  return `${WHATSAPP_URL}${number}?text=${encodeURIComponent(text)}`;
+};
+
 /* Checkout enquiry */
 const closeCheckout = () => {
   checkoutModal?.classList.remove("open");
@@ -626,30 +720,29 @@ const getCartSubtotal = () => cart.reduce((sum, item) => {
   return sum + (product ? product.price * item.qty : 0);
 }, 0);
 
-const buildOrderText = (formData) => {
+const buildOrderText = (formData, orderOverride = null) => {
+  const order = orderOverride || buildOrderPayload(formData);
   const lines = [
     "FABLE BY KAVITA ANU - ORDER ENQUIRY",
     "",
-    `Name: ${formData.get("name")}`,
-    `Phone: ${formData.get("phone")}`,
-    `City: ${formData.get("city")}`,
+    `Order ID: ${order.id}`,
+    `Name: ${order.customer.name}`,
+    `Email: ${order.customer.email}`,
+    `Phone: ${order.customer.phone}`,
+    `City: ${order.customer.city}`,
+    `Address: ${order.customer.address || "Not added"}`,
     "",
     "Selected pieces:",
   ];
-  cart.forEach((item, index) => {
-    const product = getProduct(item.id);
-    if (product) lines.push(`${index + 1}. ${product.name} | Size: ${item.size} | Qty: ${item.qty} | ${formatPrice(product.price * item.qty)}`);
+  order.items.forEach((item, index) => {
+    lines.push(`${index + 1}. ${item.name} | Size: ${item.size} | Qty: ${item.qty} | ${formatPrice(item.lineTotal)}`);
   });
-  const subtotal = getCartSubtotal();
-  const { activeLead, discount, total } = calculateCartDiscount(subtotal);
-  lines.push("", `Estimated subtotal: ${formatPrice(subtotal)}`);
-  if (activeLead && discount) {
-    lines.push(`WhatsApp updates discount (5%): -${formatPrice(discount)}`);
-    lines.push(`Estimated total after discount: ${formatPrice(total)}`);
-    lines.push(`Discount linked to: ${activeLead.rawPhone || activeLead.phone}`);
+  lines.push("", `Subtotal: ${formatPrice(order.subtotal)}`);
+  if (order.discount > 0) {
+    lines.push(`${order.discountLabel || "Discount"}: -${formatPrice(order.discount)}`);
   }
-  const note = String(formData.get("note") || "").trim();
-  if (note) lines.push("", `Note: ${note}`);
+  lines.push(`Total: ${formatPrice(order.total)}`);
+  if (order.note) lines.push("", `Note: ${order.note}`);
   lines.push("", "Please confirm availability, final price, shipping and payment details.");
   return lines.join("\n");
 };
@@ -674,11 +767,23 @@ const openCheckout = () => {
   closeCart();
   checkoutModal.innerHTML = `
     <button class="modal-close" type="button" data-checkout-close aria-label="Close checkout enquiry">${ICON_CLOSE}</button>
-    <p class="eyebrow">Complete your selection</p><h2>Order enquiry</h2><p class="checkout-intro">Enter your details below. Your complete order summary will be copied, then WhatsApp will open so you can send it directly to the Fable team.</p>
+    <p class="eyebrow">Complete your selection</p>
+    <h2>Send order enquiry</h2>
+    <p class="checkout-intro">Enter the customer details below. The order will be saved to the Supabase admin dashboard through Vercel, and an email confirmation will be sent if Resend is configured.</p>
     ${(() => {
       const subtotal = getCartSubtotal();
       const { activeLead, discount, total } = calculateCartDiscount(subtotal);
-      return `<form class="checkout-form" id="checkoutForm"><label>Full name<input type="text" name="name" required autocomplete="name" value="${activeLead ? escapeText(activeLead.name) : ""}" /></label><label>Phone number<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" value="${activeLead ? escapeText(activeLead.rawPhone || activeLead.phone) : ""}" /></label><label>City<input type="text" name="city" required autocomplete="address-level2" /></label><label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label><div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(subtotal)}</strong></p>${activeLead && discount ? `<p class="discount-applied"><span>WhatsApp updates discount</span><strong>−${formatPrice(discount)}</strong></p><p><span>Estimated total</span><strong>${formatPrice(total)}</strong></p>` : `<p><span>Estimated total</span><strong>${formatPrice(subtotal)}</strong></p>`}</div><button class="button button-dark checkout-submit" type="submit">Copy order & open WhatsApp</button><p class="checkout-disclaimer">This creates an enquiry only. No online payment is collected on this website. The 5% updates discount is linked to the registered WhatsApp number and is valid once.</p></form>`;
+      return `<form class="checkout-form" id="checkoutForm">
+        <label>Full name<input type="text" name="name" required autocomplete="name" value="${activeLead ? escapeText(activeLead.name) : ""}" /></label>
+        <label>Email address<input type="email" name="email" required autocomplete="email" placeholder="customer@email.com" /></label>
+        <label>Phone / WhatsApp number<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" value="${activeLead ? escapeText(activeLead.rawPhone || activeLead.phone) : ""}" /></label>
+        <label>City<input type="text" name="city" required autocomplete="address-level2" /></label>
+        <label>Full delivery address<textarea name="address" required placeholder="House / building, area, city, pincode"></textarea></label>
+        <label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label>
+        <div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(subtotal)}</strong></p>${activeLead && discount ? `<p class="discount-applied"><span>WhatsApp updates discount</span><strong>−${formatPrice(discount)}</strong></p><p><span>Estimated total</span><strong>${formatPrice(total)}</strong></p>` : `<p><span>Estimated total</span><strong>${formatPrice(subtotal)}</strong></p>`}</div>
+        <button class="button button-dark checkout-submit" type="submit">Submit order enquiry</button>
+        <p class="checkout-disclaimer">Payment is not collected until Razorpay keys are added. This saves the order enquiry and can send the customer email through the Vercel backend.</p>
+      </form>`;
     })()}`;
   checkoutModal.classList.add("open");
   checkoutModal.setAttribute("aria-hidden", "false");
@@ -693,19 +798,48 @@ checkoutModal?.addEventListener("click", (event) => {
 checkoutModal?.addEventListener("submit", async (event) => {
   if (event.target.id !== "checkoutForm") return;
   event.preventDefault();
-  const formData = new FormData(event.target);
+  const form = event.target;
+  const submitButton = form.querySelector(".checkout-submit");
+  const formData = new FormData(form);
   const activeLead = getActiveDiscountLead();
   const formPhone = normalizeDiscountPhone(formData.get("phone"));
   if (activeLead && formPhone !== activeLead.phone) {
     showToast("Please use the registered WhatsApp number to keep the 5% discount");
     return;
   }
-  const orderText = buildOrderText(formData);
-  await copyText(orderText);
-  if (activeLead) markDiscountUsed(activeLead.phone);
-  renderCart();
-  showToast(activeLead ? "Order copied and 5% discount marked as used" : "Order summary copied - paste it into WhatsApp");
-  window.open(`${WHATSAPP_URL}?text=${encodeURIComponent(orderText)}`, "_blank", "noopener");
+  const order = buildOrderPayload(formData);
+  const orderText = buildOrderText(formData, order);
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Saving order...";
+  }
+  try {
+    const apiResult = await sendOrderToApi(order);
+    const savedOrder = apiResult.order || order;
+    saveOrderLocally(savedOrder);
+    await copyText(buildOrderText(formData, savedOrder));
+    if (activeLead) markDiscountUsed(activeLead.phone);
+    cart = [];
+    saveCart();
+    renderCart();
+    closeCheckout();
+    showToast(apiResult.email?.sent ? "Order saved and customer email sent" : "Order saved. Email will work after Resend is connected.");
+    window.open(fableWhatsappUrl(buildOrderText(formData, savedOrder)), "_blank", "noopener");
+  } catch (error) {
+    saveOrderLocally(order);
+    await copyText(orderText);
+    if (activeLead) markDiscountUsed(activeLead.phone);
+    renderCart();
+    closeCheckout();
+    showToast("Order saved locally. Connect Vercel + Supabase to save centrally.");
+    window.open(fableWhatsappUrl(orderText), "_blank", "noopener");
+    console.warn(error);
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Submit order enquiry";
+    }
+  }
 });
 
 modalBackdrop?.addEventListener("click", () => {
@@ -780,7 +914,7 @@ updatesPopup?.addEventListener("click", (event) => {
   if (event.target.closest("[data-updates-close]")) closeUpdatesPopup();
 });
 
-document.getElementById("updatesForm")?.addEventListener("submit", (event) => {
+document.getElementById("updatesForm")?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = new FormData(event.currentTarget);
   const name = String(form.get("name") || "").trim();
@@ -813,6 +947,7 @@ document.getElementById("updatesForm")?.addEventListener("submit", (event) => {
   if (existingIndex >= 0) leads[existingIndex] = { ...existing, ...lead };
   else leads.unshift(lead);
   saveLeads(leads);
+  try { await saveSubscriberToApi(lead); } catch (error) { console.warn(error); }
   if (alreadyUsed) {
     setDiscountLedgerEntry(phone, { status: "used", eligible: false, usedAt: lead.discountUsedAt || ledgerEntry?.usedAt || "used-before" });
   } else {
@@ -867,9 +1002,23 @@ const setAdminVisible = (visible) => {
   if (visible) renderAdminLeads();
 };
 
-const renderAdminLeads = () => {
+const fetchAdminLeads = async () => {
+  const localLeads = readLeads();
+  const token = sessionStorage.getItem(FABLE_ADMIN_TOKEN_KEY) || "";
+  if (!token) return localLeads;
+  try {
+    const data = await fableApi("/api/subscribers", { headers: { "X-Admin-Token": token } });
+    const remote = Array.isArray(data.subscribers) ? data.subscribers : [];
+    return remote.length ? remote : localLeads;
+  } catch (error) {
+    console.warn(error);
+    return localLeads;
+  }
+};
+
+const renderAdminLeads = async () => {
   if (!adminLeadRows || !adminDashboard) return;
-  const leads = readLeads();
+  const leads = await fetchAdminLeads();
   const q = adminFilter.trim().toLowerCase();
   const filtered = leads.filter((lead) => !q || [lead.name, lead.phone, lead.rawPhone, lead.sourcePage, lead.status].join(" ").toLowerCase().includes(q));
   if (adminLeadCount) adminLeadCount.textContent = String(leads.length);
@@ -883,7 +1032,7 @@ const renderAdminLeads = () => {
       <td><span class="admin-status">${escapeText(lead.status || "Subscribed")}</span></td>
       <td class="admin-actions-cell">
         <button type="button" data-admin-whatsapp="${escapeText(lead.id)}">WhatsApp</button>
-        <button type="button" data-admin-delete="${escapeText(lead.id)}">Delete</button>
+        <button type="button" data-admin-delete="${escapeText(lead.id)}">Delete local</button>
       </td>
     </tr>
   `).join("");
@@ -964,6 +1113,67 @@ document.getElementById("openBroadcastQueue")?.addEventListener("click", () => {
 
 if (body.dataset.page === "admin") {
   setAdminVisible(sessionStorage.getItem("fable-admin-auth") === "true");
+}
+
+
+/* Supabase orders admin dashboard */
+const adminOrderRows = document.getElementById("adminOrderRows");
+const adminOrderEmpty = document.getElementById("adminOrderEmpty");
+const adminOrderCount = document.getElementById("adminOrderCount");
+const adminApiStatus = document.getElementById("adminApiStatus");
+const adminTokenInput = document.getElementById("adminTokenInput");
+const saveAdminTokenButton = document.getElementById("saveAdminToken");
+const refreshAdminDataButton = document.getElementById("refreshAdminData");
+
+const getAdminToken = () => sessionStorage.getItem(FABLE_ADMIN_TOKEN_KEY) || "";
+const setAdminToken = (token) => sessionStorage.setItem(FABLE_ADMIN_TOKEN_KEY, token || "");
+
+const fetchAdminOrders = async () => {
+  if (!hasFableApi()) return readOrderRecords();
+  const data = await fableApi("/api/orders", { headers: { "X-Admin-Token": getAdminToken() } });
+  return Array.isArray(data.orders) ? data.orders : [];
+};
+
+const renderAdminOrders = async () => {
+  if (!adminOrderRows) return;
+  if (adminApiStatus) adminApiStatus.textContent = hasFableApi() ? "Connecting to Supabase..." : "Local demo mode: deploy on Vercel or add your Vercel API URL in script.js for central storage.";
+  try {
+    const orders = await fetchAdminOrders();
+    if (adminOrderCount) adminOrderCount.textContent = String(orders.length);
+    if (adminOrderEmpty) adminOrderEmpty.hidden = orders.length > 0;
+    adminOrderRows.innerHTML = orders.map((order) => {
+      const customer = order.customer || {};
+      const items = Array.isArray(order.items) ? order.items : [];
+      const itemText = items.map((item) => `${item.name} x ${item.qty} (${item.size || "Custom"})`).join("; ");
+      return `<tr>
+        <td><strong>${escapeText(order.id || "Order")}</strong><span>${formatLeadDate(order.createdAt)}</span></td>
+        <td><strong>${escapeText(customer.name || "")}</strong><span>${escapeText(customer.phone || "")}</span><span>${escapeText(customer.email || "")}</span></td>
+        <td>${escapeText(itemText || "-")}</td>
+        <td><strong>${formatPrice(Number(order.total || 0))}</strong><span>${escapeText(order.discountLabel || "")}</span></td>
+        <td><span class="admin-status">${escapeText(order.status || "enquiry_received")}</span><span>${escapeText(order.paymentStatus || "not_paid")}</span></td>
+      </tr>`;
+    }).join("");
+    if (adminApiStatus) adminApiStatus.textContent = hasFableApi() ? "Connected to Supabase." : "Showing orders saved in this browser only.";
+  } catch (error) {
+    adminOrderRows.innerHTML = "";
+    if (adminOrderEmpty) adminOrderEmpty.hidden = false;
+    if (adminApiStatus) adminApiStatus.textContent = `Admin API error: ${error.message}. Check Vercel deployment, Supabase env variables, and admin token.`;
+  }
+};
+
+saveAdminTokenButton?.addEventListener("click", () => {
+  setAdminToken(adminTokenInput?.value || "");
+  showToast("Admin API token saved for this session");
+  renderAdminOrders();
+});
+refreshAdminDataButton?.addEventListener("click", () => {
+  renderAdminOrders();
+  renderAdminLeads();
+});
+
+if (body.dataset.page === "admin") {
+  if (adminTokenInput) adminTokenInput.value = getAdminToken();
+  window.setTimeout(renderAdminOrders, 50);
 }
 
 /* Cursor and magnetic hover */

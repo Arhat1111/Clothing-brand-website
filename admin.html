@@ -19,18 +19,18 @@
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=4" />
   <link rel="manifest" href="site.webmanifest?v=4" />
   <meta name="theme-color" content="#fffaf9" />
-  <meta name="description" content="Fable by Kavita Anu admin dashboard for WhatsApp update subscribers." />
+  <meta name="description" content="Fable by Kavita Anu admin dashboard for orders, subscribers and email confirmations." />
   <title>Admin | Fable by Kavita Anu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260912-pricefix" />
+  <link rel="stylesheet" href="styles.css?v=20260915-vercel-supabase" />
 </head>
 <body data-page="admin">
   <div class="page-loader" aria-hidden="true"><div class="loader-mark"><span>F</span><small>FABLE</small></div></div>
   <div class="cursor-dot" aria-hidden="true"></div><div class="cursor-ring" aria-hidden="true"></div>
 
-  <div class="announcement-bar"><p>Admin dashboard for WhatsApp update subscribers and first-order discount tracking</p><a href="products.html">Back to shop</a></div>
+  <div class="announcement-bar"><p>Admin dashboard for website orders, customers, email confirmations and subscribers</p><a href="products.html">Back to shop</a></div>
 
   <header class="site-header shop-header" id="siteHeader">
     <a class="brand" href="index.html" aria-label="Fable by Kavita Anu home"><span class="brand-name">Fable</span><span class="brand-byline">by Kavita Anu</span></a>
@@ -65,9 +65,9 @@
   <main>
     <section class="admin-hero">
       <div class="reveal-up">
-        <p class="eyebrow">Subscriber dashboard</p>
-        <h1>WhatsApp<br /><em>updates admin.</em></h1>
-        <p>View customers who joined daily WhatsApp updates from the website popup, export their data, and open pre-filled WhatsApp messages from one place.</p>
+        <p class="eyebrow">Orders dashboard</p>
+        <h1>Fable<br /><em>admin centre.</em></h1>
+        <p>View website orders, customer details, subscribers, discount status and email confirmation records from one private dashboard.</p>
       </div>
     </section>
 
@@ -75,7 +75,7 @@
       <div class="admin-login-card" id="adminLogin">
         <p class="eyebrow">Protected area</p>
         <h2>Enter admin passcode.</h2>
-        <p>This is a simple static-site lock for the downloadable demo. Default passcode: <strong>FABLE2026</strong>.</p>
+        <p>This unlocks the admin screen. Default page passcode: <strong>FABLE2026</strong>. For live Supabase orders, also enter your private Admin API Token after login.</p>
         <form id="adminLoginForm">
           <label>Passcode<input type="password" name="pin" placeholder="Enter passcode" autocomplete="current-password" required /></label>
           <button class="button button-dark" type="submit">Open dashboard</button>
@@ -85,34 +85,64 @@
       <div class="admin-dashboard-card" id="adminDashboard" hidden>
         <div class="admin-dashboard-head">
           <div>
-            <p class="eyebrow">Daily updates list</p>
-            <h2>Saved subscribers.</h2>
-            <p>Use the message box below to create a daily update. The WhatsApp buttons open a pre-filled chat for each subscriber.</p>
+            <p class="eyebrow">Live backend</p>
+            <h2>Orders and subscribers.</h2>
+            <p id="adminApiStatus">Local demo mode until Vercel + Supabase environment variables are connected.</p>
           </div>
-          <div class="admin-count-badge"><div><strong id="adminLeadCount">0</strong><span>contacts</span></div></div>
+          <div class="admin-count-badge"><div><strong id="adminOrderCount">0</strong><span>orders</span></div></div>
         </div>
 
-        <p class="admin-note"><strong>Important:</strong> this downloadable static website stores signups and discount usage in the browser using localStorage. To collect all real customer numbers centrally, prevent discount reuse across devices, and send truly automatic WhatsApp messages, connect this form to Firebase/Sheets plus the official WhatsApp Business API.</p>
+        <p class="admin-note"><strong>Live setup:</strong> connect this page to Vercel + Supabase. If the website is deployed on Vercel, leave <strong>FABLE_API_BASE_URL</strong> blank in <strong>script.js</strong>. If the website stays on GitHub Pages, add your Vercel URL there. Then enter your private <strong>ADMIN_TOKEN</strong> below. Do not put the Admin Token in GitHub.</p>
 
         <div class="admin-actions">
-          <button type="button" id="exportLeads">Export CSV</button>
-          <button type="button" id="copyLeadNumbers">Copy numbers</button>
-          <button type="button" id="clearLeads" class="danger">Clear all</button>
+          <label style="flex:1; min-width: 240px;">Admin API Token<input type="password" id="adminTokenInput" placeholder="Enter ADMIN_TOKEN from Vercel" /></label>
+          <button type="button" id="saveAdminToken">Save token</button>
+          <button type="button" id="refreshAdminData">Refresh data</button>
+          <button type="button" id="exportLeads">Export subscribers CSV</button>
         </div>
 
         <div class="admin-grid">
+          <section class="admin-table-panel" style="grid-column: 1 / -1;">
+            <div class="admin-table-top">
+              <div>
+                <p class="eyebrow">Order enquiries</p>
+                <h3>Customer orders.</h3>
+              </div>
+            </div>
+            <p class="admin-empty" id="adminOrderEmpty">No orders yet. Place a cart enquiry to test the flow.</p>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr>
+                </thead>
+                <tbody id="adminOrderRows"></tbody>
+              </table>
+            </div>
+          </section>
+
           <aside class="admin-broadcast-panel">
             <p class="eyebrow">Broadcast message</p>
             <label>Daily WhatsApp update<textarea id="broadcastMessage">Hi {name}, Fable by Kavita Anu has a new festive update for you today. Reply here for styling help, new arrivals or a free consultation.</textarea></label>
             <button class="button button-dark" type="button" id="openBroadcastQueue">Open next WhatsApp chat</button>
-            <p class="admin-note">Use <strong>{name}</strong> to personalise the message. Browsers cannot silently send WhatsApp messages; this opens WhatsApp with the message ready to send.</p>
+            <p class="admin-note">Browsers cannot silently send WhatsApp messages. This opens WhatsApp with the message ready to send.</p>
           </aside>
 
           <section class="admin-table-panel">
             <div class="admin-table-top">
+              <div>
+                <p class="eyebrow">Subscribers</p>
+                <h3>Saved update contacts.</h3>
+              </div>
+              <div class="admin-count-badge"><div><strong id="adminLeadCount">0</strong><span>contacts</span></div></div>
+            </div>
+            <div class="admin-actions">
+              <button type="button" id="copyLeadNumbers">Copy numbers</button>
+              <button type="button" id="clearLeads" class="danger">Clear local subscribers</button>
+            </div>
+            <div class="admin-table-top">
               <div class="admin-search"><label>Search subscribers<input type="search" id="adminSearch" placeholder="Search name, number or page" /></label></div>
             </div>
-            <p class="admin-empty" id="adminEmpty">No WhatsApp update subscribers yet. Open the website popup and submit a test signup to see it here.</p>
+            <p class="admin-empty" id="adminEmpty">No WhatsApp update subscribers yet.</p>
             <div class="admin-table-wrap">
               <table class="admin-table">
                 <thead>
@@ -136,7 +166,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-to-top" type="button" aria-label="Back to top"><svg class="icon icon-up" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 
-  <script src="catalog.js?v=20260912-pricefix"></script>
-  <script src="script.js?v=20260912-pricefix"></script>
+  <script src="catalog.js?v=20260915-vercel-supabase"></script>
+  <script src="script.js?v=20260915-vercel-supabase"></script>
 </body>
 </html>

@@ -2130,3 +2130,16 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
   color: #7b4b55;
   line-height: 1.6;
 }
+
+/* Admin backend additions */
+.admin-actions label input {
+  margin-top: 8px;
+  width: 100%;
+  border: 1px solid rgba(56, 42, 36, 0.18);
+  border-radius: 999px;
+  padding: 13px 16px;
+  background: rgba(255,255,255,.82);
+  font: inherit;
+}
+.admin-table td span { display:block; opacity:.66; font-size:.86rem; margin-top:4px; }
+.admin-table-panel h3 { margin: 0; font-family: Italiana, serif; font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 400; }
