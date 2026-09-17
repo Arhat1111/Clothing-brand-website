@@ -56,3 +56,4 @@ BUSINESS_EMAIL=owner_email_here
 ```
 
 After adding or changing variables, redeploy the Vercel project.
+- Mobile updates popup z-index/responsive fix added on 2026-09-17 so it no longer clashes with the navbar.

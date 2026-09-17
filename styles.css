@@ -1732,10 +1732,14 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
 .updates-popup {
   position: fixed;
   inset: 0;
-  z-index: 95;
-  display: grid;
-  place-items: center;
-  padding: 22px;
+  z-index: 520;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(22px, env(safe-area-inset-top)) 22px max(22px, env(safe-area-inset-bottom));
+  min-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -1756,11 +1760,14 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
   position: relative;
   z-index: 2;
   width: min(490px, 100%);
+  max-height: calc(100dvh - 44px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   padding: 34px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   background: linear-gradient(145deg, rgba(255, 252, 248, .98), rgba(253, 239, 238, .98));
   border: 1px solid rgba(111, 35, 54, .12);
   box-shadow: 0 34px 100px rgba(66, 31, 40, .22);
-  overflow: hidden;
 }
 .updates-popup-panel::before {
   content: "";
@@ -1846,6 +1853,12 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
   font: 10px var(--ui);
   letter-spacing: .14em;
   text-transform: uppercase;
+}
+
+
+body.overlay-open .announcement-bar,
+body.overlay-open .site-header {
+  pointer-events: none;
 }
 
 /* Admin dashboard */
@@ -2045,8 +2058,26 @@ body[data-page="celebrities"] .celebrity-card-float img { object-position: cente
   .admin-table-top { flex-direction: column; align-items: stretch; }
 }
 @media (max-width: 620px) {
-  .updates-popup { padding: 14px; }
-  .updates-popup-panel { padding: 28px 22px; }
+  .updates-popup {
+    align-items: flex-start;
+    justify-content: center;
+    padding: calc(16px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom));
+  }
+  .updates-popup-panel {
+    width: min(100%, 520px);
+    max-height: calc(100dvh - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding: 30px 22px 22px;
+    overflow-y: auto;
+  }
+  .updates-popup-close { top: 12px; right: 12px; width: 36px; height: 36px; }
+  .updates-popup-panel::before { width: 132px; height: 132px; right: -54px; top: -58px; }
+  .updates-popup-panel h2 { max-width: calc(100% - 48px); font-size: clamp(38px, 12vw, 52px); line-height: .98; }
+  .updates-popup-copy { margin: 14px 0 18px; font-size: 14px; line-height: 1.62; }
+  .updates-form { gap: 12px; }
+  .updates-form input[type="text"],
+  .updates-form input[type="tel"] { padding: 13px 12px; font-size: 16px; }
+  .updates-consent { font-size: 12px !important; line-height: 1.45 !important; }
+  .updates-later { margin-top: 13px; }
   .admin-hero { padding: 150px 22px 56px; }
   .admin-section { padding: 46px 20px 90px; }
   .admin-dashboard-card, .admin-login-card { padding: 22px; }
