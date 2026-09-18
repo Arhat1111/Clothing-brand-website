@@ -1281,11 +1281,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "celebrity-edit",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Celebrity Edit",
-    "image": "assets/celebrities/showcase/celebrity-red-main.webp",
+    "image": "assets/celebrities/celebrity-red-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-red-main.webp",
-      "assets/celebrities/showcase/celebrity-red-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-red-detail-2.webp"
+      "assets/celebrities/celebrity-red-main.webp",
+      "assets/celebrities/celebrity-red-detail-1.webp",
+      "assets/celebrities/celebrity-red-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1313,11 +1313,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "celebrity-edit",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Celebrity Edit",
-    "image": "assets/celebrities/showcase/celebrity-golden-main.webp",
+    "image": "assets/celebrities/celebrity-golden-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-golden-main.webp",
-      "assets/celebrities/showcase/celebrity-golden-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-golden-detail-2.webp"
+      "assets/celebrities/celebrity-golden-main.webp",
+      "assets/celebrities/celebrity-golden-detail-1.webp",
+      "assets/celebrities/celebrity-golden-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1345,11 +1345,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "lehenga",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Lehenga",
-    "image": "assets/celebrities/showcase/celebrity-green-lehenga-main.webp",
+    "image": "assets/celebrities/celebrity-green-lehenga-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-green-lehenga-main.webp",
-      "assets/celebrities/showcase/celebrity-green-lehenga-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-green-lehenga-detail-2.webp"
+      "assets/celebrities/celebrity-green-lehenga-main.webp",
+      "assets/celebrities/celebrity-green-lehenga-detail-1.webp",
+      "assets/celebrities/celebrity-green-lehenga-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1377,11 +1377,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "heritage",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Banarasi",
-    "image": "assets/celebrities/showcase/celebrity-banarasi-main.webp",
+    "image": "assets/celebrities/celebrity-banarasi-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-banarasi-main.webp",
-      "assets/celebrities/showcase/celebrity-banarasi-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-banarasi-detail-2.webp"
+      "assets/celebrities/celebrity-banarasi-main.webp",
+      "assets/celebrities/celebrity-banarasi-detail-1.webp",
+      "assets/celebrities/celebrity-banarasi-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1409,11 +1409,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "tissue",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Tissue Edit",
-    "image": "assets/celebrities/showcase/celebrity-golden-tissue-main.webp",
+    "image": "assets/celebrities/celebrity-golden-tissue-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-golden-tissue-main.webp",
-      "assets/celebrities/showcase/celebrity-golden-tissue-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-golden-tissue-detail-2.webp"
+      "assets/celebrities/celebrity-golden-tissue-main.webp",
+      "assets/celebrities/celebrity-golden-tissue-detail-1.webp",
+      "assets/celebrities/celebrity-golden-tissue-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1441,11 +1441,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "kurta",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Kurta Set",
-    "image": "assets/celebrities/showcase/celebrity-wine-kurta-main.webp",
+    "image": "assets/celebrities/celebrity-wine-kurta-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-wine-kurta-main.webp",
-      "assets/celebrities/showcase/celebrity-wine-kurta-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-wine-kurta-detail-2.webp"
+      "assets/celebrities/celebrity-wine-kurta-main.webp",
+      "assets/celebrities/celebrity-wine-kurta-detail-1.webp",
+      "assets/celebrities/celebrity-wine-kurta-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1473,11 +1473,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "festive",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Festive Edit",
-    "image": "assets/celebrities/showcase/celebrity-beige-main.webp",
+    "image": "assets/celebrities/celebrity-beige-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-beige-main.webp",
-      "assets/celebrities/showcase/celebrity-beige-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-beige-detail-2.webp"
+      "assets/celebrities/celebrity-beige-main.webp",
+      "assets/celebrities/celebrity-beige-detail-1.webp",
+      "assets/celebrities/celebrity-beige-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1505,11 +1505,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "multi",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Multi Edit",
-    "image": "assets/celebrities/showcase/celebrity-multi-25000-main.webp",
+    "image": "assets/celebrities/celebrity-multi-25000-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-multi-25000-main.webp",
-      "assets/celebrities/showcase/celebrity-multi-25000-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-multi-25000-detail-2.webp"
+      "assets/celebrities/celebrity-multi-25000-main.webp",
+      "assets/celebrities/celebrity-multi-25000-detail-1.webp",
+      "assets/celebrities/celebrity-multi-25000-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1537,11 +1537,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "celebrity-edit",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Blue Edit",
-    "image": "assets/celebrities/showcase/celebrity-blue-main.webp",
+    "image": "assets/celebrities/celebrity-blue-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-blue-main.webp",
-      "assets/celebrities/showcase/celebrity-blue-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-blue-detail-2.webp"
+      "assets/celebrities/celebrity-blue-main.webp",
+      "assets/celebrities/celebrity-blue-detail-1.webp",
+      "assets/celebrities/celebrity-blue-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1569,11 +1569,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "jewellery-work",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Jewellery Work",
-    "image": "assets/celebrities/showcase/celebrity-red-jewellery-work-main.webp",
+    "image": "assets/celebrities/celebrity-red-jewellery-work-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-red-jewellery-work-main.webp",
-      "assets/celebrities/showcase/celebrity-red-jewellery-work-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-red-jewellery-work-detail-2.webp"
+      "assets/celebrities/celebrity-red-jewellery-work-main.webp",
+      "assets/celebrities/celebrity-red-jewellery-work-detail-1.webp",
+      "assets/celebrities/celebrity-red-jewellery-work-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [
@@ -1601,11 +1601,11 @@ window.FABLE_PRODUCTS = [
     "subCategory": "multi",
     "categoryLabel": "What Celebrities Wear",
     "badge": "Multi Edit",
-    "image": "assets/celebrities/showcase/celebrity-multi-11000-main.webp",
+    "image": "assets/celebrities/celebrity-multi-11000-main.webp",
     "gallery": [
-      "assets/celebrities/showcase/celebrity-multi-11000-main.webp",
-      "assets/celebrities/showcase/celebrity-multi-11000-detail-1.webp",
-      "assets/celebrities/showcase/celebrity-multi-11000-detail-2.webp"
+      "assets/celebrities/celebrity-multi-11000-main.webp",
+      "assets/celebrities/celebrity-multi-11000-detail-1.webp",
+      "assets/celebrities/celebrity-multi-11000-detail-2.webp"
     ],
     "source": "New Look Book by Fable",
     "sizes": [

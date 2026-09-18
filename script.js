@@ -1,3 +1,28 @@
+
+
+function attachImageFallbacks(scope = document) {
+  const imgs = scope.querySelectorAll ? scope.querySelectorAll("img") : [];
+  imgs.forEach((img) => {
+    if (img.dataset.fableFallbackAttached === "true") return;
+    img.dataset.fableFallbackAttached = "true";
+    img.addEventListener("error", () => {
+      const current = img.getAttribute("src") || "";
+      if (!current || img.dataset.fableFallbackTried === "true") return;
+      img.dataset.fableFallbackTried = "true";
+      let fallback = "";
+      if (current.includes("assets/celebrities/showcase/")) {
+        fallback = current.replace("assets/celebrities/showcase/", "assets/celebrities/");
+      } else if (current.includes("/assets/celebrities/showcase/")) {
+        fallback = current.replace("/assets/celebrities/showcase/", "/assets/celebrities/");
+      }
+      if (fallback && fallback !== current) {
+        img.src = fallback;
+      } else {
+        img.classList.add("image-load-failed");
+      }
+    });
+  });
+}
 "use strict";
 
 const PRODUCTS = Array.isArray(window.FABLE_PRODUCTS) ? window.FABLE_PRODUCTS : [];
@@ -69,6 +94,16 @@ const showToast = (message) => {
   toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2500);
 };
 
+
+const imageFallbackObserver = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    mutation.addedNodes.forEach((node) => {
+      if (node.nodeType === 1) attachImageFallbacks(node);
+    });
+  });
+});
+imageFallbackObserver.observe(document.documentElement, { childList: true, subtree: true });
+attachImageFallbacks();
 window.addEventListener("load", () => {
   window.setTimeout(() => loader?.classList.add("is-hidden"), 260);
 });

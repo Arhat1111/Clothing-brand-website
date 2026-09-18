@@ -2264,3 +2264,13 @@ body.overlay-open .site-header {
 @media (max-width: 900px) {
   .admin-owner-panel { grid-template-columns: 1fr; }
 }
+
+
+.image-load-failed {
+  opacity: 0;
+}
+
+.catalog-image:has(.image-load-failed),
+.product-image:has(.image-load-failed) {
+  background: linear-gradient(180deg, rgba(139, 36, 68, 0.2), rgba(246, 239, 234, 0.9));
+}
