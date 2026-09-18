@@ -2274,3 +2274,206 @@ body.overlay-open .site-header {
 .product-image:has(.image-load-failed) {
   background: linear-gradient(180deg, rgba(139, 36, 68, 0.2), rgba(246, 239, 234, 0.9));
 }
+
+/* --- Simple pricing typography fix --- */
+.product-card-info .price,
+.catalog-info .catalog-price,
+.quick-price,
+.cart-item-side strong,
+.cart-subtotal strong,
+.cart-total strong,
+.checkout-summary strong,
+.admin-table td strong,
+[data-price] {
+  font-family: var(--sans) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  font-style: normal !important;
+}
+
+.product-card-info .price,
+.catalog-info .catalog-price {
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+}
+
+.quick-price {
+  font-size: 17px !important;
+  line-height: 1.4 !important;
+}
+
+.cart-subtotal strong,
+.cart-total strong {
+  font-size: 18px !important;
+  line-height: 1.25 !important;
+}
+
+/* Mobile home hero responsive repair: prevents celebrity caption/text from overlapping the headline and navbar */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, picture, video { max-width: 100%; }
+
+@media (max-width: 760px) {
+  .hero {
+    min-height: auto !important;
+    padding: max(116px, calc(env(safe-area-inset-top) + 108px)) 20px 58px !important;
+    display: block !important;
+    overflow: hidden !important;
+    isolation: isolate;
+  }
+
+  .hero-visual,
+  .hero-visual.hero-collage {
+    position: absolute !important;
+    top: 72px !important;
+    right: 0 !important;
+    bottom: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: min(64svh, 560px) !important;
+    border-radius: 0 !important;
+    opacity: .30 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+  }
+
+  .hero-collage-main {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .hero-visual img,
+  .hero-collage img,
+  .hero-collage-main img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 28% !important;
+    transform: none !important;
+  }
+
+  .hero-visual::after,
+  .hero-collage-main::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    background:
+      linear-gradient(to bottom, rgba(255,247,245,.50) 0%, rgba(255,247,245,.30) 40%, rgba(255,247,245,.88) 82%, rgba(255,247,245,1) 100%) !important;
+  }
+
+  .hero-collage-caption,
+  .hero-collage-note,
+  .hero-collage-orbit,
+  .hero-side-note,
+  .scroll-cue {
+    display: none !important;
+  }
+
+  .hero-copy {
+    position: relative !important;
+    z-index: 5 !important;
+    margin-top: clamp(230px, 42svh, 350px) !important;
+    padding-top: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .hero .eyebrow {
+    margin-bottom: 18px !important;
+    font-size: 9px !important;
+    letter-spacing: .24em !important;
+  }
+
+  .hero h1 {
+    max-width: 100% !important;
+    font-size: clamp(46px, 14.2vw, 66px) !important;
+    line-height: .93 !important;
+    letter-spacing: -.055em !important;
+    word-break: normal !important;
+  }
+
+  .hero-description {
+    max-width: 96% !important;
+    margin: 22px 0 0 !important;
+    font-size: 13px !important;
+    line-height: 1.62 !important;
+  }
+
+  .hero-cta-row {
+    margin-top: 26px !important;
+    gap: 16px !important;
+    align-items: center !important;
+  }
+
+  .hero-cta-row .button {
+    min-height: 52px !important;
+    padding: 0 24px !important;
+  }
+
+  .hero-cta-row .text-link {
+    font-size: 12px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .marquee-section,
+  .as-seen-strip,
+  .collections,
+  .story,
+  .featured,
+  .shop-preview,
+  .site-footer {
+    position: relative;
+    z-index: 2;
+  }
+
+  .as-seen-strip {
+    padding: 22px 20px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    padding-bottom: 52px !important;
+  }
+
+  .hero-visual,
+  .hero-visual.hero-collage {
+    height: min(60svh, 500px) !important;
+  }
+
+  .hero-copy {
+    margin-top: clamp(210px, 40svh, 305px) !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(42px, 13.7vw, 58px) !important;
+  }
+
+  .hero-description {
+    font-size: 12.5px !important;
+    line-height: 1.58 !important;
+  }
+
+  .hero-cta-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: start !important;
+  }
+
+  .hero-cta-row .button {
+    width: min(100%, 310px) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-copy { margin-top: clamp(195px, 38svh, 280px) !important; }
+  .hero h1 { font-size: clamp(38px, 13vw, 52px) !important; }
+  .hero .eyebrow { letter-spacing: .18em !important; }
+}
