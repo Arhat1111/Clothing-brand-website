@@ -31,12 +31,12 @@ const isShowcaseProduct = (product) => product?.category === "celebrity" || prod
 const SALE_PRODUCTS = PRODUCTS.filter((product) => !isShowcaseProduct(product));
 const INSTAGRAM_URL = "https://www.instagram.com/fablebykavitaanu/";
 const WHATSAPP_URL = "https://wa.me/";
-const FABLE_WHATSAPP_NUMBER = ""; // Add Fable WhatsApp number with country code, e.g. 91XXXXXXXXXX
+const FABLE_WHATSAPP_NUMBER = "919601129762"; // Fable WhatsApp number with country code
 const FABLE_API_BASE_URL = ""; // Vercel + Supabase: leave blank when the site is hosted on Vercel. If the site stays on GitHub Pages, paste your Vercel URL here, e.g. https://fable-orders.vercel.app
 const RAZORPAY_CHECKOUT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
 const FABLE_ADMIN_TOKEN_KEY = "fable-admin-api-token-v1";
 const FABLE_OWNER_WHATSAPP_KEY = "fable-owner-whatsapp-v1";
-const WHATSAPP_CONSULTATION_URL = "https://wa.me/?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
+const WHATSAPP_CONSULTATION_URL = "https://wa.me/919601129762?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
 const CART_KEY = "fable-shopping-bag-v2";
 const LEADS_KEY = "fable-whatsapp-update-leads-v1";
 const ORDERS_KEY = "fable-orders-local-v1";
