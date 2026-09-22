@@ -39,6 +39,7 @@ const FABLE_OWNER_WHATSAPP_KEY = "fable-owner-whatsapp-v1";
 const WHATSAPP_CONSULTATION_URL = "https://wa.me/919601129762?text=Hi%20Fable%20by%20Kavita%20Anu%2C%20I%20would%20like%20a%20free%20styling%20consultation.";
 const CART_KEY = "fable-shopping-bag-v2";
 const LEADS_KEY = "fable-whatsapp-update-leads-v1";
+const BROADCAST_CURSOR_KEY = "fable-whatsapp-broadcast-cursor-v2";
 const ORDERS_KEY = "fable-orders-local-v1";
 const UPDATES_JOINED_KEY = "fable-updates-joined-v1";
 const UPDATES_DISMISSED_KEY = "fable-updates-dismissed-session-v1";
@@ -1128,7 +1129,12 @@ const personalizeMessage = (template, lead) => String(template || "")
   .replaceAll("{name}", lead.name || "there")
   .replaceAll("{phone}", lead.phone || "");
 
-const whatsappLeadUrl = (lead, message) => `https://wa.me/${lead.phone}?text=${encodeURIComponent(personalizeMessage(message, lead))}`;
+const getLeadPhone = (lead = {}) => normalizePhone(lead.phone || lead.rawPhone || lead.raw_phone || "");
+const whatsappLeadUrl = (lead, message) => {
+  const number = getLeadPhone(lead);
+  return `https://wa.me/${number}?text=${encodeURIComponent(personalizeMessage(message, { ...lead, phone: number }))}`;
+};
+const getLeadKey = (lead = {}) => String(lead.id || lead.phone || lead.rawPhone || lead.raw_phone || "");
 
 const toCsvCell = (value = "") => `"${String(value).replaceAll('"', '""')}"`;
 const downloadTextFile = (filename, content, type = "text/plain") => {
@@ -1151,6 +1157,7 @@ const adminLeadCount = document.getElementById("adminLeadCount");
 const adminSearch = document.getElementById("adminSearch");
 const broadcastMessage = document.getElementById("broadcastMessage");
 let adminFilter = "";
+let latestAdminLeads = [];
 
 const setAdminVisible = (visible) => {
   if (!adminDashboard || !adminLogin) return;
@@ -1176,23 +1183,27 @@ const fetchAdminLeads = async () => {
 const renderAdminLeads = async () => {
   if (!adminLeadRows || !adminDashboard) return;
   const leads = await fetchAdminLeads();
+  latestAdminLeads = Array.isArray(leads) ? leads : [];
   const q = adminFilter.trim().toLowerCase();
-  const filtered = leads.filter((lead) => !q || [lead.name, lead.phone, lead.rawPhone, lead.sourcePage, lead.status].join(" ").toLowerCase().includes(q));
-  if (adminLeadCount) adminLeadCount.textContent = String(leads.length);
+  const filtered = latestAdminLeads.filter((lead) => !q || [lead.name, lead.phone, lead.rawPhone, lead.sourcePage, lead.status].join(" ").toLowerCase().includes(q));
+  if (adminLeadCount) adminLeadCount.textContent = String(latestAdminLeads.length);
   if (adminEmpty) adminEmpty.hidden = filtered.length > 0;
-  adminLeadRows.innerHTML = filtered.map((lead) => `
+  adminLeadRows.innerHTML = filtered.map((lead) => {
+    const phone = getLeadPhone(lead);
+    const id = escapeText(getLeadKey(lead));
+    return `
     <tr>
-      <td><strong>${escapeText(lead.name)}</strong><span>${escapeText(lead.sourcePage || "Website")}</span></td>
-      <td>${escapeText(lead.rawPhone || lead.phone)}<span>wa.me/${escapeText(lead.phone)}</span></td>
-      <td>${formatLeadDate(lead.createdAt)}<span>Last sent: ${formatLeadDate(lead.lastMessageAt)}</span></td>
-      <td><span class="admin-status ${lead.discountUsedAt ? "used" : ""}">${lead.discountUsedAt ? "5% used" : "5% available"}</span><span>${lead.discountUsedAt ? formatLeadDate(lead.discountUsedAt) : "First order only"}</span></td>
-      <td><span class="admin-status">${escapeText(lead.status || "Subscribed")}</span></td>
-      <td class="admin-actions-cell">
-        <button type="button" data-admin-whatsapp="${escapeText(lead.id)}">WhatsApp</button>
-        <button type="button" data-admin-delete="${escapeText(lead.id)}">Delete local</button>
+      <td data-label="Name"><strong>${escapeText(lead.name || "Subscriber")}</strong><span>${escapeText(lead.sourcePage || "Website")}</span></td>
+      <td data-label="Phone">${escapeText(lead.rawPhone || lead.phone || phone)}<span>wa.me/${escapeText(phone)}</span></td>
+      <td data-label="Joined">${formatLeadDate(lead.createdAt)}<span>Last sent: ${formatLeadDate(lead.lastMessageAt)}</span></td>
+      <td data-label="Discount"><span class="admin-status ${lead.discountUsedAt ? "used" : ""}">${lead.discountUsedAt ? "5% used" : "5% available"}</span><span>${lead.discountUsedAt ? formatLeadDate(lead.discountUsedAt) : "First order only"}</span></td>
+      <td data-label="Status"><span class="admin-status">${escapeText(lead.status || "Subscribed")}</span></td>
+      <td class="admin-actions-cell" data-label="Actions">
+        <button type="button" data-admin-whatsapp="${id}">WhatsApp</button>
+        <button type="button" data-admin-delete="${id}">Delete local</button>
       </td>
-    </tr>
-  `).join("");
+    </tr>`;
+  }).join("");
 };
 
 document.getElementById("adminLoginForm")?.addEventListener("submit", (event) => {
@@ -1215,33 +1226,45 @@ adminSearch?.addEventListener("input", (event) => {
 adminLeadRows?.addEventListener("click", (event) => {
   const whatsappButton = event.target.closest("[data-admin-whatsapp]");
   const deleteButton = event.target.closest("[data-admin-delete]");
-  const leads = readLeads();
+  const localLeads = readLeads();
+  const visibleLeads = latestAdminLeads.length ? latestAdminLeads : localLeads;
   if (whatsappButton) {
     const id = whatsappButton.dataset.adminWhatsapp;
-    const lead = leads.find((item) => item.id === id);
+    const lead = visibleLeads.find((item) => getLeadKey(item) === id);
     if (!lead) return;
     const message = broadcastMessage?.value || "Hi {name}, Fable by Kavita Anu has a new festive update for you. Reply here for styling help or a free consultation.";
     window.open(whatsappLeadUrl(lead, message), "_blank", "noopener");
-    const updated = leads.map((item) => item.id === id ? { ...item, lastMessageAt: new Date().toISOString(), status: "Messaged" } : item);
-    saveLeads(updated);
+    const now = new Date().toISOString();
+    latestAdminLeads = visibleLeads.map((item) => getLeadKey(item) === id ? { ...item, lastMessageAt: now, status: "Messaged" } : item);
+    const updatedLocal = localLeads.map((item) => getLeadKey(item) === id ? { ...item, lastMessageAt: now, status: "Messaged" } : item);
+    if (updatedLocal.some((item) => getLeadKey(item) === id)) saveLeads(updatedLocal);
     renderAdminLeads();
   }
   if (deleteButton) {
     const id = deleteButton.dataset.adminDelete;
-    if (!confirm("Delete this subscriber?")) return;
-    saveLeads(leads.filter((lead) => lead.id !== id));
+    if (!confirm("Delete this local subscriber from this browser? Live Supabase subscribers stay saved.")) return;
+    saveLeads(localLeads.filter((lead) => getLeadKey(lead) !== id));
+    latestAdminLeads = latestAdminLeads.filter((lead) => getLeadKey(lead) !== id);
     renderAdminLeads();
   }
 });
 
-document.getElementById("exportLeads")?.addEventListener("click", () => {
-  const leads = readLeads();
-  const rows = [["Name", "WhatsApp", "Raw Phone", "Status", "Discount Eligible", "Discount Used At", "Source Page", "Created At", "Last Message At"], ...leads.map((lead) => [lead.name, lead.phone, lead.rawPhone, lead.status, lead.discountUsedAt ? "No" : "Yes", lead.discountUsedAt || "", lead.sourcePage, lead.createdAt, lead.lastMessageAt])];
+const getAdminLeadList = async () => {
+  if (latestAdminLeads.length) return latestAdminLeads;
+  const leads = await fetchAdminLeads();
+  latestAdminLeads = Array.isArray(leads) ? leads : [];
+  return latestAdminLeads;
+};
+
+document.getElementById("exportLeads")?.addEventListener("click", async () => {
+  const leads = await getAdminLeadList();
+  const rows = [["Name", "WhatsApp", "Raw Phone", "Status", "Discount Eligible", "Discount Used At", "Source Page", "Created At", "Last Message At"], ...leads.map((lead) => [lead.name, getLeadPhone(lead), lead.rawPhone, lead.status, lead.discountUsedAt ? "No" : "Yes", lead.discountUsedAt || "", lead.sourcePage, lead.createdAt, lead.lastMessageAt])];
   downloadTextFile(`fable-whatsapp-leads-${new Date().toISOString().slice(0,10)}.csv`, rows.map((row) => row.map(toCsvCell).join(",")).join("\n"), "text/csv");
 });
 
 document.getElementById("copyLeadNumbers")?.addEventListener("click", async () => {
-  const numbers = readLeads().map((lead) => lead.phone).join("\n");
+  const leads = await getAdminLeadList();
+  const numbers = leads.map(getLeadPhone).filter(Boolean).join("\n");
   await copyText(numbers);
   showToast("All WhatsApp numbers copied");
 });
@@ -1253,19 +1276,26 @@ document.getElementById("clearLeads")?.addEventListener("click", () => {
   showToast("Subscriber list cleared");
 });
 
-document.getElementById("openBroadcastQueue")?.addEventListener("click", () => {
-  const leads = readLeads();
-  const message = broadcastMessage?.value || "Hi {name}, Fable by Kavita Anu has a new festive update for you. Reply here for styling help or a free consultation.";
-  const next = leads.find((lead) => lead.status !== "Messaged") || leads[0];
-  if (!next) {
+document.getElementById("openBroadcastQueue")?.addEventListener("click", async () => {
+  const leads = (await getAdminLeadList()).filter((lead) => getLeadPhone(lead));
+  const message = broadcastMessage?.value || "Hi {name}, Fable by Kavita Anu has a new festive update for you today. Reply here for styling help, new arrivals or a free consultation.";
+  if (!leads.length) {
     showToast("No subscribers saved yet");
     return;
   }
+  const currentCursor = Number(localStorage.getItem(BROADCAST_CURSOR_KEY) || "0");
+  const index = Number.isFinite(currentCursor) ? currentCursor % leads.length : 0;
+  const next = leads[index];
+  localStorage.setItem(BROADCAST_CURSOR_KEY, String((index + 1) % leads.length));
   window.open(whatsappLeadUrl(next, message), "_blank", "noopener");
-  const updated = leads.map((lead) => lead.id === next.id ? { ...lead, lastMessageAt: new Date().toISOString(), status: "Messaged" } : lead);
-  saveLeads(updated);
+  const now = new Date().toISOString();
+  const nextKey = getLeadKey(next);
+  latestAdminLeads = (latestAdminLeads.length ? latestAdminLeads : leads).map((lead) => getLeadKey(lead) === nextKey ? { ...lead, lastMessageAt: now, status: "Messaged" } : lead);
+  const localLeads = readLeads();
+  const updatedLocal = localLeads.map((lead) => getLeadKey(lead) === nextKey ? { ...lead, lastMessageAt: now, status: "Messaged" } : lead);
+  if (updatedLocal.some((lead) => getLeadKey(lead) === nextKey)) saveLeads(updatedLocal);
   renderAdminLeads();
-  showToast(`Opened WhatsApp for ${next.name}`);
+  showToast(`Opened ${index + 1} of ${leads.length}: ${next.name || getLeadPhone(next)}`);
 });
 
 if (body.dataset.page === "admin") {
@@ -1388,12 +1418,12 @@ const renderAdminOrders = async ({ silent = false } = {}) => {
       const itemText = items.map((item) => `${item.name} x ${item.qty} (${item.size || "Custom"})`).join("; ");
       const id = escapeText(order.id || "");
       return `<tr>
-        <td><strong>${escapeText(order.id || "Order")}</strong><span>${formatLeadDate(order.createdAt)}</span></td>
-        <td><strong>${escapeText(customer.name || "")}</strong><span>${escapeText(customer.phone || "")}</span><span>${escapeText(customer.email || "")}</span></td>
-        <td>${escapeText(itemText || "-")}</td>
-        <td><strong>${formatPrice(Number(order.total || 0))}</strong><span>${escapeText(order.discountLabel || "")}</span></td>
-        <td><span class="admin-status">${escapeText(order.status || "enquiry_received")}</span><span>${escapeText(order.paymentStatus || "not_paid")}</span></td>
-        <td class="admin-actions-cell"><button type="button" data-admin-copy-order="${id}">Copy</button><button type="button" data-admin-owner-email="${id}">Email owner</button><button type="button" data-admin-owner-whatsapp="${id}">WhatsApp owner</button></td>
+        <td data-label="Order"><strong>${escapeText(order.id || "Order")}</strong><span>${formatLeadDate(order.createdAt)}</span></td>
+        <td data-label="Customer"><strong>${escapeText(customer.name || "")}</strong><span>${escapeText(customer.phone || "")}</span><span>${escapeText(customer.email || "")}</span></td>
+        <td data-label="Items">${escapeText(itemText || "-")}</td>
+        <td data-label="Total"><strong>${formatPrice(Number(order.total || 0))}</strong><span>${escapeText(order.discountLabel || "")}</span></td>
+        <td data-label="Status"><span class="admin-status">${escapeText(order.status || "enquiry_received")}</span><span>${escapeText(order.paymentStatus || "not_paid")}</span></td>
+        <td class="admin-actions-cell" data-label="Actions"><button type="button" data-admin-copy-order="${id}">Copy</button><button type="button" data-admin-owner-email="${id}">Email owner</button><button type="button" data-admin-owner-whatsapp="${id}">WhatsApp owner</button></td>
       </tr>`;
     }).join("");
     if (adminApiStatus) adminApiStatus.textContent = hasFableApi() ? `Connected to Supabase. Live refresh ${ownerLiveRefresh?.checked ? "on" : "off"}.` : "Showing orders saved in this browser only.";
