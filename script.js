@@ -47,6 +47,7 @@ const DISCOUNT_PHONE_KEY = "fable-active-discount-phone-v1";
 const DISCOUNT_USED_PHONES_KEY = "fable-discount-used-phones-v1";
 const DISCOUNT_LEDGER_KEY = "fable-discount-phone-ledger-v2";
 const DISCOUNT_RATE = 0.05;
+const DIWALI_DISCOUNT_RATE = 0.10;
 const ADMIN_PIN = "FABLE2026";
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const body = document.body;
@@ -172,7 +173,7 @@ const featuredCardMarkup = (product) => `
     </div>
     <div class="product-card-info">
       <div><h3>${escapeText(product.name)}</h3><p class="category-name">${escapeText(product.categoryLabel)}</p></div>
-      <p class="price">${formatPrice(product.price)}</p>
+      <p class="price">${formatPrice(Math.round(product.price * .9))} <del class="diwali-old-price">${formatPrice(product.price)}</del> <span class="diwali-price-tag">10% off</span></p>
       <button class="mini-add" type="button" data-add-product="${product.id}" aria-label="Add ${escapeText(product.name)} to bag">+</button>
     </div>
   </article>`;
@@ -305,7 +306,7 @@ const catalogCardMarkup = (product, index) => `
       <button class="catalog-add" type="button" data-add-product="${product.id}">${product.sizes.length > 1 ? "Choose size" : "Add to bag"}</button>
     </div>
     <div class="catalog-info">
-      <h3>${escapeText(product.name)}</h3><p class="catalog-price">${formatPrice(product.price)}</p><p class="catalog-category">${escapeText(product.categoryLabel)}</p>
+      <h3>${escapeText(product.name)}</h3><p class="catalog-price">${formatPrice(Math.round(product.price * .9))} <del class="diwali-old-price">${formatPrice(product.price)}</del> <span class="diwali-price-tag">10% off</span></p><p class="catalog-category">${escapeText(product.categoryLabel)}</p>
     </div>
   </article>`;
 
@@ -439,10 +440,9 @@ const getActiveDiscountLead = () => {
 };
 
 const calculateCartDiscount = (subtotal) => {
-  const activeLead = getActiveDiscountLead();
-  if (!activeLead || subtotal <= 0) return { activeLead: null, discount: 0, total: subtotal };
-  const discount = Math.round(subtotal * DISCOUNT_RATE);
-  return { activeLead, discount, total: Math.max(subtotal - discount, 0) };
+  // The Diwali 10% discount replaces (does not stack with) the older 5% offer.
+  const discount = Math.round(subtotal * DIWALI_DISCOUNT_RATE);
+  return { activeLead: null, discount, total: Math.max(subtotal - discount, 0) };
 };
 
 const markDiscountUsed = (phone) => {
@@ -529,12 +529,9 @@ const renderCart = () => {
   if (cartSubtotal) cartSubtotal.textContent = formatPrice(subtotal);
   if (cartDiscountElement) cartDiscountElement.textContent = discount ? `−${formatPrice(discount)}` : "−₹0";
   if (cartTotal) cartTotal.textContent = formatPrice(total);
-  if (cartDiscountPanel) cartDiscountPanel.classList.toggle("active", Boolean(activeLead && discount));
-  if (cartDiscountNote) {
-    if (activeLead && discount) cartDiscountNote.textContent = `5% first-order discount applied for ${activeLead.name}. This offer is linked to ${activeLead.rawPhone || activeLead.phone}.`;
-    else if (normalizeDiscountPhone(localStorage.getItem(DISCOUNT_PHONE_KEY) || "") && !activeLead) cartDiscountNote.textContent = "The 5% updates discount for this WhatsApp number has already been used.";
-    else cartDiscountNote.textContent = "Enter your phone number in the updates popup to unlock 5% off your first order.";
-  }
+  if (cartDiscountPanel) cartDiscountPanel.classList.toggle("active", Boolean(discount));
+  if (cartDiscountNote) cartDiscountNote.textContent = "Diwali offer: 10% off every product. Automatically applied; cannot be combined with the 5% welcome offer.";
+
   if (cartEmpty) cartEmpty.classList.toggle("visible", detailed.length === 0);
   cartFoot?.classList.toggle("hidden", detailed.length === 0);
   if (!cartItemsElement) return;
@@ -542,7 +539,7 @@ const renderCart = () => {
     <article class="cart-item">
       <div class="cart-item-image"><img src="${product.image}" alt="${escapeText(product.name)}" /></div>
       <div class="cart-item-info"><h3>${escapeText(product.name)}</h3><p>Size: ${escapeText(size)}</p><div class="cart-qty"><button type="button" data-cart-delta="-1" data-id="${product.id}" data-size="${escapeText(size)}" aria-label="Decrease quantity">−</button><span>${qty}</span><button type="button" data-cart-delta="1" data-id="${product.id}" data-size="${escapeText(size)}" aria-label="Increase quantity">+</button></div></div>
-      <div class="cart-item-side"><strong>${formatPrice(product.price * qty)}</strong><button class="cart-remove" type="button" data-cart-remove data-id="${product.id}" data-size="${escapeText(size)}">Remove</button></div>
+      <div class="cart-item-side"><strong>${formatPrice(Math.round(product.price * qty * .9))}</strong><button class="cart-remove" type="button" data-cart-remove data-id="${product.id}" data-size="${escapeText(size)}">Remove</button></div>
     </article>`).join("");
 };
 renderCart();
@@ -623,7 +620,7 @@ const openProductModal = (id) => {
         </div>
         ${hasGallery ? `<div class="gallery-thumbnails" aria-label="Product image thumbnails">${quickGallery.map((image, index) => `<button type="button" class="gallery-thumb ${index === 0 ? "active" : ""}" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${image}" alt="${escapeText(product.name)} thumbnail ${index + 1}" loading="lazy" decoding="async" /></button>`).join("")}</div>` : ""}
       </div>
-      <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${isShowcaseProduct(product) ? "Showcase only" : formatPrice(product.price)}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}${isShowcaseProduct(product) ? `<p class="quick-showcase-note">This celebrity look is for showcase/inspiration only and is not available for sale through the shop.</p>` : `<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p>`}</div>
+      <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${isShowcaseProduct(product) ? "Showcase only" : `${formatPrice(Math.round(product.price * .9))} <del class="diwali-old-price">${formatPrice(product.price)}</del> <span class="diwali-price-tag">10% off</span>`}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}${isShowcaseProduct(product) ? `<p class="quick-showcase-note">This celebrity look is for showcase/inspiration only and is not available for sale through the shop.</p>` : `<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p>`}</div>
     </div>`;
   quickModal.classList.add("open");
   quickModal.setAttribute("aria-hidden", "false");
@@ -724,8 +721,8 @@ const buildOrderPayload = (formData) => {
     subtotal,
     discount,
     total,
-    discountPhone: activeLead ? activeLead.phone : "",
-    discountLabel: activeLead && discount ? "5% WhatsApp updates discount" : "",
+    discountPhone: "",
+    discountLabel: discount ? "Diwali 10% off (sitewide)" : "",
     createdAt: new Date().toISOString(),
   };
 };
@@ -740,6 +737,7 @@ const createRazorpayOrder = async (order) => fableApi("/api/razorpay-create-orde
   body: JSON.stringify({
     amount: Math.round(Number(order.total || 0) * 100),
     receipt: order.id,
+    items: order.items,
   }),
 });
 
@@ -810,7 +808,7 @@ const openRazorpayCheckout = ({ keyId, razorpayOrder, order, formData, submitBut
           const finalOrder = verifyResult.order || paidOrder;
           saveOrderLocally(finalOrder);
           await copyText(buildOrderText(formData, finalOrder));
-          if (activeLead) markDiscountUsed(activeLead.phone);
+          // Diwali offer is automatic and does not consume a 5% welcome discount.
           cart = [];
           saveCart();
           renderCart();
@@ -940,7 +938,7 @@ const openCheckout = () => {
         <label>City<input type="text" name="city" required autocomplete="address-level2" /></label>
         <label>Full delivery address<textarea name="address" required placeholder="House / building, area, city, pincode"></textarea></label>
         <label>Styling or delivery note<textarea name="note" placeholder="Optional"></textarea></label>
-        <div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(subtotal)}</strong></p>${activeLead && discount ? `<p class="discount-applied"><span>WhatsApp updates discount</span><strong>−${formatPrice(discount)}</strong></p><p><span>Estimated total</span><strong>${formatPrice(total)}</strong></p>` : `<p><span>Estimated total</span><strong>${formatPrice(subtotal)}</strong></p>`}</div>
+        <div class="checkout-summary"><p><span>${cart.reduce((sum, item) => sum + item.qty, 0)} selected item(s)</span><strong>${formatPrice(subtotal)}</strong></p><p class="discount-applied"><span>Diwali offer · 10% off</span><strong>−${formatPrice(discount)}</strong></p><p><span>Estimated total</span><strong>${formatPrice(total)}</strong></p></div>
         <button class="button button-dark checkout-submit" type="submit">Pay with Razorpay</button>
         <p class="checkout-disclaimer">Secure payment is processed by Razorpay. Order confirmation email sends after successful payment if Resend is configured.</p>
       </form>`;
@@ -963,7 +961,7 @@ checkoutModal?.addEventListener("submit", async (event) => {
   const formData = new FormData(form);
   const activeLead = getActiveDiscountLead();
   const formPhone = normalizeDiscountPhone(formData.get("phone"));
-  if (activeLead && formPhone !== activeLead.phone) {
+  if (false && activeLead && formPhone !== activeLead.phone) {
     showToast("Please use the registered WhatsApp number to keep the 5% discount");
     return;
   }
@@ -977,6 +975,7 @@ checkoutModal?.addEventListener("submit", async (event) => {
     order.status = "payment_pending";
     order.paymentStatus = "payment_pending";
     const razorpayResult = await createRazorpayOrder(order);
+    if (Math.round(Number(razorpayResult.pricing?.total) * 100) !== Math.round(order.total * 100)) throw new Error('Cart amount changed. Please refresh and try again.');
     order.razorpayOrderId = razorpayResult.order.id;
     const pendingSave = await sendOrderToApi(order);
     const pendingOrder = pendingSave.order || order;
@@ -1056,7 +1055,7 @@ const closeUpdatesPopup = () => {
 };
 
 const openUpdatesPopup = () => {
-  if (!updatesPopup || body.dataset.page === "admin") return;
+  if (!updatesPopup || body.dataset.page === "admin" || DIWALI_DISCOUNT_RATE > 0) return;
   if (localStorage.getItem(UPDATES_JOINED_KEY) === "true") return;
   if (sessionStorage.getItem(UPDATES_DISMISSED_KEY) === "true") return;
   updatesPopup.classList.add("open");

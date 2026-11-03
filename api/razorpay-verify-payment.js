@@ -13,7 +13,18 @@ module.exports = async function handler(req, res) {
     const expected = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest('hex');
-    if (expected !== razorpay_signature) return json(res, 400, { ok: false, error: 'Payment signature verification failed.' });
+    const left = Buffer.from(String(expected), 'utf8');
+    const right = Buffer.from(String(razorpay_signature || ''), 'utf8');
+    if (left.length !== right.length || !crypto.timingSafeEqual(left, right)) return json(res, 400, { ok: false, error: 'Payment signature verification failed.' });
+    if (!local_order_id || !razorpay_order_id || !razorpay_payment_id) return json(res,400,{ok:false,error:'Missing payment information.'});
+    const previous = await supabaseRequest('orders', {}, `?id=eq.${encodeURIComponent(local_order_id)}&select=*&limit=1`);
+    const pending = Array.isArray(previous) && previous[0];
+    if (!pending || pending.razorpay_order_id !== razorpay_order_id) return json(res, 400, { ok:false, error:'Payment does not match the saved order.' });
+    const auth = Buffer.from(`${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`).toString('base64');
+    const paymentResponse = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(razorpay_payment_id)}`, { headers: {Authorization: `Basic ${auth}`} });
+    const payment = await paymentResponse.json();
+    if (!paymentResponse.ok || payment.order_id !== razorpay_order_id || payment.status !== 'captured' || Number(payment.amount) !== Math.round(Number(pending.total) * 100)) return json(res, 400, { ok:false, error:'Razorpay payment amount/status does not match order.' });
+    if (pending.payment_status === 'paid') return json(res, 200, {ok:true, order: rowToOrder(pending), alreadyProcessed:true});
     let saved = null;
     let email = { sent: false, skipped: true };
     let ownerEmail = { sent: false, skipped: true };

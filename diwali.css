@@ -1,0 +1,161 @@
+/* Fable by Kavita Anu — Diwali 2026 seasonal layer.
+   Designed to leave the original commerce, catalogue, and admin intact. */
+body.diwali-season .announcement-bar {
+  background: linear-gradient(90deg, #602335 0%, #71303a 40%, #664326 75%, #602335 100%);
+  color: #fff9f2;
+}
+body.diwali-season .site-header {
+  background: rgba(255,251,248,.96);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 rgba(54,26,26,.08);
+}
+body.diwali-season .announcement-bar a { border-bottom-color: rgba(255,249,242,.7); }
+/* Desktop: a fashion editorial with light photo right, typography left.
+   Actual photographed lights and flowers are part of the image asset. */
+.diwali-hero {
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  align-items:center;
+  min-height: clamp(640px, 84svh, 870px);
+  padding: 128px 6vw 78px;
+  overflow:hidden;
+  background: radial-gradient(ellipse at 22% 38%, #fbe8e1 0%, #f8ebe5 48%, #eed1cc 100%);
+}
+.diwali-hero-media {
+  position:absolute;
+  z-index:-1;
+  top: 75px;
+  right:0;
+  bottom:0;
+  width:64%;
+  overflow:hidden;
+  background: #c79066;
+}
+.diwali-hero-media picture,
+.diwali-hero-media img {display:block;width:100%;height:100%;}
+.diwali-hero-media img { object-fit: cover; object-position: 49% 43%; }
+.diwali-hero-media::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background: linear-gradient(90deg, #f8e9e3 0%, rgba(248,233,227,.96) 6%, rgba(248,233,227,.72) 22%, rgba(248,233,227,.07) 51%, rgba(248,233,227,0) 72%);
+  pointer-events:none;
+}
+.diwali-hero-copy {
+  position:relative;
+  z-index:2;
+  width: min(100%, 770px);
+  padding: 16px 0 0;
+}
+.diwali-eyebrow {
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin:0 0 35px 5px;
+  color:#772d3c;
+  font: 600 12px/1.4 var(--ui,Arial,sans-serif);
+  letter-spacing:.31em;
+  text-transform:uppercase;
+}
+.diwali-eyebrow-rule { display:inline-block;width:92px;height:1px;background:rgba(119,45,60,.4); }
+.diwali-hero h1 {
+  max-width:750px;
+  margin:0;
+  font: 400 clamp(66px, 6.35vw, 113px)/.94 var(--serif,Georgia,serif);
+  letter-spacing:-.047em;
+  color:#291b1d;
+}
+.diwali-hero h1 em { color:#712638;font-style:italic; }
+.diwali-hero-description {
+  max-width: 520px;
+  margin: 31px 0 0 5px;
+  color:#5e4d4e;
+  font-size: clamp(14px, 1.04vw, 17px);
+  line-height:1.8;
+}
+.diwali-hero-actions { display:flex; gap:15px; flex-wrap:wrap; align-items:center; margin:34px 0 0 5px; }
+.diwali-hero-actions .button { min-height:56px; padding:0 26px; white-space:nowrap; }
+.diwali-hero-actions .button-dark { background:#6f2336;border-color:#6f2336; }
+.diwali-hero-actions .button-dark:hover { background:#4b1b2a;border-color:#4b1b2a; }
+.diwali-hero-actions .button-outline { background:rgba(255,247,242,.57);border-color:rgba(41,27,29,.7); }
+.diwali-hero-actions .button-outline:hover { background:var(--ink,#291b1d);color:white; }
+.diwali-hero-actions .icon { width:15px;height:15px;margin-left:10px; }
+.diwali-photolight {position:absolute;z-index:2;display:block;border-radius:50%;pointer-events:none;opacity:.25;mix-blend-mode:screen;filter:blur(9px);animation:diwali-glow 4.2s ease-in-out infinite;}
+.diwali-photolight-one {top:18%;right:20%;width:44px;height:44px;background:radial-gradient(circle,#fff3c1,#f2b75a 38%,transparent 70%);}
+.diwali-photolight-two {top:41%;right:9%;width:28px;height:28px;background:radial-gradient(circle,#ffe1b3,#ee9c43 38%,transparent 72%);animation-delay:1.6s;}
+.diwali-photolight-three {top:12%;right:46%;width:25px;height:25px;background:radial-gradient(circle,#fff2bc,#f6ca75 40%,transparent 72%);animation-delay:2.8s;}
+@keyframes diwali-glow {0%,100%{opacity:.18;transform:scale(.9)}50%{opacity:.45;transform:scale(1.14)}}
+@media (min-width: 1500px) {
+  .diwali-hero {padding-left:7vw;}
+  .diwali-hero-copy {width:min(54vw,850px);}
+}
+@media (min-width: 821px) and (max-width: 1170px) {
+  .diwali-hero {min-height:700px;padding-left:4.5vw;padding-right:3vw;}
+  .diwali-hero-media {width:68%;}
+  .diwali-hero-copy {width:61%;}
+  .diwali-hero h1 {font-size:clamp(61px,6.3vw,78px);}
+  .diwali-hero-description {max-width:450px;}
+  .diwali-hero-actions .button {min-height:52px;padding:0 18px; font-size:9px;}
+}
+@media (max-width:820px) {
+  .diwali-hero {
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    min-height:0;
+    padding:74px 0 0;
+    background:#f7e6e0;
+  }
+  .diwali-hero-media {
+    position:relative;
+    top:auto;right:auto;bottom:auto;
+    order:0;
+    width:100%;
+    height:clamp(310px,55svh,550px);
+    z-index:0;
+  }
+  .diwali-hero-media img {object-position:50% 30%;}
+  .diwali-hero-media::before {
+    background:linear-gradient(180deg, rgba(247,230,224,0) 62%, rgba(247,230,224,.55) 85%, #f7e6e0 100%);
+  }
+  .diwali-hero-copy {
+    order:1;
+    z-index:2;
+    width:100%;
+    max-width:none;
+    padding: 22px 6vw 62px;
+    margin:0;
+    background:linear-gradient(180deg,#f7e6e0 0%,#f9edeb 100%);
+  }
+  .diwali-eyebrow {margin:0 0 20px; font-size:11px;letter-spacing:.25em;}
+  .diwali-hero h1 {max-width:680px;font-size:clamp(58px,9.7vw,82px);line-height:.94;}
+  .diwali-hero-description {max-width:590px;font-size:15px;line-height:1.68;margin:23px 0 0;}
+  .diwali-hero-actions {margin:28px 0 0;gap:12px;}
+  .diwali-hero-actions .button {font-size:10px;min-height:54px;}
+  .diwali-photolight-one {right:22%;top:23%;}
+  .diwali-photolight-three {right:71%;top:38%;}
+}
+@media (max-width: 520px) {
+  .diwali-hero {padding-top:74px;}
+  .diwali-hero-media {height:clamp(280px,47svh,410px);}
+  .diwali-hero-copy {padding:24px 21px 49px;}
+  .diwali-eyebrow {font-size:10px;letter-spacing:.2em;gap:13px;margin-bottom:19px;}
+  .diwali-eyebrow-rule {width:64px;}
+  .diwali-hero h1 {font-size:clamp(45px,12.5vw,66px);line-height:.98;letter-spacing:-.048em;}
+  .diwali-hero-description {font-size:13px;line-height:1.7;margin-top:20px;}
+  .diwali-hero-actions {display:grid;grid-template-columns:minmax(0,1fr);gap:11px;margin-top:25px;}
+  .diwali-hero-actions .button {width:100%;padding:0 15px;min-height:49px;white-space:normal;text-align:center;}
+}
+@media (max-width:360px) {
+  .diwali-hero-media {height:270px;}
+  .diwali-hero-copy {padding:22px 17px 43px;}
+  .diwali-hero h1 {font-size:clamp(41px,12vw,47px);}
+  .diwali-hero-description {font-size:12px;}
+}
+@media (prefers-reduced-motion:reduce) { .diwali-photolight {animation:none;opacity:.25;} }
+/* Mid-size tablets retain the taller desktop header. */
+@media (min-width:761px) and (max-width:820px) {
+  .diwali-hero { padding-top:86px; }
+}
