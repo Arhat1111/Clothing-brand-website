@@ -72,6 +72,7 @@ const formatPrice = (value) => new Intl.NumberFormat("en-IN", {
 }).format(value);
 
 const getProduct = (id) => PRODUCTS.find((product) => product.id === id);
+const isSoldOut = (product) => product?.soldOut === true;
 
 const escapeText = (value = "") => String(value)
   .replaceAll("&", "&amp;")
@@ -168,13 +169,13 @@ const featuredCardMarkup = (product) => `
       <button class="product-image-button" type="button" data-quick-view="${product.id}" aria-label="View ${escapeText(product.name)}">
         <img src="${product.image}" alt="${escapeText(product.name)}" loading="lazy" decoding="async" />
       </button>
-      <span class="product-tag">${escapeText(product.badge)}</span>
-      <button class="product-quick-action" type="button" data-quick-view="${product.id}">View & choose size</button>
+      <span class="product-tag">${isSoldOut(product) ? "Sold out" : escapeText(product.badge)}</span>
+      <button class="product-quick-action" type="button" data-quick-view="${product.id}">${isSoldOut(product) ? "View details · Sold out" : "View & choose size"}</button>
     </div>
     <div class="product-card-info">
       <div><h3>${escapeText(product.name)}</h3><p class="category-name">${escapeText(product.categoryLabel)}</p></div>
       <p class="price">${formatPrice(Math.round(product.price * .9))} <del class="diwali-old-price">${formatPrice(product.price)}</del> <span class="diwali-price-tag">10% off</span></p>
-      <button class="mini-add" type="button" data-add-product="${product.id}" aria-label="Add ${escapeText(product.name)} to bag">+</button>
+      <button class="mini-add" type="button" ${isSoldOut(product) ? "disabled" : `data-add-product="${product.id}"`} aria-label="${isSoldOut(product) ? "Sold out" : "Add " + escapeText(product.name) + " to bag"}">${isSoldOut(product) ? "×" : "+"}</button>
     </div>
   </article>`;
 
@@ -213,6 +214,7 @@ const noResults = document.getElementById("noResults");
 const clearFilters = document.getElementById("clearFilters");
 const resetCatalog = document.getElementById("resetCatalog");
 const validCategories = ["all", "sarees", "anarkalis", "drapes", "festive", "dresses"];
+const isDiwaliCollection = new URLSearchParams(window.location.search).get("collection") === "diwali";
 
 const shopHeroEyebrow = document.getElementById("shopHeroEyebrow");
 const shopHeroTitle = document.getElementById("shopHeroTitle");
@@ -278,7 +280,12 @@ const categoryHeroContent = {
 };
 
 const updateCategoryHero = (category) => {
-  const hero = categoryHeroContent[category] || categoryHeroContent.all;
+  const hero = category === "all" && isDiwaliCollection ? {
+    ...categoryHeroContent.all,
+    eyebrow: "The Diwali collection · All categories",
+    title: "The Diwali edit,<br /><em>every Fable piece.</em>",
+    description: "Explore the complete Fable collection with 10% off across sarees, anarkalis, drape sets, festive wear and dresses. Filter by category or search your favourite piece."
+  } : categoryHeroContent[category] || categoryHeroContent.all;
   if (shopHeroEyebrow) shopHeroEyebrow.textContent = hero.eyebrow;
   if (shopHeroTitle) shopHeroTitle.innerHTML = hero.title;
   if (shopHeroDescription) shopHeroDescription.textContent = hero.description;
@@ -301,9 +308,9 @@ const catalogCardMarkup = (product, index) => `
       <button class="product-image-button" type="button" data-quick-view="${product.id}" aria-label="View ${escapeText(product.name)}">
         <img src="${product.image}" alt="${escapeText(product.name)}" loading="lazy" decoding="async" />
       </button>
-      <span class="catalog-badge">${escapeText(product.badge)}</span>
+      <span class="catalog-badge">${isSoldOut(product) ? "Sold out" : escapeText(product.badge)}</span>
       <button class="catalog-quick" type="button" data-quick-view="${product.id}" aria-label="Quick view ${escapeText(product.name)}">${ICON_ONLY_OPEN}</button>
-      <button class="catalog-add" type="button" data-add-product="${product.id}">${product.sizes.length > 1 ? "Choose size" : "Add to bag"}</button>
+      <button class="catalog-add" type="button" ${isSoldOut(product) ? "disabled" : `data-add-product="${product.id}"`}>${isSoldOut(product) ? "Sold out" : product.sizes.length > 1 ? "Choose size" : "Add to bag"}</button>
     </div>
     <div class="catalog-info">
       <h3>${escapeText(product.name)}</h3><p class="catalog-price">${formatPrice(Math.round(product.price * .9))} <del class="diwali-old-price">${formatPrice(product.price)}</del> <span class="diwali-price-tag">10% off</span></p><p class="catalog-category">${escapeText(product.categoryLabel)}</p>
@@ -469,7 +476,7 @@ try {
   const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
   if (Array.isArray(saved)) cart = saved.filter((item) => {
     const product = getProduct(item.id);
-    return product && !isShowcaseProduct(product) && item.qty > 0;
+    return product && !isShowcaseProduct(product) && !isSoldOut(product) && item.qty > 0;
   });
 } catch (error) {
   cart = [];
@@ -483,6 +490,7 @@ const cartKey = (id, size) => `${id}::${size}`;
 const addToCart = (id, size) => {
   const product = getProduct(id);
   if (!product) return;
+  if (isSoldOut(product)) { showToast("This piece is sold out"); return; }
   if (isShowcaseProduct(product)) {
     showToast("This celebrity look is showcase only");
     return;
@@ -497,6 +505,7 @@ const addToCart = (id, size) => {
 };
 
 const changeCartQuantity = (id, size, delta) => {
+  if (delta > 0 && isSoldOut(getProduct(id))) { showToast("This piece is sold out"); return; }
   const item = cart.find((entry) => cartKey(entry.id, entry.size) === cartKey(id, size));
   if (!item) return;
   item.qty += delta;
@@ -620,7 +629,7 @@ const openProductModal = (id) => {
         </div>
         ${hasGallery ? `<div class="gallery-thumbnails" aria-label="Product image thumbnails">${quickGallery.map((image, index) => `<button type="button" class="gallery-thumb ${index === 0 ? "active" : ""}" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${image}" alt="${escapeText(product.name)} thumbnail ${index + 1}" loading="lazy" decoding="async" /></button>`).join("")}</div>` : ""}
       </div>
-      <div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${isShowcaseProduct(product) ? "Showcase only" : `${formatPrice(Math.round(product.price * .9))} <del class="diwali-old-price">${formatPrice(product.price)}</del> <span class="diwali-price-tag">10% off</span>`}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}${isShowcaseProduct(product) ? `<p class="quick-showcase-note">This celebrity look is for showcase/inspiration only and is not available for sale through the shop.</p>` : `<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p>`}</div>
+<div class="quick-modal-copy"><p class="eyebrow">${escapeText(product.categoryLabel)} · ${isSoldOut(product) ? "Sold out" : escapeText(product.badge)}</p><h2>${escapeText(product.name)}</h2><p class="quick-price">${isShowcaseProduct(product) ? "Showcase only" : `${formatPrice(Math.round(product.price * .9))} <del class="diwali-old-price">${formatPrice(product.price)}</del> <span class="diwali-price-tag">10% off</span>`}</p><p class="quick-description">${escapeText(product.description)}</p>${hasGallery ? `<p class="quick-gallery-hint">Use the arrows or thumbnails to view the complete look and close-up details.</p>` : ""}${isSoldOut(product) ? `<p class="quick-showcase-note">This piece is sold out and cannot be ordered.</p>` : isShowcaseProduct(product) ? `<p class="quick-showcase-note">This celebrity look is for showcase/inspiration only and is not available for sale through the shop.</p>` : `<p class="size-label">Select size</p><div class="size-options">${product.sizes.map((size, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-quick-size="${escapeText(size)}">${escapeText(size)}</button>`).join("")}</div><button class="button button-dark quick-add" type="button" data-quick-add>Add to shopping bag</button><p class="quick-note">Final fit, availability, shipping and payment are confirmed by the Fable team after enquiry.</p>`}</div>
     </div>`;
   quickModal.classList.add("open");
   quickModal.setAttribute("aria-hidden", "false");
@@ -639,7 +648,7 @@ quickModal?.addEventListener("click", (event) => {
     quickSize = sizeButton.dataset.quickSize;
     quickModal.querySelectorAll("[data-quick-size]").forEach((button) => button.classList.toggle("active", button === sizeButton));
   }
-  if (event.target.closest("[data-quick-add]") && quickProductId) {
+  if (event.target.closest("[data-quick-add]") && quickProductId && !isSoldOut(getProduct(quickProductId))) {
     addToCart(quickProductId, quickSize);
     closeProductModal();
     openCart();
@@ -1011,6 +1020,7 @@ document.addEventListener("click", (event) => {
   if (addButton) {
     const product = getProduct(addButton.dataset.addProduct);
     if (!product) return;
+    if (isSoldOut(product)) { showToast("This piece is sold out"); return; }
     if (isShowcaseProduct(product)) {
       openProductModal(product.id);
       showToast("This celebrity look is showcase only");

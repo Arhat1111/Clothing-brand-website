@@ -463,6 +463,7 @@ window.FABLE_PRODUCTS = [
   {
     "id": "ivory-ruffle-hem-dress",
     "name": "Ivory Ruffle Hem Dress",
+    "soldOut": true,
     "price": 9500,
     "color": "Ivory",
     "category": "dresses",
