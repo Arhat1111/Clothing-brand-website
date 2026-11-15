@@ -1,15 +1,10 @@
-const { priceOrder } = require('./_diwali-pricing');
 const { json, cors, requireAdmin, supabaseRequest, rowToOrder, buildOrderRecord, sendConfirmationEmail, sendOwnerOrderEmail } = require('./_utils');
 
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;
   try {
     if (req.method === 'POST') {
-      const input = req.body || {};
-      // Recalculate all prices server-side from the catalogue; do not trust browser totals.
-      const pricing = priceOrder(input.items);
-      const record = buildOrderRecord({ ...input, ...pricing });
-      if (record.payment_status === 'paid') return json(res, 400, {ok:false,error:'Payment must be verified by Razorpay.'});
+      const record = buildOrderRecord(req.body || {});
       const rows = await supabaseRequest('orders', {
         method: 'POST',
         body: JSON.stringify(record),
