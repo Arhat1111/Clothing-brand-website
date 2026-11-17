@@ -1,12 +1,5 @@
-FABLE — IMAGE QUALITY IMPROVEMENT (17 Nov 2026)
+MODEL IMAGE QUALITY CORRECTION - 17 NOV 2026
 
-The nine AI model images originated from 3x3 contact sheets. Their actual native resolution was about 430x392 px, causing visible softness when shown as large portrait cards.
-
-This version uses 3x Lanczos reconstruction with restrained edge sharpening, embedded in catalog.js to avoid broken image paths. It preserves the generated model image as the primary photograph and all high-resolution real garment photos after it.
-
-IMPORTANT: Upscaling does not create genuine photographic detail that was absent in the original. True high-resolution model photos (separate images, ideally 1200x1600 px or greater) are necessary for genuinely crisp model portraits. The garment originals already provide higher-resolution details in the gallery.
-
-No styling, payment, Supabase, or Razorpay code was changed in this image-quality update.
-All newly supplied prices remain as previously set.
-
-Deploy the package by uploading all contents to the existing GitHub repository, or replace only catalog.js.
+The first three new shirts use newly rendered full-resolution AI model portraits as their primary image. Other six new products now use the original high-resolution customer-uploaded photos as the primary image because prior AI models were sourced from very small collage tiles. The AI model preview is retained as second gallery image for each of those six.
+All other design, inventory, prices, checkout and Supabase/Razorpay files retained.
+For perfect model-first presentation for every product, please commission/source individual high-resolution model photos with manufacturer approval of garment details.
