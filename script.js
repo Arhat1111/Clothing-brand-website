@@ -708,7 +708,7 @@ const buildOrderPayload = (formData) => {
       qty: item.qty,
       unitPrice: product.price,
       lineTotal: product.price * item.qty,
-      image: product.image || "",
+      image: (String(product.image || "").startsWith("data:") ? "" : product.image || ""),
     } : null;
   }).filter(Boolean);
   return {
@@ -741,10 +741,7 @@ const sendOrderToApi = async (order) => {
 
 const createRazorpayOrder = async (order) => fableApi("/api/razorpay-create-order", {
   method: "POST",
-  body: JSON.stringify({
-    amount: Math.round(Number(order.total || 0) * 100),
-    receipt: order.id,
-  }),
+  body: JSON.stringify({ local_order_id: order.id }),
 });
 
 const verifyRazorpayPayment = async (payload) => fableApi("/api/razorpay-verify-payment", {
@@ -980,10 +977,15 @@ checkoutModal?.addEventListener("submit", async (event) => {
   try {
     order.status = "payment_pending";
     order.paymentStatus = "payment_pending";
-    const razorpayResult = await createRazorpayOrder(order);
-    order.razorpayOrderId = razorpayResult.order.id;
+    // Save and validate current product prices in Supabase before creating a payment.
     const pendingSave = await sendOrderToApi(order);
-    const pendingOrder = pendingSave.order || order;
+    if (!pendingSave.ok || !pendingSave.order?.id) throw new Error("Could not securely save your order.");
+    const pendingOrder = pendingSave.order;
+    const razorpayResult = await createRazorpayOrder(pendingOrder);
+    if (Math.round(Number(pendingOrder.total) * 100) !== Number(razorpayResult.order.amount)) {
+      throw new Error("Payment amount mismatch. Please restart checkout.");
+    }
+    pendingOrder.razorpayOrderId = razorpayResult.order.id;
     saveOrderLocally(pendingOrder);
     if (submitButton) submitButton.textContent = "Opening Razorpay...";
     await openRazorpayCheckout({
