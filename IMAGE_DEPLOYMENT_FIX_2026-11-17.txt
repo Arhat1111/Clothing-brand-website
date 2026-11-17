@@ -1,0 +1,7 @@
+Fable original website - image loading repair
+
+The five newest product image galleries are embedded directly in catalog.js. They no longer depend on assets/products/nov-2026-arrivals paths during rendering. Original image files are retained in the package as backups.
+
+Deployment: unzip and upload the contents (not the ZIP as a single file) to the GitHub repository root. For this specific fix, replacing catalog.js is sufficient if the current deployed site already contains the same previous website build. Confirm GitHub shows the new catalog.js and that Vercel deployment succeeds. Hard refresh after deployment.
+
+No layout/theme, backend, Razorpay or Supabase changes. Prices for five new products remain To be decided; purchases are disabled for those items. Live deployment and checkout are not tested.
