@@ -1,5 +1,278 @@
 window.FABLE_PRODUCTS = [
   {
+    "id": "lavender-dragonfly-shirt",
+    "name": "Lavender Dragonfly Embroidered Shirt",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Lavender",
+    "category": "tops",
+    "categoryLabel": "Tops & Shirts",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A lavender button-front shirt featuring golden dragonfly embroidery.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/lavender-dragonfly-shirt-model.webp",
+    "gallery": [
+      "assets/products/lavender-dragonfly-shirt-model.webp",
+      "assets/products/lavender-dragonfly-shirt-original-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "rose-striped-tie-shirt",
+    "name": "Rose Stripe Tie-Front Shirt",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Rose",
+    "category": "tops",
+    "categoryLabel": "Tops & Shirts",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A two-tone rose shirt with embroidered botanical patches and ribbon ties.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/rose-striped-tie-shirt-model.webp",
+    "gallery": [
+      "assets/products/rose-striped-tie-shirt-model.webp",
+      "assets/products/rose-striped-tie-shirt-original-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "monochrome-bird-shirt",
+    "name": "Monochrome Bird Embroidered Shirt",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Black and White",
+    "category": "tops",
+    "categoryLabel": "Tops & Shirts",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A contrasting printed shirt with a colorful bird motif and front ties.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/monochrome-bird-shirt-model.webp",
+    "gallery": [
+      "assets/products/monochrome-bird-shirt-model.webp",
+      "assets/products/monochrome-bird-shirt-original-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "geometric-tie-front-shirt",
+    "name": "Geometric Tie-Front Shirt",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Black and White",
+    "category": "tops",
+    "categoryLabel": "Tops & Shirts",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A geometric monochrome printed shirt finished with long contrast ties.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/geometric-tie-front-shirt-model.webp",
+    "gallery": [
+      "assets/products/geometric-tie-front-shirt-model.webp",
+      "assets/products/geometric-tie-front-shirt-original-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "black-zebra-embroidered-shirt",
+    "name": "Black Zebra Embroidered Shirt",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Black and White",
+    "category": "tops",
+    "categoryLabel": "Tops & Shirts",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "An asymmetrical black and graphic print shirt with red embroidery.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/black-zebra-embroidered-shirt-model.webp",
+    "gallery": [
+      "assets/products/black-zebra-embroidered-shirt-model.webp",
+      "assets/products/black-zebra-embroidered-shirt-original-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "white-beaded-mini-dress",
+    "name": "White Beaded Mini Dress",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "White",
+    "category": "dresses",
+    "categoryLabel": "Dresses",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A white spaghetti-strap short dress with delicate beaded mesh texture, shown from front and back.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/white-beaded-mini-dress-model.webp",
+    "gallery": [
+      "assets/products/white-beaded-mini-dress-model.webp",
+      "assets/products/white-beaded-mini-dress-original-1.webp",
+      "assets/products/white-beaded-mini-dress-original-2.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "lime-embroidered-sharara-set",
+    "name": "Lime Embroidered Sharara Set",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Lime Green",
+    "category": "festive",
+    "categoryLabel": "Festive Wear",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A lime green embroidered short kurta and flared bottom ensemble, paired with a blue-green dupatta.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/lime-embroidered-sharara-set-model.webp",
+    "gallery": [
+      "assets/products/lime-embroidered-sharara-set-model.webp",
+      "assets/products/lime-embroidered-sharara-set-original-1.webp",
+      "assets/products/lime-embroidered-sharara-set-original-2.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "fuchsia-embroidered-kurta-set",
+    "name": "Fuchsia Embroidered Kurta Set",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Fuchsia",
+    "category": "festive",
+    "categoryLabel": "Festive Wear",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A vivid pink embroidered kurta set with a patterned dupatta.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/fuchsia-embroidered-kurta-set-model.webp",
+    "gallery": [
+      "assets/products/fuchsia-embroidered-kurta-set-model.webp",
+      "assets/products/fuchsia-embroidered-kurta-set-original-1.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
+    "id": "sky-blue-red-dupatta-anarkali",
+    "name": "Sky Blue Anarkali with Red Dupatta",
+    "price": null,
+    "pricePending": true,
+    "saleable": true,
+    "color": "Sky Blue",
+    "category": "anarkalis",
+    "categoryLabel": "Anarkalis",
+    "badge": "New Arrival",
+    "tone": "#eee3dd",
+    "accent": "#d9bdb1",
+    "description": "A flowing sky-blue dress with a contrasting rich red dupatta, shown from front and back.",
+    "fabric": "Refer to the original garment photos for accurate details.",
+    "source": "Customer uploaded garment photos; editorial AI model preview",
+    "subCategory": "new-arrivals",
+    "image": "assets/products/sky-blue-red-dupatta-anarkali-model.webp",
+    "gallery": [
+      "assets/products/sky-blue-red-dupatta-anarkali-model.webp",
+      "assets/products/sky-blue-red-dupatta-anarkali-original-1.webp",
+      "assets/products/sky-blue-red-dupatta-anarkali-original-2.webp"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "Custom fit"
+    ]
+  },
+  {
     "id": "teal-embroidered-drape-set",
     "name": "Teal Embroidered Drape Set",
     "price": 9500,
@@ -463,7 +736,6 @@ window.FABLE_PRODUCTS = [
   {
     "id": "ivory-ruffle-hem-dress",
     "name": "Ivory Ruffle Hem Dress",
-    "soldOut": true,
     "price": 9500,
     "color": "Ivory",
     "category": "dresses",
@@ -488,7 +760,8 @@ window.FABLE_PRODUCTS = [
       "L",
       "XL",
       "Custom fit"
-    ]
+    ],
+    "soldOut": true
   },
   {
     "id": "color-block-zip-dress",

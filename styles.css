@@ -456,8 +456,6 @@ body.overlay-open { overflow:hidden; }
 .catalog-add { position:absolute; z-index:3; left:14px; right:14px; bottom:14px; min-height:48px; border:0; background:rgba(255,253,249,.93); color:var(--ink); backdrop-filter:blur(12px); font:9px var(--ui); letter-spacing:.15em; text-transform:uppercase; transform:translateY(74px); transition:transform .35s,background .25s,color .25s; cursor:pointer; }
 .catalog-card:hover .catalog-add { transform:translateY(0); }
 .catalog-add:hover { background:var(--ink); color:white; }
-.catalog-add:disabled, .mini-add:disabled { cursor:not-allowed; opacity:.85; }
-.catalog-add:disabled { transform:translateY(0); background:#49323a; color:white; }
 .catalog-info { display:grid; grid-template-columns:1fr auto; gap:7px 15px; padding-top:16px; }
 .catalog-info h3 { margin:0; font:23px/1.15 var(--serif); }
 .catalog-info .catalog-price { margin:2px 0 0; font:12px var(--ui); }
