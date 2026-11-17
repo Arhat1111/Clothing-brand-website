@@ -1,0 +1,15 @@
+Fable by Kavita Anu — original website price update (17 November 2026)
+
+lavender-dragonfly-shirt: INR 4,500
+rose-striped-tie-shirt: INR 4,500
+monochrome-bird-shirt: INR 4,500
+geometric-tie-front-shirt: INR 4,500
+black-zebra-embroidered-shirt: INR 4,500
+white-beaded-mini-dress: INR 9,500
+lime-embroidered-sharara-set: INR 22,000
+fuchsia-embroidered-kurta-set: INR 30,000
+sky-blue-red-dupatta-anarkali: INR 22,000
+
+All nine new products have pricePending=false and display their exact prices. Existing images, styles, Razorpay configuration, and Supabase code are unchanged.
+
+SECURITY NOTE: The original api/razorpay-create-order.js accepts a client-supplied amount; it needs server-side cart/price verification before production payments can be regarded as tamper-resistant. This update does not change that payment endpoint.
