@@ -1,0 +1,7 @@
+Fable original website — Cobalt Blue Patchwork Tie-Front Shirt
+Added under Tops & Shirts, New Arrivals.
+Cover and gallery first image: original-resolution model portrait, 1122x1402 source.
+Gallery second image: actual customer-supplied product photo.
+Price pending; no checkout allowed until finalized.
+Unchanged: existing product data, other pages, backend, CSS, Razorpay/Vercel code.
+Not deployed or live-payment tested.
